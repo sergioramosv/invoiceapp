@@ -295,7 +295,6 @@ const en: Record<string, string> = {
   'offline.cached': 'Resources cached',
 
   // Clients
-  'nav.clients': 'Clients',
   'clients.title': 'Clients',
   'clients.subtitle': 'Manage your recurring clients',
   'clients.new': 'New client',
