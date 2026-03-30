@@ -1,10 +1,27 @@
 import type { Metadata } from 'next'
 import { AuthProvider } from '@/lib/auth-context'
+import { Analytics } from '@/components/Analytics'
 import './globals.css'
 
 export const metadata: Metadata = {
   title: 'InvoiceApp — Crea facturas profesionales en segundos',
-  description: 'Genera facturas profesionales en PDF al instante. Sin registro, sin complicaciones.',
+  description:
+    'Genera facturas profesionales en PDF al instante. El generador de facturas más rápido para freelancers y empresas en España.',
+  metadataBase: new URL('https://invoiceapp.es'),
+  openGraph: {
+    title: 'InvoiceApp — Crea facturas profesionales en segundos',
+    description:
+      'Genera facturas profesionales en PDF al instante. El generador de facturas más rápido para freelancers y empresas en España.',
+    type: 'website',
+    url: 'https://invoiceapp.es',
+    siteName: 'InvoiceApp',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'InvoiceApp — Crea facturas profesionales en segundos',
+    description:
+      'Genera facturas profesionales en PDF al instante. El generador de facturas más rápido para freelancers y empresas en España.',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -12,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es">
       <body className="antialiased">
         <AuthProvider>{children}</AuthProvider>
+        <Analytics />
       </body>
     </html>
   )
