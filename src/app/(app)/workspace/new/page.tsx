@@ -3,8 +3,10 @@
 import { Suspense, useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { doc, getDoc } from 'firebase/firestore'
 import { useInvoice } from '@/hooks/useInvoice'
 import { useAuth } from '@/lib/auth-context'
+import { getFirebaseDb } from '@/lib/firebase'
 import InvoiceForm from '@/components/invoice/InvoiceForm'
 import InvoicePreview from '@/components/invoice/InvoicePreview'
 import { downloadPDF } from '@/lib/generate-pdf'
@@ -83,8 +85,24 @@ function NewInvoiceEditor({
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit')
   const [saving, setSaving] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [isPaid, setIsPaid] = useState(false)
   const previewRef = useRef<HTMLDivElement>(null)
-  const isFreeUser = true
+
+  useEffect(() => {
+    async function checkPaidStatus() {
+      if (!user) return
+      try {
+        const db = getFirebaseDb()
+        const userDoc = await getDoc(doc(db, 'users', user.uid))
+        if (userDoc.exists()) {
+          setIsPaid(userDoc.data().isPaid === true)
+        }
+      } catch {
+        // Default to free
+      }
+    }
+    checkPaidStatus()
+  }, [user])
 
   async function handleSave() {
     if (!user) return
@@ -113,7 +131,7 @@ function NewInvoiceEditor({
     if (!previewRef.current) return
     setDownloading(true)
     try {
-      await downloadPDF(previewRef.current, state.invoiceNumber, isFreeUser)
+      await downloadPDF(previewRef.current, state.invoiceNumber, isPaid)
     } catch (err) {
       console.error('Error generating PDF:', err)
     } finally {
@@ -140,6 +158,22 @@ function NewInvoiceEditor({
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Free user banner */}
+      {!isPaid && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-center gap-2 text-sm text-amber-800">
+          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Estas usando el plan gratuito. Las facturas incluyen watermark.</span>
+          <Link
+            href="/workspace/upgrade"
+            className="font-semibold text-primary hover:text-primary-dark underline underline-offset-2 transition-colors"
+          >
+            Eliminar watermark
+          </Link>
+        </div>
+      )}
+
       {/* Top bar */}
       <div className="border-b border-border bg-surface px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">

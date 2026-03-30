@@ -58,10 +58,10 @@ export async function generatePDF(
 export async function downloadPDF(
   previewRef: HTMLElement,
   invoiceNumber: string,
-  isFreeUser: boolean
+  isPaid: boolean
 ): Promise<void> {
   const filename = invoiceNumber
     ? `factura-${invoiceNumber}.pdf`
     : 'factura.pdf'
-  await generatePDF(previewRef, filename, isFreeUser)
+  await generatePDF(previewRef, filename, !isPaid)
 }

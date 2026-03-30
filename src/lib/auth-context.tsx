@@ -62,12 +62,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await updateProfile(cred.user, { displayName: name })
     const token = await cred.user.getIdToken()
     await syncSession(token)
+    fetch('/api/auth/welcome', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: cred.user.email, name }),
+    }).catch(() => {})
   }
 
   const signInWithGoogle = async () => {
     const cred = await signInWithPopup(getFirebaseAuth(), new GoogleAuthProvider())
     const token = await cred.user.getIdToken()
     await syncSession(token)
+    fetch('/api/auth/welcome', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: cred.user.email,
+        name: cred.user.displayName || '',
+      }),
+    }).catch(() => {})
   }
 
   const signOut = async () => {
