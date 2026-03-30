@@ -99,7 +99,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
             </svg>
             <span className="flex-1 text-left">{t('search.hint')}</span>
-            <kbd className="px-1.5 py-0.5 text-[10px] font-mono border border-border rounded bg-surface-secondary text-text-muted">Ctrl+K</kbd>
+            <kbd className="px-1.5 py-0.5 text-[10px] font-mono border border-border rounded bg-surface-secondary text-text-muted">{typeof navigator !== 'undefined' && /Mac/.test(navigator.userAgent) ? '⌘K' : 'Ctrl+K'}</kbd>
           </button>
         </nav>
 

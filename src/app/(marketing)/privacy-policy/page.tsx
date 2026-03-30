@@ -30,8 +30,8 @@ export default function PrivacyPolicyPage() {
               1. Responsable del tratamiento
             </h2>
             <ul className="space-y-1.5 list-none">
-              <li><strong className="text-text">Titular:</strong> InvoiceApp (SRSoftware)</li>
-              <li><strong className="text-text">Responsable:</strong> Sergio Ramos Vicente</li>
+              <li><strong className="text-text">Titular:</strong> InvoiceApp</li>
+              <li><strong className="text-text">Responsable:</strong> El responsable de InvoiceApp</li>
               <li><strong className="text-text">Email de contacto:</strong> sergioramosvicente2004@gmail.com</li>
               <li><strong className="text-text">Sitio web:</strong> https://invoiceapp.es</li>
             </ul>

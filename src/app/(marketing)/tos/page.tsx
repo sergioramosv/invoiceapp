@@ -178,7 +178,7 @@ export default function TermsOfServicePage() {
             </h2>
             <p>
               El software, diseño, logotipos, textos y demás elementos del Sitio
-              Web son propiedad de InvoiceApp (SRSoftware) y están protegidos por
+              Web son propiedad de InvoiceApp y están protegidos por
               las leyes de propiedad intelectual e industrial.
             </p>
             <p className="mt-3">
