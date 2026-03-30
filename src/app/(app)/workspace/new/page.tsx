@@ -37,32 +37,31 @@ function NewInvoicePage() {
   const saveAsTemplateMode = searchParams.get('saveAsTemplate') === 'true'
 
   const [initialState, setInitialState] = useState<InvoiceState | null>(null)
-  const [loadingTemplate, setLoadingTemplate] = useState(!!templateId)
+  const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    async function loadTemplate() {
+    if (ready) return
+    async function load() {
       if (templateId) {
         try {
           const template = await getTemplate(templateId)
           if (template && template.data) {
-            const state = template.data as unknown as InvoiceState
-            setInitialState(state)
+            setInitialState(template.data as unknown as InvoiceState)
           } else {
             setInitialState(createInitialState())
           }
         } catch {
           setInitialState(createInitialState())
         }
-        setLoadingTemplate(false)
       } else {
         setInitialState(createInitialState())
-        setLoadingTemplate(false)
       }
+      setReady(true)
     }
-    loadTemplate()
-  }, [templateId])
+    load()
+  }, [templateId, ready])
 
-  if (loadingTemplate || !initialState) {
+  if (!ready || !initialState) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
