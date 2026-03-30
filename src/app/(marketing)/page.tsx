@@ -234,6 +234,7 @@ export default function LandingPage() {
     { q: t('landing.faq3.q'), a: t('landing.faq3.a') },
     { q: t('landing.faq4.q'), a: t('landing.faq4.a') },
     { q: t('landing.faq5.q'), a: t('landing.faq5.a') },
+    { q: t('landing.faq6.q'), a: t('landing.faq6.a') },
   ]
 
   const socialProofLabels = [

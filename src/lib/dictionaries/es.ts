@@ -265,6 +265,8 @@ const es: Record<string, string> = {
   'landing.faq4.a': 'Sí, soportamos más de 20 monedas internacionales.',
   'landing.faq5.q': '¿Necesito instalar algo?',
   'landing.faq5.a': 'No, InvoiceApp funciona 100% en el navegador. También puedes instalarla como PWA.',
+  'landing.faq6.q': '¿Es un software de facturación electrónica / VeriFactu?',
+  'landing.faq6.a': 'No. InvoiceApp es una herramienta de diseño de documentos comerciales en PDF. No es un software de gestión fiscal ni cumple con VeriFactu (RD 1007/2023). El usuario es responsable de cumplir con la normativa fiscal aplicable en su jurisdicción.',
 
   // Landing social proof labels
   'landing.sp1': 'Freelancers',
