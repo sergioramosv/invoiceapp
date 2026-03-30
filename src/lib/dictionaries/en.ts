@@ -332,6 +332,7 @@ const en: Record<string, string> = {
   'footer.privacy': 'Privacy',
   'footer.terms': 'Terms',
   'footer.legal': 'Legal',
+  'footer.disclaimer': 'InvoiceApp is a commercial document design tool (invoices, quotes) in PDF format. It is not a fiscal management software nor an electronic invoicing system. The user is responsible for complying with applicable tax regulations.',
 }
 
 export default en

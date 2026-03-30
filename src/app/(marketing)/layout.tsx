@@ -140,21 +140,26 @@ function Footer() {
 
   return (
     <footer className="border-t border-border">
-      <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-sm text-text-muted">
-          {t('footer.copyright')}
-        </p>
-        <div className="flex items-center gap-6">
-          <a href="/privacy-policy" className="text-sm text-text-muted hover:text-text transition-colors">
-            {t('footer.privacy')}
-          </a>
-          <a href="/tos" className="text-sm text-text-muted hover:text-text transition-colors">
-            {t('footer.terms')}
-          </a>
-          <a href="/legal-notice" className="text-sm text-text-muted hover:text-text transition-colors">
-            {t('footer.legal')}
-          </a>
+      <div className="px-6 py-8 space-y-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-text-muted">
+            {t('footer.copyright')}
+          </p>
+          <div className="flex items-center gap-6">
+            <a href="/privacy-policy" className="text-sm text-text-muted hover:text-text transition-colors">
+              {t('footer.privacy')}
+            </a>
+            <a href="/tos" className="text-sm text-text-muted hover:text-text transition-colors">
+              {t('footer.terms')}
+            </a>
+            <a href="/legal-notice" className="text-sm text-text-muted hover:text-text transition-colors">
+              {t('footer.legal')}
+            </a>
+          </div>
         </div>
+        <p className="text-[11px] text-text-muted text-center leading-relaxed">
+          {t('footer.disclaimer')}
+        </p>
       </div>
     </footer>
   )

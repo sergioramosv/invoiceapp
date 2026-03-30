@@ -30,11 +30,27 @@ export default function TermsOfServicePage() {
               1. Descripción del servicio
             </h2>
             <p>
-              InvoiceApp es una plataforma SaaS (Software as a Service) que
-              permite a usuarios autónomos, freelancers y empresas generar
-              facturas profesionales en formato PDF de forma rápida y sencilla.
-              El servicio está disponible a través de la web en invoiceapp.es.
+              InvoiceApp es una <strong className="text-text">herramienta de diseño y generación de documentos comerciales</strong> (facturas,
+              presupuestos) en formato PDF. El servicio está disponible a través de la web en invoiceapp.es.
             </p>
+            <div className="mt-4 p-4 border border-border rounded-lg bg-surface-tertiary">
+              <p className="font-semibold text-text mb-2">
+                Aviso importante — Naturaleza del servicio
+              </p>
+              <p>
+                InvoiceApp <strong className="text-text">NO es un software de gestión fiscal, contable ni de facturación electrónica</strong> en
+                el sentido del Real Decreto 1007/2023 (VeriFactu) ni de la Ley Crea y Crece. InvoiceApp es una herramienta
+                de diseño de documentos comerciales que genera archivos PDF. No realiza ningún tipo de registro fiscal,
+                no envía datos a la Agencia Tributaria (AEAT), no genera cadenas de hash, no cumple con los requisitos
+                de los Sistemas Informáticos de Facturación (SIF) y no sustituye a un software de contabilidad o ERP.
+              </p>
+              <p className="mt-2">
+                El usuario es el <strong className="text-text">único responsable</strong> de cumplir con la normativa fiscal aplicable en su
+                jurisdicción, incluyendo pero no limitado a: la obligación de utilizar un sistema de facturación
+                homologado, la presentación de impuestos, la conservación de facturas y cualquier otro requisito legal.
+                InvoiceApp no asume ninguna responsabilidad sobre la validez fiscal o legal de los documentos generados.
+              </p>
+            </div>
           </section>
 
           <section>

@@ -332,6 +332,7 @@ const es: Record<string, string> = {
   'footer.privacy': 'Privacidad',
   'footer.terms': 'Términos',
   'footer.legal': 'Legal',
+  'footer.disclaimer': 'InvoiceApp es una herramienta de diseño de documentos comerciales (facturas, presupuestos) en formato PDF. No es un software de gestión fiscal ni de facturación electrónica conforme al RD 1007/2023 (VeriFactu). El usuario es responsable de cumplir con la normativa fiscal aplicable.',
 }
 
 export default es
