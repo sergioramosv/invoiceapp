@@ -13,6 +13,14 @@ import {
 } from 'firebase/auth'
 import { getFirebaseAuth } from './firebase'
 
+async function syncSession(token: string | null) {
+  await fetch('/api/auth/session', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token }),
+  })
+}
+
 interface AuthContextType {
   user: User | null
   loading: boolean
@@ -30,28 +38,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const auth = getFirebaseAuth()
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
+    const unsubscribe = onAuthStateChanged(auth, async (u) => {
       setUser(u)
+      if (u) {
+        const token = await u.getIdToken()
+        await syncSession(token)
+      } else {
+        await syncSession(null)
+      }
       setLoading(false)
     })
     return unsubscribe
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(getFirebaseAuth(), email, password)
+    const cred = await signInWithEmailAndPassword(getFirebaseAuth(), email, password)
+    const token = await cred.user.getIdToken()
+    await syncSession(token)
   }
 
   const signUp = async (email: string, password: string, name: string) => {
     const cred = await createUserWithEmailAndPassword(getFirebaseAuth(), email, password)
     await updateProfile(cred.user, { displayName: name })
+    const token = await cred.user.getIdToken()
+    await syncSession(token)
   }
 
   const signInWithGoogle = async () => {
-    await signInWithPopup(getFirebaseAuth(), new GoogleAuthProvider())
+    const cred = await signInWithPopup(getFirebaseAuth(), new GoogleAuthProvider())
+    const token = await cred.user.getIdToken()
+    await syncSession(token)
   }
 
   const signOut = async () => {
     await firebaseSignOut(getFirebaseAuth())
+    await syncSession(null)
   }
 
   return (
