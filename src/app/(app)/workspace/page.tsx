@@ -96,7 +96,7 @@ export default function WorkspacePage() {
       } finally {
         setPdfInvoice(null)
       }
-    }, 300)
+    }, 500)
     return () => clearTimeout(timer)
   }, [pdfInvoice])
 
