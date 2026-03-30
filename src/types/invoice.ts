@@ -168,6 +168,7 @@ export interface InvoiceState {
   // Notes
   notes: string
   terms: string
+  signatureUrl: string
 }
 
 function getTodayISO(): string {
@@ -216,6 +217,7 @@ export function createInitialState(): InvoiceState {
     bankFields: [],
     notes: '',
     terms: '',
+    signatureUrl: '',
   }
 }
 

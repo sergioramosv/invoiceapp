@@ -11,6 +11,7 @@ import {
   DocumentType,
 } from '@/types/invoice'
 import { TEMPLATE_STYLES, TemplateStyle } from '@/lib/invoice-templates'
+import SignaturePad from './SignaturePad'
 
 type InvoiceAction =
   | { type: 'SET_FIELD'; field: keyof InvoiceState; value: unknown }
@@ -928,6 +929,15 @@ export default function InvoiceForm({
             />
           </div>
         </div>
+      </div>
+
+      {/* Firma / Sello */}
+      <div className="border-t border-border pt-6 mt-6">
+        <h3 className="text-lg font-semibold mb-4">Firma / Sello</h3>
+        <SignaturePad
+          value={state.signatureUrl}
+          onChange={(url) => dispatch({ type: 'SET_FIELD', field: 'signatureUrl', value: url })}
+        />
       </div>
     </div>
   )

@@ -52,6 +52,7 @@ export function invoiceStateToFirestore(
     balanceDue: getBalanceDue(state),
     notes: state.notes || '',
     terms: state.terms || '',
+    signatureUrl: state.signatureUrl || '',
     items: state.items.map((item, idx) => ({
       ...item,
       sortOrder: idx,
@@ -104,5 +105,6 @@ export function firestoreToInvoiceState(invoice: Invoice): InvoiceState {
     bankFields: [],
     notes: invoice.notes || '',
     terms: invoice.terms || '',
+    signatureUrl: invoice.signatureUrl || '',
   }
 }
