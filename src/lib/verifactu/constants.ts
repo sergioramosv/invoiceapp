@@ -24,8 +24,8 @@ export const OPERATION_TYPES = [
 ]
 
 export const SOFTWARE_INFO = {
-  name: 'SRSoftware',
-  nif: '', // To be filled with actual NIF
+  name: 'InvoiceApp',
+  nif: '', // NIF del fabricante — rellenar si se registra ante AEAT
   softwareName: 'InvoiceApp',
   softwareId: '001',
   version: '1.0.0',
