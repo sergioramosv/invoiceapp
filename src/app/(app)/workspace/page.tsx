@@ -19,11 +19,11 @@ import type { Invoice, InvoiceStatus, DocumentType } from '@/types'
 import styles from './workspace.module.css'
 
 const STATUS_CONFIG: Record<InvoiceStatus, { label: string; className: string }> = {
-  draft: { label: 'Borrador', className: 'bg-gray-100 text-gray-700' },
-  sent: { label: 'Enviada', className: 'bg-blue-100 text-blue-700' },
-  paid: { label: 'Pagada', className: 'bg-green-100 text-green-700' },
-  overdue: { label: 'Vencida', className: 'bg-red-100 text-red-700' },
-  cancelled: { label: 'Cancelada', className: 'bg-gray-200 text-gray-600' },
+  draft: { label: 'Borrador', className: 'bg-text/10 text-text-secondary' },
+  sent: { label: 'Enviada', className: 'bg-accent/10 text-accent' },
+  paid: { label: 'Pagada', className: 'bg-success/10 text-success' },
+  overdue: { label: 'Vencida', className: 'bg-danger/10 text-danger' },
+  cancelled: { label: 'Cancelada', className: 'bg-text/5 text-text-muted' },
 }
 
 type FilterTab = 'all' | 'invoice' | 'quote'
@@ -176,7 +176,7 @@ export default function WorkspacePage() {
         </div>
         <Link
           href="/workspace/new"
-          className="px-6 py-2 text-sm bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
+          className="px-6 py-2 text-sm bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors"
         >
           + Nuevo documento
         </Link>
@@ -187,8 +187,8 @@ export default function WorkspacePage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-surface border border-border rounded-xl p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
-                <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -200,8 +200,8 @@ export default function WorkspacePage() {
           </div>
           <div className="bg-surface border border-border rounded-xl p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
-                <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -213,8 +213,8 @@ export default function WorkspacePage() {
           </div>
           <div className="bg-surface border border-border rounded-xl p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
-                <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -226,8 +226,8 @@ export default function WorkspacePage() {
           </div>
           <div className="bg-surface border border-border rounded-xl p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
-                <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                 </svg>
               </div>
@@ -288,7 +288,7 @@ export default function WorkspacePage() {
           <p className="text-text-secondary mt-1">Crea tu primera factura o presupuesto en segundos</p>
           <Link
             href="/workspace/new"
-            className="mt-6 inline-block px-8 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
+            className="mt-6 inline-block px-8 py-3 bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors"
           >
             Crear primer documento
           </Link>
@@ -357,7 +357,7 @@ export default function WorkspacePage() {
                           {isQuote && (
                             <button
                               onClick={() => handleConvertToInvoice(invoice)}
-                              className="p-1.5 text-text-secondary hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                              className="p-1.5 text-text-secondary hover:text-success hover:bg-success/10 rounded-lg transition-colors"
                               title="Convertir en factura"
                             >
                               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -408,7 +408,7 @@ export default function WorkspacePage() {
 
       {/* Off-screen PDF render target */}
       {pdfPreviewState && (
-        <div className={styles.pdfRendererOffscreen} ref={pdfRef}>
+        <div className={`${styles.pdfRendererOffscreen} light-paper`} ref={pdfRef}>
           <InvoicePreview
             state={pdfPreviewState}
             subtotal={getSubtotal(pdfPreviewState)}

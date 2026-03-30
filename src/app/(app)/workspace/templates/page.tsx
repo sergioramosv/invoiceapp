@@ -64,7 +64,7 @@ export default function TemplatesPage() {
         </div>
         <Link
           href="/workspace/new"
-          className="px-6 py-2 text-sm bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
+          className="px-6 py-2 text-sm bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors"
         >
           + Nueva factura
         </Link>
@@ -87,7 +87,7 @@ export default function TemplatesPage() {
           </p>
           <Link
             href="/workspace/new"
-            className="mt-6 inline-block px-8 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
+            className="mt-6 inline-block px-8 py-3 bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors"
           >
             Crear factura
           </Link>
@@ -114,7 +114,7 @@ export default function TemplatesPage() {
               <div className="flex items-center gap-2 mt-4">
                 <Link
                   href={`/workspace/new?template=${template.id}`}
-                  className="flex-1 px-3 py-2 text-sm text-center bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
+                  className="flex-1 px-3 py-2 text-sm text-center bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors"
                 >
                   Usar template
                 </Link>

@@ -275,7 +275,7 @@ export default function InvoicePreview({
                   className={[
                     tmpl === 'default' && 'border-b border-border/60',
                     tmpl === 'minimal' && '',
-                    tmpl === 'corporate' && (idx % 2 === 0 ? 'bg-surface-secondary' : 'bg-white'),
+                    tmpl === 'corporate' && (idx % 2 === 0 ? 'bg-[#fafafa]' : 'bg-white'),
                     tmpl === 'creative' && 'border-b border-border/40',
                   ].filter(Boolean).join(' ')}
                 >

@@ -36,7 +36,7 @@ const A4Page = forwardRef<HTMLDivElement, { children: React.ReactNode }>(
         >
           <div
             ref={ref}
-            className="bg-white shadow-lg rounded-sm"
+            className="bg-white shadow-lg rounded-sm light-paper"
             style={{ width: A4_WIDTH, minHeight: A4_HEIGHT }}
           >
             {children}

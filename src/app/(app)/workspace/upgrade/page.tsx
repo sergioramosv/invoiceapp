@@ -17,7 +17,7 @@ const proFeatures = [
 function CheckIcon() {
   return (
     <svg
-      className="w-5 h-5 text-green-600 shrink-0"
+      className="w-5 h-5 text-success shrink-0"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -110,8 +110,8 @@ export default function UpgradePage() {
           <span
             className={`px-3 py-1 text-xs font-semibold rounded-full ${
               isPaid
-                ? 'bg-green-100 text-green-700'
-                : 'bg-gray-100 text-text-secondary'
+                ? 'bg-success/10 text-success'
+                : 'bg-text/10 text-text-secondary'
             }`}
           >
             {isPaid ? 'Pro — Lifetime' : 'Plan Gratuito'}
@@ -120,10 +120,10 @@ export default function UpgradePage() {
       </div>
 
       {isPaid ? (
-        <div className="rounded-2xl border border-green-200 bg-green-50 p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="rounded-2xl border border-success/20 bg-success/10 p-8 text-center">
+          <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
-              className="w-8 h-8 text-green-600"
+              className="w-8 h-8 text-success"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -147,7 +147,7 @@ export default function UpgradePage() {
         <div className="relative rounded-2xl border-2 border-primary bg-surface p-8 shadow-xl shadow-primary/10">
           {/* Badge */}
           <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-            <span className="px-4 py-1.5 bg-primary text-white text-xs font-semibold rounded-full">
+            <span className="px-4 py-1.5 bg-text text-surface text-xs font-semibold rounded-full">
               Pro — Lifetime
             </span>
           </div>
@@ -175,7 +175,7 @@ export default function UpgradePage() {
           <button
             onClick={handleUpgrade}
             disabled={checkoutLoading}
-            className="mt-8 block w-full py-3.5 bg-primary text-white rounded-xl font-medium hover:bg-primary-dark transition-colors text-center shadow-lg shadow-primary/25 disabled:opacity-50"
+            className="mt-8 block w-full py-3.5 bg-text text-surface rounded-xl font-medium hover:bg-text-secondary transition-colors text-center shadow-lg shadow-text/25 disabled:opacity-50"
           >
             {checkoutLoading ? 'Redirigiendo a Stripe...' : 'Upgrade a Pro'}
           </button>

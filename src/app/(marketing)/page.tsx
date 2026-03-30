@@ -60,7 +60,7 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
 
 const STATUS_CYCLE = [
   { label: 'Pagada', className: 'bg-success/10 text-success' },
-  { label: 'Pendiente', className: 'bg-amber-100 text-amber-700' },
+  { label: 'Pendiente', className: 'bg-warning/10 text-warning' },
   { label: 'Enviada', className: 'bg-primary/10 text-primary' },
 ] as const
 
@@ -95,15 +95,15 @@ function InvoicePreview() {
     >
       <div className="relative group">
         {/* Live preview badge */}
-        <div className="absolute -top-3 -right-3 z-10 px-3 py-1 bg-primary text-white text-xs font-semibold rounded-full shadow-lg">
+        <div className="absolute -top-3 -right-3 z-10 px-3 py-1 bg-text text-surface text-xs font-semibold rounded-full shadow-lg">
           Vista previa en vivo
         </div>
 
-        <div className="bg-white rounded-2xl shadow-2xl border border-border p-8 md:p-10 transition-all duration-300 group-hover:shadow-3xl group-hover:scale-[1.02]">
+        <div className="bg-surface rounded-2xl shadow-2xl border border-border p-8 md:p-10 transition-all duration-300 group-hover:shadow-3xl group-hover:scale-[1.02]">
           {/* Header */}
           <div className="flex items-start justify-between mb-8">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-text rounded-full flex items-center justify-center text-white font-bold text-sm">
+              <div className="w-10 h-10 bg-text rounded-full flex items-center justify-center text-surface font-bold text-sm">
                 A
               </div>
               <div>
@@ -249,7 +249,7 @@ export default function LandingPage() {
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/signup"
-                className="w-full sm:w-auto px-8 py-4 bg-primary text-white rounded-full font-medium hover:bg-primary-light transition-colors text-center"
+                className="w-full sm:w-auto px-8 py-4 bg-text text-surface rounded-full font-medium hover:bg-text-secondary transition-colors text-center"
               >
                 Empezar gratis
               </Link>
@@ -302,7 +302,7 @@ export default function LandingPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((f, i) => (
               <FadeIn key={f.title} delay={i * 0.1}>
-                <div className="h-full p-8 rounded-2xl border border-border bg-white hover:shadow-lg hover:shadow-black/5 hover:-translate-y-1 transition-all duration-300">
+                <div className="h-full p-8 rounded-2xl border border-border bg-surface hover:shadow-lg hover:shadow-text/5 hover:-translate-y-1 transition-all duration-300">
                   <span className="text-3xl mb-4 block">{f.icon}</span>
                   <h3 className="text-lg font-semibold text-text mb-2">{f.title}</h3>
                   <p className="text-sm text-text-secondary leading-relaxed">{f.desc}</p>
@@ -328,7 +328,7 @@ export default function LandingPage() {
 
             {steps.map((step, i) => (
               <FadeIn key={step.num} delay={i * 0.2} className="relative text-center">
-                <div className="relative z-10 w-32 h-32 rounded-full bg-white border border-border mx-auto flex items-center justify-center mb-8">
+                <div className="relative z-10 w-32 h-32 rounded-full bg-surface border border-border mx-auto flex items-center justify-center mb-8">
                   <span className="text-4xl font-black text-text">{step.num}</span>
                 </div>
                 <h3 className="text-xl font-semibold text-text mb-3">{step.title}</h3>
@@ -343,7 +343,7 @@ export default function LandingPage() {
       <section id="pricing" className="py-24 md:py-32">
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="max-w-md mx-auto">
-            <div className="rounded-2xl border border-border bg-white p-10 shadow-xl text-center">
+            <div className="rounded-2xl border border-border bg-surface p-10 shadow-xl text-center">
               <p className="text-sm font-semibold text-text-muted uppercase tracking-widest mb-2">Pro</p>
               <p className="text-lg font-medium text-text-secondary mb-6">Acceso de por vida</p>
 
@@ -364,7 +364,7 @@ export default function LandingPage() {
 
               <Link
                 href="/signup"
-                className="block w-full py-4 bg-primary text-white rounded-full font-medium hover:bg-primary-light transition-colors text-center"
+                className="block w-full py-4 bg-text text-surface rounded-full font-medium hover:bg-text-secondary transition-colors text-center"
               >
                 Empezar ahora
               </Link>
@@ -388,7 +388,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((t, i) => (
               <FadeIn key={t.name} delay={i * 0.1}>
-                <div className="h-full p-8 rounded-2xl border border-border bg-white">
+                <div className="h-full p-8 rounded-2xl border border-border bg-surface">
                   <p className="text-sm text-text leading-relaxed mb-8">
                     &ldquo;{t.text}&rdquo;
                   </p>
@@ -428,18 +428,18 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Final CTA ─── */}
-      <section className="py-24 md:py-32 bg-primary">
+      <section className="py-24 md:py-32 bg-text">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
-            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-bold text-surface tracking-tight">
               Listo para facturar como un profesional?
             </h2>
-            <p className="mt-4 text-lg text-white/70">
+            <p className="mt-4 text-lg text-surface/70">
               Unete a miles de freelancers y empresas que ya usan InvoiceApp
             </p>
             <Link
               href="/signup"
-              className="mt-10 inline-block px-8 py-4 bg-white text-primary font-medium rounded-full hover:bg-white/90 transition-colors"
+              className="mt-10 inline-block px-8 py-4 bg-surface text-text font-medium rounded-full hover:bg-surface/90 transition-colors"
             >
               Crear cuenta gratis
             </Link>

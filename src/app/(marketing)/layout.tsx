@@ -16,7 +16,7 @@ function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-white/80 backdrop-blur-xl border-b border-border shadow-sm'
+          ? 'bg-surface/80 backdrop-blur-xl border-b border-border shadow-sm'
           : 'bg-transparent'
       }`}
     >
@@ -35,7 +35,7 @@ function Navbar() {
           </Link>
           <Link
             href="/signup"
-            className="text-sm font-medium text-white bg-primary hover:bg-primary-light transition-colors px-5 py-2 rounded-full"
+            className="text-sm font-medium text-surface bg-text hover:bg-text-secondary transition-colors px-5 py-2 rounded-full"
           >
             Empezar gratis
           </Link>
@@ -73,7 +73,7 @@ function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-xl border-b border-border px-6 pb-6 pt-2 space-y-4">
+        <div className="md:hidden bg-surface/95 backdrop-blur-xl border-b border-border px-6 pb-6 pt-2 space-y-4">
           <Link
             href="/login"
             onClick={() => setMobileOpen(false)}
@@ -84,7 +84,7 @@ function Navbar() {
           <Link
             href="/signup"
             onClick={() => setMobileOpen(false)}
-            className="block text-sm font-medium text-white bg-primary hover:bg-primary-light transition-colors px-4 py-2.5 rounded-full text-center"
+            className="block text-sm font-medium text-surface bg-text hover:bg-text-secondary transition-colors px-4 py-2.5 rounded-full text-center"
           >
             Empezar gratis
           </Link>

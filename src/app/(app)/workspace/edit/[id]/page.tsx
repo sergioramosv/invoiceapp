@@ -149,7 +149,7 @@ function EditInvoiceEditor({
               onClick={() => setActiveTab('edit')}
               className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                 activeTab === 'edit'
-                  ? 'bg-primary text-white'
+                  ? 'bg-text text-surface'
                   : 'bg-surface text-text-secondary hover:bg-surface-tertiary'
               }`}
             >
@@ -159,7 +159,7 @@ function EditInvoiceEditor({
               onClick={() => setActiveTab('preview')}
               className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                 activeTab === 'preview'
-                  ? 'bg-primary text-white'
+                  ? 'bg-text text-surface'
                   : 'bg-surface text-text-secondary hover:bg-surface-tertiary'
               }`}
             >
@@ -178,7 +178,7 @@ function EditInvoiceEditor({
           <button
             onClick={handleDownloadPDF}
             disabled={downloading}
-            className="px-4 py-2 text-sm bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors flex items-center gap-2 disabled:opacity-50"
+            className="px-4 py-2 text-sm bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors flex items-center gap-2 disabled:opacity-50"
           >
             <svg
               className="w-4 h-4"

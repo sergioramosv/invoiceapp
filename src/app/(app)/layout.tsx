@@ -58,7 +58,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive(item.href)
-                  ? 'bg-black/5 text-text'
+                  ? 'bg-text/5 text-text'
                   : 'text-text-secondary hover:bg-surface-tertiary hover:text-text'
               }`}
             >

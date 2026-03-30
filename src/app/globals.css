@@ -47,3 +47,23 @@ body {
   background: var(--color-surface);
   -webkit-font-smoothing: antialiased;
 }
+
+/* Force light-mode colors inside paper previews so invoice stays readable */
+.light-paper {
+  --color-primary: #000000;
+  --color-primary-light: #333333;
+  --color-primary-dark: #000000;
+  --color-accent: #6366f1;
+  --color-accent-light: #818cf8;
+  --color-surface: #ffffff;
+  --color-surface-secondary: #fafafa;
+  --color-surface-tertiary: #f5f5f5;
+  --color-border: #e5e5e5;
+  --color-border-light: #f0f0f0;
+  --color-text: #0a0a0a;
+  --color-text-secondary: #525252;
+  --color-text-muted: #a3a3a3;
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-danger: #ef4444;
+}

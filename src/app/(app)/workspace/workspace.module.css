@@ -26,13 +26,13 @@
 }
 
 .filterTabActive {
-  background: var(--color-primary, #4f46e5);
-  color: white;
+  background: var(--color-text, #0a0a0a);
+  color: var(--color-surface, #ffffff);
 }
 
 .filterTabActive:hover {
-  background: var(--color-primary-dark, #4338ca);
-  color: white;
+  background: var(--color-text-secondary, #525252);
+  color: var(--color-surface, #ffffff);
 }
 
 .badgeInvoice {
@@ -41,8 +41,8 @@
   border-radius: 9999px;
   font-size: 0.6875rem;
   font-weight: 600;
-  background: #ede9fe;
-  color: #6d28d9;
+  background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+  color: var(--color-accent);
 }
 
 .badgeQuote {
@@ -51,8 +51,8 @@
   border-radius: 9999px;
   font-size: 0.6875rem;
   font-weight: 600;
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 15%, transparent);
+  color: var(--color-warning);
 }
 
 .pdfRendererOffscreen {

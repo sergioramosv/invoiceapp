@@ -208,7 +208,7 @@ function NewInvoiceEditor({
     <div className="h-screen flex flex-col">
       {/* Free user banner */}
       {!isPaid && (
-        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-center gap-2 text-sm text-amber-800">
+        <div className="bg-warning/10 border-b border-warning/20 px-4 py-2.5 flex items-center justify-center gap-2 text-sm text-warning">
           <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -253,7 +253,7 @@ function NewInvoiceEditor({
               onClick={() => setActiveTab('edit')}
               className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                 activeTab === 'edit'
-                  ? 'bg-primary text-white'
+                  ? 'bg-text text-surface'
                   : 'bg-surface text-text-secondary hover:bg-surface-tertiary'
               }`}
             >
@@ -263,7 +263,7 @@ function NewInvoiceEditor({
               onClick={() => setActiveTab('preview')}
               className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                 activeTab === 'preview'
-                  ? 'bg-primary text-white'
+                  ? 'bg-text text-surface'
                   : 'bg-surface text-text-secondary hover:bg-surface-tertiary'
               }`}
             >
@@ -303,7 +303,7 @@ function NewInvoiceEditor({
           <button
             onClick={handleDownloadPDF}
             disabled={downloading}
-            className="px-4 py-2 text-sm bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors flex items-center gap-2 disabled:opacity-50"
+            className="px-4 py-2 text-sm bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors flex items-center gap-2 disabled:opacity-50"
           >
             <svg
               className="w-4 h-4"
