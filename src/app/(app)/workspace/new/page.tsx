@@ -3,10 +3,8 @@
 import { Suspense, useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { doc, getDoc } from 'firebase/firestore'
 import { useInvoice } from '@/hooks/useInvoice'
 import { useAuth } from '@/lib/auth-context'
-import { getFirebaseDb } from '@/lib/firebase'
 import InvoiceForm from '@/components/invoice/InvoiceForm'
 import InvoicePreview from '@/components/invoice/InvoicePreview'
 import A4Page from '@/components/invoice/A4Page'
@@ -97,7 +95,7 @@ function NewInvoiceEditor({
   const [downloading, setDownloading] = useState(false)
   const [showTemplatePrompt, setShowTemplatePrompt] = useState(false)
   const [downloadingPNG, setDownloadingPNG] = useState(false)
-  const [isPaid, setIsPaid] = useState(false)
+  const [isPaid] = useState(true) // Free for now — enable payments later
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false)
   const previewRef = useRef<HTMLDivElement>(null)
@@ -131,22 +129,6 @@ function NewInvoiceEditor({
     updateNumber()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.documentType])
-
-  useEffect(() => {
-    async function checkPaidStatus() {
-      if (!user) return
-      try {
-        const db = getFirebaseDb()
-        const userDoc = await getDoc(doc(db, 'users', user.uid))
-        if (userDoc.exists()) {
-          setIsPaid(userDoc.data().isPaid === true)
-        }
-      } catch {
-        // Default to free
-      }
-    }
-    checkPaidStatus()
-  }, [user])
 
   async function handleSave() {
     if (!user) return

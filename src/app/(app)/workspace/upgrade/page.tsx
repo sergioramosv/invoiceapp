@@ -105,88 +105,23 @@ export default function UpgradePage() {
         {t('workspace.backToWorkspace')}
       </Link>
 
-      {/* Current plan badge */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-text mb-2">{t('upgrade.title')}</h1>
-        <div className="inline-flex items-center gap-2">
-          <span
-            className={`px-3 py-1 text-xs font-semibold rounded-full ${
-              isPaid
-                ? 'bg-success/10 text-success'
-                : 'bg-text/10 text-text-secondary'
-            }`}
-          >
-            {isPaid ? t('upgrade.pro') : t('upgrade.free')}
-          </span>
+      <div className="rounded-2xl border border-success/20 bg-success/10 p-8 text-center">
+        <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
         </div>
+        <h2 className="text-xl font-bold text-text mb-2">{t('upgrade.launchTitle')}</h2>
+        <p className="text-text-secondary mb-6">{t('upgrade.launchDesc')}</p>
+        <ul className="space-y-3 text-left max-w-sm mx-auto">
+          {proFeatures.map((feat) => (
+            <li key={feat} className="flex items-center gap-3 text-sm text-text">
+              <CheckIcon />
+              {feat}
+            </li>
+          ))}
+        </ul>
       </div>
-
-      {isPaid ? (
-        <div className="rounded-2xl border border-success/20 bg-success/10 p-8 text-center">
-          <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg
-              className="w-8 h-8 text-success"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <h2 className="text-xl font-bold text-text mb-2">
-            {t('upgrade.proActive')}
-          </h2>
-          <p className="text-text-secondary">
-            {t('upgrade.proActiveDesc')}
-          </p>
-        </div>
-      ) : (
-        <div className="relative rounded-2xl border-2 border-primary bg-surface p-8 shadow-xl shadow-primary/10">
-          {/* Badge */}
-          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-            <span className="px-4 py-1.5 bg-text text-surface text-xs font-semibold rounded-full">
-              {t('upgrade.pro')}
-            </span>
-          </div>
-
-          <div className="text-center mt-4">
-            <div className="flex items-baseline justify-center gap-2">
-              <span className="text-5xl font-bold text-text">{t('upgrade.price')}</span>
-              <span className="text-text-muted line-through">{t('upgrade.originalPrice')}</span>
-            </div>
-            <p className="mt-1 text-sm text-text-secondary">{t('upgrade.oneTime')}</p>
-          </div>
-
-          <ul className="mt-8 space-y-4">
-            {proFeatures.map((feat) => (
-              <li
-                key={feat}
-                className="flex items-center gap-3 text-sm text-text"
-              >
-                <CheckIcon />
-                {feat}
-              </li>
-            ))}
-          </ul>
-
-          <button
-            onClick={handleUpgrade}
-            disabled={checkoutLoading}
-            className="mt-8 block w-full py-3.5 bg-text text-surface rounded-xl font-medium hover:bg-text-secondary transition-colors text-center shadow-lg shadow-text/25 disabled:opacity-50"
-          >
-            {checkoutLoading ? t('upgrade.redirecting') : t('upgrade.upgradeBtn')}
-          </button>
-
-          <p className="text-center mt-4 text-xs text-text-muted">
-            {t('upgrade.secure')}
-          </p>
-        </div>
-      )}
     </div>
   )
 }

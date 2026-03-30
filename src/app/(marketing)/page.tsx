@@ -357,17 +357,20 @@ export default function LandingPage() {
 
       {/* ─── Pricing ─── */}
       <section id="pricing" className="py-24 md:py-32">
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="px-6">
           <FadeIn className="max-w-md mx-auto">
-            <div className="rounded-2xl border border-border bg-surface p-10 shadow-xl text-center">
-              <p className="text-sm font-semibold text-text-muted uppercase tracking-widest mb-2">{t('landing.pricingTitle')}</p>
-              <p className="text-lg font-medium text-text-secondary mb-6">{t('landing.pricingSubtitle')}</p>
+            <div className="rounded-2xl border-2 border-text bg-surface p-10 shadow-xl text-center relative">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                <span className="px-4 py-1.5 bg-text text-surface text-xs font-semibold rounded-full whitespace-nowrap">
+                  {t('landing.pricingBadge')}
+                </span>
+              </div>
+              <p className="text-sm font-semibold text-text-muted uppercase tracking-widest mb-2 mt-2">{t('landing.pricingTitle')}</p>
 
               <div className="flex items-baseline justify-center gap-3 mb-2">
-                <span className="text-6xl font-black text-text">29€</span>
-                <span className="text-xl text-text-muted line-through">49€</span>
+                <span className="text-6xl font-black text-text">{t('landing.pricingFree')}</span>
               </div>
-              <p className="text-sm text-text-muted mb-8">{t('upgrade.oneTime')}</p>
+              <p className="text-sm text-text-secondary mb-8">{t('landing.pricingFreeDesc')}</p>
 
               <ul className="space-y-4 text-left mb-10">
                 {proFeatures.map((feat) => (
