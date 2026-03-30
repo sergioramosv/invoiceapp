@@ -437,17 +437,17 @@ export default function InvoicePreview({
         )}
 
         {/* VeriFactu QR */}
-        <div className="mt-6 flex justify-between items-end">
-          <div className="text-xs text-text-muted">
-            <p>Registro VeriFactu</p>
-            <p className="font-mono text-[10px] mt-0.5 max-w-[200px] truncate">
-              {/* Hash will go here */}
-            </p>
+        {state.invoiceType && state.documentType === 'invoice' && (
+          <div className="mt-6 pt-4 border-t border-border flex justify-between items-end">
+            <div className="text-xs text-text-muted space-y-0.5">
+              <p>VeriFactu · {state.invoiceSeries}-{state.invoiceNumber}</p>
+              <p>Tipo: {state.invoiceType}</p>
+            </div>
+            <div className="w-16 h-16 border border-border rounded flex items-center justify-center text-text-muted text-[10px] text-center leading-tight">
+              QR<br/>VeriFactu
+            </div>
           </div>
-          <div className="w-20 h-20 border border-border rounded flex items-center justify-center text-text-muted text-xs">
-            QR
-          </div>
-        </div>
+        )}
       </div>
     </div>
   )

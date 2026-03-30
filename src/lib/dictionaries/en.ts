@@ -271,6 +271,26 @@ const en: Record<string, string> = {
   'landing.sp4': 'Consultants',
   'landing.sp5': 'Law Firms',
 
+  // VeriFactu
+  'nav.verifactu': 'VeriFactu',
+  'verifactu.title': 'VeriFactu Panel',
+  'verifactu.subtitle': 'Invoice submission status to AEAT',
+  'verifactu.send': 'Send to AEAT',
+  'verifactu.sending': 'Submitting...',
+  'verifactu.viewXML': 'View XML',
+  'verifactu.hash': 'Hash',
+  'verifactu.status': 'VeriFactu Status',
+  'verifactu.draft': 'Draft',
+  'verifactu.pending': 'Pending',
+  'verifactu.sent': 'Sent',
+  'verifactu.accepted': 'Accepted',
+  'verifactu.rejected': 'Rejected',
+  'verifactu.noInvoices': 'No invoices to submit',
+  'verifactu.emit': 'Emit VeriFactu',
+  'verifactu.emitDesc': 'Save and submit to AEAT',
+  'verifactu.success': 'Invoice submitted successfully',
+  'verifactu.staging': 'AEAT testing environment',
+
   // Footer
   'footer.copyright': '© 2026 InvoiceApp',
   'footer.privacy': 'Privacy',

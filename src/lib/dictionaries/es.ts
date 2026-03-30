@@ -271,6 +271,26 @@ const es: Record<string, string> = {
   'landing.sp4': 'Consultoras',
   'landing.sp5': 'Despachos',
 
+  // VeriFactu
+  'nav.verifactu': 'VeriFactu',
+  'verifactu.title': 'Panel VeriFactu',
+  'verifactu.subtitle': 'Estado de env\u00edo de facturas a la AEAT',
+  'verifactu.send': 'Enviar a AEAT',
+  'verifactu.sending': 'Emitiendo...',
+  'verifactu.viewXML': 'Ver XML',
+  'verifactu.hash': 'Hash',
+  'verifactu.status': 'Estado VeriFactu',
+  'verifactu.draft': 'Borrador',
+  'verifactu.pending': 'Pendiente',
+  'verifactu.sent': 'Enviado',
+  'verifactu.accepted': 'Aceptado',
+  'verifactu.rejected': 'Rechazado',
+  'verifactu.noInvoices': 'No hay facturas para enviar',
+  'verifactu.emit': 'Emitir VeriFactu',
+  'verifactu.emitDesc': 'Guardar y enviar a la AEAT',
+  'verifactu.success': 'Factura emitida correctamente',
+  'verifactu.staging': 'Entorno de pruebas AEAT',
+
   // Footer
   'footer.copyright': '© 2026 InvoiceApp',
   'footer.privacy': 'Privacidad',

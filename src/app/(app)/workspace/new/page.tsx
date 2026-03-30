@@ -94,6 +94,7 @@ function NewInvoiceEditor({
   const [showTemplatePrompt, setShowTemplatePrompt] = useState(false)
   const [downloadingPNG, setDownloadingPNG] = useState(false)
   const [isPaid, setIsPaid] = useState(false)
+  const [emitting, setEmitting] = useState(false)
   const previewRef = useRef<HTMLDivElement>(null)
 
   // Auto-set invoice number on mount
@@ -169,6 +170,41 @@ function NewInvoiceEditor({
       console.error('Error saving:', err)
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleEmitVerifactu() {
+    if (!user) return
+    setEmitting(true)
+    try {
+      let invoiceNumber = state.invoiceNumber
+      if (!invoiceNumber) {
+        invoiceNumber = await getNextInvoiceNumber(user.uid)
+        dispatch({ type: 'SET_FIELD', field: 'invoiceNumber', value: invoiceNumber })
+      }
+      const data = invoiceStateToFirestore(
+        { ...state, invoiceNumber },
+        user.uid,
+        'draft'
+      )
+      const invoiceId = await createInvoice(data)
+
+      const res = await fetch('/api/verifactu/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoiceId }),
+      })
+
+      if (res.ok) {
+        router.push('/workspace')
+      } else {
+        console.error('VeriFactu submission failed')
+        router.push('/workspace')
+      }
+    } catch (err) {
+      console.error('Error emitting VeriFactu:', err)
+    } finally {
+      setEmitting(false)
     }
   }
 
@@ -300,6 +336,22 @@ function NewInvoiceEditor({
           >
             {saving ? t('editor.saving') : saveAsTemplateMode ? t('editor.saveTemplate') : t('editor.save')}
           </button>
+
+          {state.documentType === 'invoice' && !saveAsTemplateMode && (
+            <button
+              onClick={handleEmitVerifactu}
+              disabled={emitting}
+              className="px-4 py-2 text-sm bg-success text-white rounded-lg font-medium hover:bg-success/90 transition-colors flex items-center gap-2 disabled:opacity-50"
+              title={t('verifactu.emitDesc')}
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+              </svg>
+              <span className="hidden sm:inline">
+                {emitting ? t('verifactu.sending') : t('verifactu.emit')}
+              </span>
+            </button>
+          )}
 
           <button
             onClick={handleDownloadPNG}

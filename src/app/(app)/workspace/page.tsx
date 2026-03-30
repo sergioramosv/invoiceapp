@@ -18,6 +18,7 @@ import {
 } from '@/types/invoice'
 import type { Invoice, InvoiceStatus, DocumentType } from '@/types'
 import styles from './workspace.module.css'
+import verifactuStyles from './verifactu/verifactu.module.css'
 import { ConfirmModal } from '@/components/ui/Modal'
 import { useI18n } from '@/lib/i18n'
 
@@ -340,23 +341,45 @@ export default function WorkspacePage() {
                         {formatCurrency(invoice.total || 0, invoice.currency || 'EUR')}
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <select
-                          value={invoice.status}
-                          onChange={async (e) => {
-                            const newStatus = e.target.value as InvoiceStatus
-                            await updateInvoice(invoice.id, { status: newStatus })
-                            setInvoices((prev) =>
-                              prev.map((inv) =>
-                                inv.id === invoice.id ? { ...inv, status: newStatus } : inv
+                        <div className="flex items-center justify-center gap-1.5">
+                          <select
+                            value={invoice.status}
+                            onChange={async (e) => {
+                              const newStatus = e.target.value as InvoiceStatus
+                              await updateInvoice(invoice.id, { status: newStatus })
+                              setInvoices((prev) =>
+                                prev.map((inv) =>
+                                  inv.id === invoice.id ? { ...inv, status: newStatus } : inv
+                                )
                               )
-                            )
-                          }}
-                          className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${statusCfg.className}`}
-                        >
-                          {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-                            <option key={key} value={key}>{cfg.label}</option>
-                          ))}
-                        </select>
+                            }}
+                            className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${statusCfg.className}`}
+                          >
+                            {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
+                              <option key={key} value={key}>{cfg.label}</option>
+                            ))}
+                          </select>
+                          {invoice.verifactuStatus && invoice.verifactuStatus !== 'draft' && (
+                            <span
+                              title={`VeriFactu: ${invoice.verifactuStatus}`}
+                              className="shrink-0"
+                            >
+                              {invoice.verifactuStatus === 'accepted' ? (
+                                <svg className="w-3.5 h-3.5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                              ) : invoice.verifactuStatus === 'rejected' ? (
+                                <svg className="w-3.5 h-3.5 text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              ) : (
+                                <span className={`${verifactuStyles.verifactuDot} ${
+                                  invoice.verifactuStatus === 'pending' ? verifactuStyles.dotPending : verifactuStyles.dotSent
+                                }`} />
+                              )}
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-1">
