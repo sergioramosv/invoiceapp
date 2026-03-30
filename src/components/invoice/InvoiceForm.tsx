@@ -10,6 +10,7 @@ import {
   Language,
   DocumentType,
 } from '@/types/invoice'
+import { INVOICE_TYPES } from '@/lib/verifactu/constants'
 import { TEMPLATE_STYLES, TemplateStyle } from '@/lib/invoice-templates'
 import SignaturePad from './SignaturePad'
 import { useI18n } from '@/lib/i18n'
@@ -215,6 +216,44 @@ export default function InvoiceForm({
           </select>
         </div>
       </div>
+
+      {/* VeriFactu: Invoice type + Series */}
+      {state.documentType === 'invoice' && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              Tipo factura fiscal
+            </label>
+            <select
+              value={state.invoiceType}
+              onChange={(e) =>
+                dispatch({ type: 'SET_FIELD', field: 'invoiceType', value: e.target.value })
+              }
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface"
+            >
+              {INVOICE_TYPES.map((t) => (
+                <option key={t.code} value={t.code}>
+                  {t.code} - {t.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              Serie
+            </label>
+            <input
+              type="text"
+              value={state.invoiceSeries}
+              onChange={(e) =>
+                dispatch({ type: 'SET_FIELD', field: 'invoiceSeries', value: e.target.value })
+              }
+              placeholder="FAC"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            />
+          </div>
+        </div>
+      )}
 
       {/* From section */}
       <div className="border-t border-border pt-6 mt-6">

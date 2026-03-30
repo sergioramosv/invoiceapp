@@ -163,6 +163,9 @@ export interface InvoiceState {
   taxRate: number
   shippingAmount: number
   amountPaid: number
+  // VeriFactu
+  invoiceType: string  // F1, F2, R1, etc.
+  invoiceSeries: string // Serie
   // Bank
   bankFields: BankField[]
   // Notes
@@ -211,6 +214,8 @@ export function createInitialState(): InvoiceState {
         amount: 0,
       },
     ],
+    invoiceType: 'F1',
+    invoiceSeries: 'FAC',
     discountRate: 0,
     taxRate: 0,
     shippingAmount: 0,

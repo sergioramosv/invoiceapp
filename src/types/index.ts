@@ -33,6 +33,14 @@ export interface InvoiceItem {
   sortOrder: number
 }
 
+export interface TaxBreakdownItem {
+  taxRate: number           // Tipo impositivo (21, 10, 4, 0)
+  taxBase: number           // Base imponible
+  taxAmount: number         // Cuota repercutida
+  taxRegime?: string        // Clave régimen (01 = general)
+  operationType?: string    // S1, S2, E1, etc.
+}
+
 export type DocumentType = 'invoice' | 'quote'
 
 export interface Invoice {
@@ -86,6 +94,15 @@ export interface Invoice {
   signatureLabel?: string
   // Items
   items: InvoiceItem[]
+  // VeriFactu
+  invoiceSeries?: string        // Serie de factura (ej: "FAC-2026")
+  invoiceType?: string          // F1, F2, R1, R2, etc.
+  verifactuStatus?: 'draft' | 'pending' | 'sent' | 'accepted' | 'rejected'
+  verifactuHash?: string        // SHA-256 hash
+  verifactuPreviousHash?: string // Hash de la factura anterior
+  verifactuTimestamp?: string   // ISO timestamp of record generation
+  verifactuQRData?: string      // QR code data string
+  taxBreakdown?: TaxBreakdownItem[] // Desglose IVA
   // Metadata
   templateId?: string
   createdAt: string

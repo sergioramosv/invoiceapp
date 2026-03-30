@@ -58,6 +58,9 @@ export function invoiceStateToFirestore(
       ...item,
       sortOrder: idx,
     })),
+    // VeriFactu
+    invoiceType: state.invoiceType || 'F1',
+    invoiceSeries: state.invoiceSeries || 'FAC',
   }
 }
 
@@ -108,5 +111,8 @@ export function firestoreToInvoiceState(invoice: Invoice): InvoiceState {
     terms: invoice.terms || '',
     signatureUrl: invoice.signatureUrl || '',
     signatureLabel: invoice.signatureLabel || '',
+    // VeriFactu
+    invoiceType: invoice.invoiceType || 'F1',
+    invoiceSeries: invoice.invoiceSeries || 'FAC',
   }
 }

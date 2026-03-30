@@ -435,6 +435,19 @@ export default function InvoicePreview({
             </div>
           </div>
         )}
+
+        {/* VeriFactu QR */}
+        <div className="mt-6 flex justify-between items-end">
+          <div className="text-xs text-text-muted">
+            <p>Registro VeriFactu</p>
+            <p className="font-mono text-[10px] mt-0.5 max-w-[200px] truncate">
+              {/* Hash will go here */}
+            </p>
+          </div>
+          <div className="w-20 h-20 border border-border rounded flex items-center justify-center text-text-muted text-xs">
+            QR
+          </div>
+        </div>
       </div>
     </div>
   )
