@@ -2,37 +2,39 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import { useTheme } from '@/lib/theme-context'
-
-const NAV_ITEMS = [
-  {
-    href: '/workspace',
-    label: 'Facturas',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-      </svg>
-    ),
-  },
-  {
-    href: '/workspace/templates',
-    label: 'Templates',
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-      </svg>
-    ),
-  },
-]
+import { useI18n } from '@/lib/i18n'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, signOut } = useAuth()
   const { theme, toggleTheme } = useTheme()
+  const { t, locale, setLocale } = useI18n()
   const pathname = usePathname()
+  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  const NAV_ITEMS = [
+    {
+      href: '/workspace',
+      label: t('nav.invoices'),
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+        </svg>
+      ),
+    },
+    {
+      href: '/workspace/templates',
+      label: t('nav.templates'),
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+        </svg>
+      ),
+    },
+  ]
 
   function isActive(href: string): boolean {
     if (href === '/workspace') return pathname === '/workspace'
@@ -69,7 +71,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           ))}
         </nav>
 
-        {/* Theme toggle + User section */}
+        {/* Theme toggle + Language + User section */}
         <div className="border-t border-border px-4 py-4 space-y-3">
           <button
             onClick={toggleTheme}
@@ -84,8 +86,28 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
               </svg>
             )}
-            {theme === 'light' ? 'Modo oscuro' : 'Modo claro'}
+            {theme === 'light' ? t('nav.darkMode') : t('nav.lightMode')}
           </button>
+
+          {/* Language toggle */}
+          <div className="flex rounded-lg border border-border overflow-hidden">
+            <button
+              onClick={() => setLocale('es')}
+              className={`flex-1 px-3 py-1.5 text-xs font-medium transition-colors ${
+                locale === 'es' ? 'bg-text text-surface' : 'text-text-secondary hover:bg-surface-tertiary'
+              }`}
+            >
+              ES
+            </button>
+            <button
+              onClick={() => setLocale('en')}
+              className={`flex-1 px-3 py-1.5 text-xs font-medium transition-colors ${
+                locale === 'en' ? 'bg-text text-surface' : 'text-text-secondary hover:bg-surface-tertiary'
+              }`}
+            >
+              EN
+            </button>
+          </div>
 
           {user && (
             <>
@@ -101,7 +123,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 onClick={() => signOut().then(() => router.push('/'))}
                 className="w-full px-3 py-2 text-sm text-text-secondary border border-border rounded-lg hover:bg-surface-tertiary transition-colors text-center"
               >
-                Cerrar sesion
+                {t('nav.logout')}
               </button>
             </>
           )}
@@ -120,7 +142,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               onClick={() => signOut().then(() => router.push('/'))}
               className="px-3 py-1.5 text-xs text-text-secondary border border-border rounded-lg hover:bg-surface-tertiary transition-colors"
             >
-              Salir
+              {t('nav.logoutShort')}
             </button>
           )}
           <button
@@ -171,8 +193,27 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
               </svg>
             )}
-            {theme === 'light' ? 'Modo oscuro' : 'Modo claro'}
+            {theme === 'light' ? t('nav.darkMode') : t('nav.lightMode')}
           </button>
+          {/* Mobile language toggle */}
+          <div className="flex rounded-lg border border-border overflow-hidden mx-3">
+            <button
+              onClick={() => setLocale('es')}
+              className={`flex-1 px-3 py-1.5 text-xs font-medium transition-colors ${
+                locale === 'es' ? 'bg-text text-surface' : 'text-text-secondary hover:bg-surface-tertiary'
+              }`}
+            >
+              ES
+            </button>
+            <button
+              onClick={() => setLocale('en')}
+              className={`flex-1 px-3 py-1.5 text-xs font-medium transition-colors ${
+                locale === 'en' ? 'bg-text text-surface' : 'text-text-secondary hover:bg-surface-tertiary'
+              }`}
+            >
+              EN
+            </button>
+          </div>
           {user && (
             <button
               onClick={() => {
@@ -184,7 +225,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
               </svg>
-              Cerrar sesion
+              {t('nav.logout')}
             </button>
           )}
         </div>

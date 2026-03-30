@@ -1,10 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useI18n } from '@/lib/i18n'
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { t, locale, setLocale } = useI18n()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -26,19 +28,38 @@ function Navbar() {
           <span className="font-bold text-lg text-text">InvoiceApp</span>
         </Link>
 
-        {/* Desktop auth */}
+        {/* Desktop auth + language */}
         <div className="hidden md:flex items-center gap-4">
+          {/* Language toggle */}
+          <div className="flex rounded-lg border border-border overflow-hidden">
+            <button
+              onClick={() => setLocale('es')}
+              className={`px-2 py-1 text-xs font-medium transition-colors ${
+                locale === 'es' ? 'bg-text text-surface' : 'text-text-secondary hover:bg-surface-tertiary'
+              }`}
+            >
+              ES
+            </button>
+            <button
+              onClick={() => setLocale('en')}
+              className={`px-2 py-1 text-xs font-medium transition-colors ${
+                locale === 'en' ? 'bg-text text-surface' : 'text-text-secondary hover:bg-surface-tertiary'
+              }`}
+            >
+              EN
+            </button>
+          </div>
           <Link
             href="/login"
             className="text-sm text-text-secondary hover:text-text transition-colors"
           >
-            Iniciar sesion
+            {t('auth.login')}
           </Link>
           <Link
             href="/signup"
             className="text-sm font-medium text-surface bg-text hover:bg-text-secondary transition-colors px-5 py-2 rounded-full"
           >
-            Empezar gratis
+            {t('landing.cta')}
           </Link>
         </div>
 
@@ -75,19 +96,38 @@ function Navbar() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden bg-surface/95 backdrop-blur-xl border-b border-border px-6 pb-6 pt-2 space-y-4">
+          {/* Mobile language toggle */}
+          <div className="flex rounded-lg border border-border overflow-hidden w-fit">
+            <button
+              onClick={() => setLocale('es')}
+              className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                locale === 'es' ? 'bg-text text-surface' : 'text-text-secondary hover:bg-surface-tertiary'
+              }`}
+            >
+              ES
+            </button>
+            <button
+              onClick={() => setLocale('en')}
+              className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                locale === 'en' ? 'bg-text text-surface' : 'text-text-secondary hover:bg-surface-tertiary'
+              }`}
+            >
+              EN
+            </button>
+          </div>
           <Link
             href="/login"
             onClick={() => setMobileOpen(false)}
             className="block text-sm text-text-secondary hover:text-text transition-colors"
           >
-            Iniciar sesion
+            {t('auth.login')}
           </Link>
           <Link
             href="/signup"
             onClick={() => setMobileOpen(false)}
             className="block text-sm font-medium text-surface bg-text hover:bg-text-secondary transition-colors px-4 py-2.5 rounded-full text-center"
           >
-            Empezar gratis
+            {t('landing.cta')}
           </Link>
         </div>
       )}
@@ -96,21 +136,23 @@ function Navbar() {
 }
 
 function Footer() {
+  const { t } = useI18n()
+
   return (
     <footer className="border-t border-border">
       <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p className="text-sm text-text-muted">
-          &copy; 2026 InvoiceApp
+          {t('footer.copyright')}
         </p>
         <div className="flex items-center gap-6">
           <a href="/privacy-policy" className="text-sm text-text-muted hover:text-text transition-colors">
-            Privacidad
+            {t('footer.privacy')}
           </a>
           <a href="/tos" className="text-sm text-text-muted hover:text-text transition-colors">
-            Terminos
+            {t('footer.terms')}
           </a>
           <a href="/legal-notice" className="text-sm text-text-muted hover:text-text transition-colors">
-            Legal
+            {t('footer.legal')}
           </a>
         </div>
       </div>

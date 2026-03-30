@@ -12,6 +12,7 @@ import { downloadPDF } from '@/lib/generate-pdf'
 import { getInvoice, updateInvoice } from '@/lib/firestore'
 import { invoiceStateToFirestore, firestoreToInvoiceState } from '@/lib/invoice-converter'
 import { InvoiceState } from '@/types/invoice'
+import { useI18n } from '@/lib/i18n'
 
 export default function EditInvoicePage({
   params,
@@ -80,6 +81,7 @@ function EditInvoiceEditor({
   user: ReturnType<typeof useAuth>['user']
   router: ReturnType<typeof useRouter>
 }) {
+  const { t } = useI18n()
   const { state, dispatch, subtotal, discountAmount, taxAmount, total, balanceDue } =
     useInvoice(initialState)
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit')
@@ -138,7 +140,7 @@ function EditInvoiceEditor({
             </svg>
           </Link>
           <h1 className="text-lg font-semibold">
-            Editar Factura {state.invoiceNumber && `- ${state.invoiceNumber}`}
+            {t('editor.editInvoice')} {state.invoiceNumber && `- ${state.invoiceNumber}`}
           </h1>
         </div>
 
@@ -153,7 +155,7 @@ function EditInvoiceEditor({
                   : 'bg-surface text-text-secondary hover:bg-surface-tertiary'
               }`}
             >
-              Editar
+              {t('editor.edit')}
             </button>
             <button
               onClick={() => setActiveTab('preview')}
@@ -163,7 +165,7 @@ function EditInvoiceEditor({
                   : 'bg-surface text-text-secondary hover:bg-surface-tertiary'
               }`}
             >
-              Preview
+              {t('editor.preview')}
             </button>
           </div>
 
@@ -172,7 +174,7 @@ function EditInvoiceEditor({
             disabled={saving}
             className="px-4 py-2 text-sm border border-border rounded-lg font-medium hover:bg-surface-tertiary transition-colors disabled:opacity-50"
           >
-            {saving ? 'Guardando...' : 'Guardar'}
+            {saving ? t('editor.saving') : t('editor.save')}
           </button>
 
           <button
@@ -194,7 +196,7 @@ function EditInvoiceEditor({
               />
             </svg>
             <span className="hidden sm:inline">
-              {downloading ? 'Generando...' : 'Descargar PDF'}
+              {downloading ? t('editor.generating') : t('editor.downloadPDF')}
             </span>
           </button>
         </div>

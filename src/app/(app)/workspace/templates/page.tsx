@@ -7,9 +7,11 @@ import { useEffect, useState, useCallback } from 'react'
 import { getTemplates, deleteTemplate } from '@/lib/firestore'
 import type { Template } from '@/types'
 import { ConfirmModal } from '@/components/ui/Modal'
+import { useI18n } from '@/lib/i18n'
 
 export default function TemplatesPage() {
   const { user, loading } = useAuth()
+  const { t } = useI18n()
   const router = useRouter()
   const [templates, setTemplates] = useState<Template[]>([])
   const [loadingTemplates, setLoadingTemplates] = useState(true)
@@ -39,7 +41,7 @@ export default function TemplatesPage() {
     if (!deleteTarget) return
     try {
       await deleteTemplate(deleteTarget)
-      setTemplates((prev) => prev.filter((t) => t.id !== deleteTarget))
+      setTemplates((prev) => prev.filter((tmpl) => tmpl.id !== deleteTarget))
     } catch (err) {
       console.error('Error deleting template:', err)
     }
@@ -60,16 +62,16 @@ export default function TemplatesPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Templates</h1>
+          <h1 className="text-2xl font-bold">{t('templates.title')}</h1>
           <p className="text-text-secondary mt-1">
-            Plantillas reutilizables para crear documentos rápido
+            {t('templates.subtitle')}
           </p>
         </div>
         <Link
           href="/workspace/new?saveAsTemplate=true"
           className="px-6 py-2 text-sm bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors"
         >
-          + Crear template
+          {t('templates.create')}
         </Link>
       </div>
 
@@ -84,15 +86,15 @@ export default function TemplatesPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium">No tienes templates todavía</h3>
+          <h3 className="text-lg font-medium">{t('templates.empty')}</h3>
           <p className="text-text-secondary mt-1">
-            Crea un template con los datos de tu empresa, banco, etc. y reutilízalo cada vez que crees un documento.
+            {t('templates.emptyDesc')}
           </p>
           <Link
             href="/workspace/new?saveAsTemplate=true"
             className="mt-6 inline-block px-8 py-3 bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors"
           >
-            Crear primer template
+            {t('templates.createFirst')}
           </Link>
         </div>
       ) : (
@@ -105,7 +107,7 @@ export default function TemplatesPage() {
               <div>
                 <h3 className="font-semibold text-base">{template.name}</h3>
                 <p className="text-text-secondary text-sm mt-1">
-                  Creado: {template.createdAt
+                  {t('templates.created')}: {template.createdAt
                     ? new Date(
                         typeof template.createdAt === 'object'
                           ? (template.createdAt as { seconds: number }).seconds * 1000
@@ -119,12 +121,12 @@ export default function TemplatesPage() {
                   href={`/workspace/new?template=${template.id}`}
                   className="flex-1 px-3 py-2 text-sm text-center border border-border rounded-lg font-medium hover:bg-surface-tertiary transition-colors"
                 >
-                  Usar template
+                  {t('templates.use')}
                 </Link>
                 <button
                   onClick={() => setDeleteTarget(template.id)}
                   className="p-2 text-text-secondary hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
-                  title="Eliminar"
+                  title={t('action.delete')}
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -140,9 +142,9 @@ export default function TemplatesPage() {
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={confirmDelete}
-        title="Eliminar template"
-        message="¿Estás seguro? Esta acción no se puede deshacer."
-        confirmLabel="Eliminar"
+        title={t('modal.deleteTemplate')}
+        message={t('modal.deleteTemplateMsg')}
+        confirmLabel={t('modal.deleteBtn')}
         danger
       />
     </div>

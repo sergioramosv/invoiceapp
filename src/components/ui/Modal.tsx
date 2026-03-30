@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { useI18n } from '@/lib/i18n'
 
 interface ModalProps {
   open: boolean
@@ -45,7 +46,10 @@ interface ConfirmModalProps {
   danger?: boolean
 }
 
-export function ConfirmModal({ open, onClose, onConfirm, title, message, confirmLabel = 'Confirmar', danger = false }: ConfirmModalProps) {
+export function ConfirmModal({ open, onClose, onConfirm, title, message, confirmLabel, danger = false }: ConfirmModalProps) {
+  const { t } = useI18n()
+  const resolvedConfirmLabel = confirmLabel || t('modal.confirm')
+
   return (
     <Modal open={open} onClose={onClose}>
       <div className="p-6 space-y-4">
@@ -56,7 +60,7 @@ export function ConfirmModal({ open, onClose, onConfirm, title, message, confirm
             onClick={onClose}
             className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-surface-tertiary transition-colors"
           >
-            Cancelar
+            {t('modal.cancel')}
           </button>
           <button
             onClick={() => { onConfirm(); onClose() }}
@@ -66,7 +70,7 @@ export function ConfirmModal({ open, onClose, onConfirm, title, message, confirm
                 : 'bg-text text-surface hover:bg-text-secondary'
             }`}
           >
-            {confirmLabel}
+            {resolvedConfirmLabel}
           </button>
         </div>
       </div>
@@ -83,8 +87,10 @@ interface PromptModalProps {
   submitLabel?: string
 }
 
-export function PromptModal({ open, onClose, onSubmit, title, placeholder = '', submitLabel = 'Guardar' }: PromptModalProps) {
+export function PromptModal({ open, onClose, onSubmit, title, placeholder = '', submitLabel }: PromptModalProps) {
+  const { t } = useI18n()
   const inputRef = useRef<HTMLInputElement>(null)
+  const resolvedSubmitLabel = submitLabel || t('modal.save')
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 100)
@@ -113,13 +119,13 @@ export function PromptModal({ open, onClose, onSubmit, title, placeholder = '', 
             onClick={onClose}
             className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-surface-tertiary transition-colors"
           >
-            Cancelar
+            {t('modal.cancel')}
           </button>
           <button
             type="submit"
             className="px-4 py-2 text-sm bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors"
           >
-            {submitLabel}
+            {resolvedSubmitLabel}
           </button>
         </div>
       </form>

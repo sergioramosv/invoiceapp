@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { AuthProvider } from '@/lib/auth-context'
 import { ThemeProvider } from '@/lib/theme-context'
+import { I18nProvider } from '@/lib/i18n'
 import { Analytics } from '@/components/Analytics'
 import './globals.css'
 
@@ -34,7 +35,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es">
       <body className="antialiased">
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <I18nProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </I18nProvider>
         </ThemeProvider>
         <Analytics />
       </body>

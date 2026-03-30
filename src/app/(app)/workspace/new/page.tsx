@@ -15,6 +15,7 @@ import { createInvoice, getTemplate, createTemplate, getNextInvoiceNumber } from
 import { invoiceStateToFirestore } from '@/lib/invoice-converter'
 import { InvoiceState, createInitialState } from '@/types/invoice'
 import { PromptModal } from '@/components/ui/Modal'
+import { useI18n } from '@/lib/i18n'
 
 export default function NewInvoicePageWrapper() {
   return (
@@ -84,6 +85,7 @@ function NewInvoiceEditor({
   router: ReturnType<typeof useRouter>
   saveAsTemplateMode: boolean
 }) {
+  const { t } = useI18n()
   const { state, dispatch, subtotal, discountAmount, taxAmount, total, balanceDue } =
     useInvoice(initialState)
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit')
@@ -222,12 +224,12 @@ function NewInvoiceEditor({
           <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>Estas usando el plan gratuito. Las facturas incluyen watermark.</span>
+          <span>{t('editor.freeBanner')}</span>
           <Link
             href="/workspace/upgrade"
             className="font-semibold text-primary hover:text-primary-dark underline underline-offset-2 transition-colors"
           >
-            Eliminar watermark
+            {t('editor.removeWatermark')}
           </Link>
         </div>
       )}
@@ -253,7 +255,7 @@ function NewInvoiceEditor({
               />
             </svg>
           </Link>
-          <h1 className="text-lg font-semibold">{saveAsTemplateMode ? 'Nuevo Template' : 'Nuevo Documento'}</h1>
+          <h1 className="text-lg font-semibold">{saveAsTemplateMode ? t('editor.newTemplate') : t('editor.newDocument')}</h1>
         </div>
 
         <div className="flex items-center gap-2">
@@ -267,7 +269,7 @@ function NewInvoiceEditor({
                   : 'bg-surface text-text-secondary hover:bg-surface-tertiary'
               }`}
             >
-              Editar
+              {t('editor.edit')}
             </button>
             <button
               onClick={() => setActiveTab('preview')}
@@ -277,7 +279,7 @@ function NewInvoiceEditor({
                   : 'bg-surface text-text-secondary hover:bg-surface-tertiary'
               }`}
             >
-              Preview
+              {t('editor.preview')}
             </button>
           </div>
 
@@ -288,7 +290,7 @@ function NewInvoiceEditor({
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
             </svg>
-            Template
+            {t('editor.template')}
           </button>
 
           <button
@@ -296,7 +298,7 @@ function NewInvoiceEditor({
             disabled={saving}
             className="px-4 py-2 text-sm border border-border rounded-lg font-medium hover:bg-surface-tertiary transition-colors disabled:opacity-50"
           >
-            {saving ? 'Guardando...' : saveAsTemplateMode ? 'Guardar template' : 'Guardar'}
+            {saving ? t('editor.saving') : saveAsTemplateMode ? t('editor.saveTemplate') : t('editor.save')}
           </button>
 
           <button
@@ -307,7 +309,7 @@ function NewInvoiceEditor({
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            {downloadingPNG ? 'Exportando...' : 'PNG'}
+            {downloadingPNG ? t('editor.pngExporting') : t('editor.png')}
           </button>
 
           <button
@@ -329,7 +331,7 @@ function NewInvoiceEditor({
               />
             </svg>
             <span className="hidden sm:inline">
-              {downloading ? 'Generando...' : 'Descargar PDF'}
+              {downloading ? t('editor.generating') : t('editor.downloadPDF')}
             </span>
           </button>
         </div>
@@ -379,9 +381,9 @@ function NewInvoiceEditor({
         open={showTemplatePrompt}
         onClose={() => setShowTemplatePrompt(false)}
         onSubmit={saveTemplate}
-        title="Nombre del template"
-        placeholder="Ej: Mi empresa, Cliente habitual..."
-        submitLabel="Guardar template"
+        title={t('modal.templateName')}
+        placeholder={t('modal.templatePlaceholder')}
+        submitLabel={t('modal.saveTemplate')}
       />
     </div>
   )

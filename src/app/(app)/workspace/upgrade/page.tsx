@@ -5,14 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import { doc, getDoc } from 'firebase/firestore'
 import { getFirebaseDb } from '@/lib/firebase'
-
-const proFeatures = [
-  'Sin watermark en PDFs',
-  'Templates ilimitados',
-  'Export PDF + PNG',
-  'Soporte prioritario',
-  'Actualizaciones de por vida',
-]
+import { useI18n } from '@/lib/i18n'
 
 function CheckIcon() {
   return (
@@ -34,9 +27,18 @@ function CheckIcon() {
 
 export default function UpgradePage() {
   const { user } = useAuth()
+  const { t } = useI18n()
   const [isPaid, setIsPaid] = useState(false)
   const [loading, setLoading] = useState(true)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
+
+  const proFeatures = [
+    t('upgrade.feat1'),
+    t('upgrade.feat2'),
+    t('upgrade.feat3'),
+    t('upgrade.feat4'),
+    t('upgrade.feat5'),
+  ]
 
   useEffect(() => {
     async function checkPaidStatus() {
@@ -100,12 +102,12 @@ export default function UpgradePage() {
             d="M15 19l-7-7 7-7"
           />
         </svg>
-        Volver al workspace
+        {t('workspace.backToWorkspace')}
       </Link>
 
       {/* Current plan badge */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-text mb-2">Tu plan</h1>
+        <h1 className="text-2xl font-bold text-text mb-2">{t('upgrade.title')}</h1>
         <div className="inline-flex items-center gap-2">
           <span
             className={`px-3 py-1 text-xs font-semibold rounded-full ${
@@ -114,7 +116,7 @@ export default function UpgradePage() {
                 : 'bg-text/10 text-text-secondary'
             }`}
           >
-            {isPaid ? 'Pro — Lifetime' : 'Plan Gratuito'}
+            {isPaid ? t('upgrade.pro') : t('upgrade.free')}
           </span>
         </div>
       </div>
@@ -137,10 +139,10 @@ export default function UpgradePage() {
             </svg>
           </div>
           <h2 className="text-xl font-bold text-text mb-2">
-            Ya tienes el plan Pro
+            {t('upgrade.proActive')}
           </h2>
           <p className="text-text-secondary">
-            Disfruta de todas las funcionalidades sin limitaciones.
+            {t('upgrade.proActiveDesc')}
           </p>
         </div>
       ) : (
@@ -148,16 +150,16 @@ export default function UpgradePage() {
           {/* Badge */}
           <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
             <span className="px-4 py-1.5 bg-text text-surface text-xs font-semibold rounded-full">
-              Pro — Lifetime
+              {t('upgrade.pro')}
             </span>
           </div>
 
           <div className="text-center mt-4">
             <div className="flex items-baseline justify-center gap-2">
-              <span className="text-5xl font-bold text-text">29&euro;</span>
-              <span className="text-text-muted line-through">49&euro;</span>
+              <span className="text-5xl font-bold text-text">{t('upgrade.price')}</span>
+              <span className="text-text-muted line-through">{t('upgrade.originalPrice')}</span>
             </div>
-            <p className="mt-1 text-sm text-text-secondary">pago unico</p>
+            <p className="mt-1 text-sm text-text-secondary">{t('upgrade.oneTime')}</p>
           </div>
 
           <ul className="mt-8 space-y-4">
@@ -177,11 +179,11 @@ export default function UpgradePage() {
             disabled={checkoutLoading}
             className="mt-8 block w-full py-3.5 bg-text text-surface rounded-xl font-medium hover:bg-text-secondary transition-colors text-center shadow-lg shadow-text/25 disabled:opacity-50"
           >
-            {checkoutLoading ? 'Redirigiendo a Stripe...' : 'Upgrade a Pro'}
+            {checkoutLoading ? t('upgrade.redirecting') : t('upgrade.upgradeBtn')}
           </button>
 
           <p className="text-center mt-4 text-xs text-text-muted">
-            Pago seguro con Stripe. Se aceptan codigos de descuento.
+            {t('upgrade.secure')}
           </p>
         </div>
       )}

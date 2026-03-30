@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { uid } from '@/lib/uid'
+import { useI18n } from '@/lib/i18n'
 
 type Mode = 'draw' | 'upload'
 
@@ -11,6 +12,7 @@ interface SignaturePadProps {
 }
 
 export default function SignaturePad({ value, onChange }: SignaturePadProps) {
+  const { t } = useI18n()
   const [mode, setMode] = useState<Mode>('draw')
   const [isDrawing, setIsDrawing] = useState(false)
   const [showEditor, setShowEditor] = useState(!value)
@@ -122,14 +124,14 @@ export default function SignaturePad({ value, onChange }: SignaturePadProps) {
             onClick={() => setShowEditor(true)}
             className="px-3 py-1.5 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors"
           >
-            Cambiar
+            {t('signature.change')}
           </button>
           <button
             type="button"
             onClick={() => onChange('')}
             className="px-3 py-1.5 text-sm font-medium text-danger border border-danger rounded-lg hover:bg-danger/5 transition-colors"
           >
-            Eliminar
+            {t('signature.delete')}
           </button>
         </div>
       </div>
@@ -149,7 +151,7 @@ export default function SignaturePad({ value, onChange }: SignaturePadProps) {
               : 'border border-border text-text hover:bg-surface-secondary'
           }`}
         >
-          Dibujar
+          {t('signature.draw')}
         </button>
         <button
           type="button"
@@ -160,7 +162,7 @@ export default function SignaturePad({ value, onChange }: SignaturePadProps) {
               : 'border border-border text-text hover:bg-surface-secondary'
           }`}
         >
-          Subir imagen
+          {t('signature.upload')}
         </button>
       </div>
 
@@ -186,14 +188,14 @@ export default function SignaturePad({ value, onChange }: SignaturePadProps) {
               onClick={clearCanvas}
               className="px-3 py-1.5 text-sm font-medium text-text-secondary border border-border rounded-lg hover:bg-surface-secondary transition-colors"
             >
-              Limpiar
+              {t('signature.clear')}
             </button>
             <button
               type="button"
               onClick={saveSignature}
               className="px-3 py-1.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors"
             >
-              Guardar firma
+              {t('signature.save')}
             </button>
           </div>
         </div>
@@ -227,9 +229,9 @@ export default function SignaturePad({ value, onChange }: SignaturePadProps) {
               if (file) handleFile(file)
             }}
           />
-          <p>Arrastra una imagen aquí o haz clic para seleccionar</p>
+          <p>{t('signature.dropText')}</p>
           <p className="text-xs text-text-muted mt-1">
-            PNG, JPG, SVG, WebP (máx. 2MB)
+            {t('signature.dropHint')}
           </p>
         </div>
       )}

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FadeIn } from '@/components/ui/FadeIn'
+import { useI18n } from '@/lib/i18n'
 
 /* ───────────────────────────── Icons ───────────────────────────── */
 
@@ -66,7 +67,8 @@ const STATUS_CYCLE = [
 
 const TOTAL_CYCLE = ['10.164,00', '8.400,00', '12.936,00'] as const
 
-function InvoicePreview() {
+function InvoicePreviewDemo() {
+  const { t } = useI18n()
   const [statusIdx, setStatusIdx] = useState(0)
   const [totalIdx, setTotalIdx] = useState(0)
 
@@ -96,7 +98,7 @@ function InvoicePreview() {
       <div className="relative group">
         {/* Live preview badge */}
         <div className="absolute -top-3 -right-3 z-10 px-3 py-1 bg-text text-surface text-xs font-semibold rounded-full shadow-lg">
-          Vista previa en vivo
+          {t('landing.livePreview')}
         </div>
 
         <div className="bg-surface rounded-2xl shadow-2xl border border-border p-8 md:p-10 transition-all duration-300 group-hover:shadow-3xl group-hover:scale-[1.02]">
@@ -194,42 +196,52 @@ function InvoicePreview() {
 /* ───────────────────────────── Main Page ───────────────────────────── */
 
 export default function LandingPage() {
+  const { t } = useI18n()
+
   const features = [
-    { icon: '✏️', title: 'Editor en tiempo real', desc: 'Visualiza tu factura mientras la editas. WYSIWYG perfecto.' },
-    { icon: '🌍', title: 'Multi-moneda e idioma', desc: 'Factura en EUR, USD, GBP y mas. En espanol, ingles o aleman.' },
-    { icon: '📄', title: 'PDF instantaneo', desc: 'Descarga profesional en un clic. Listo para enviar.' },
-    { icon: '📋', title: 'Templates reutilizables', desc: 'Guarda tus disenos y factura 10x mas rapido.' },
-    { icon: '📊', title: 'Presupuestos', desc: 'Crea presupuestos y conviertelos en factura al aprobar.' },
-    { icon: '🔒', title: 'Datos seguros', desc: 'Cifrado end-to-end. Cumplimiento total con GDPR.' },
+    { icon: '✏️', title: t('landing.feat1.title'), desc: t('landing.feat1.desc') },
+    { icon: '🌍', title: t('landing.feat2.title'), desc: t('landing.feat2.desc') },
+    { icon: '📄', title: t('landing.feat3.title'), desc: t('landing.feat3.desc') },
+    { icon: '📋', title: t('landing.feat4.title'), desc: t('landing.feat4.desc') },
+    { icon: '📊', title: t('landing.feat5.title'), desc: t('landing.feat5.desc') },
+    { icon: '🔒', title: t('landing.feat6.title'), desc: t('landing.feat6.desc') },
   ]
 
   const steps = [
-    { num: '01', title: 'Crea tu factura', desc: 'Rellena los datos de tu empresa y cliente en el editor visual.' },
-    { num: '02', title: 'Personaliza', desc: 'Anade tu logo, elige moneda, idioma y template.' },
-    { num: '03', title: 'Envia y cobra', desc: 'Descarga en PDF o comparte el enlace directo.' },
+    { num: '01', title: t('landing.step1.title'), desc: t('landing.step1.desc') },
+    { num: '02', title: t('landing.step2.title'), desc: t('landing.step2.desc') },
+    { num: '03', title: t('landing.step3.title'), desc: t('landing.step3.desc') },
   ]
 
   const proFeatures = [
-    'Sin watermark',
-    'Templates ilimitados',
-    'Export PDF + PNG',
-    'Soporte prioritario',
-    'Actualizaciones de por vida',
-    'Multi-moneda e idioma',
+    t('landing.proFeat1'),
+    t('landing.proFeat2'),
+    t('landing.proFeat3'),
+    t('landing.proFeat4'),
+    t('landing.proFeat5'),
+    t('landing.proFeat6'),
   ]
 
   const testimonials = [
-    { text: 'InvoiceApp me ahorra horas cada semana. El editor es rapidisimo y las facturas quedan impecables.', name: 'Laura M.', role: 'Disenadora freelance' },
-    { text: 'Por fin una herramienta de facturacion que no parece de los 90. Elegante y funcional.', name: 'Carlos R.', role: 'CEO de StartupXYZ' },
-    { text: 'El pago unico fue lo que me convencio. Sin suscripciones, sin sorpresas. Totalmente recomendable.', name: 'Ana S.', role: 'Consultora independiente' },
+    { text: t('landing.test1.text'), name: t('landing.test1.name'), role: t('landing.test1.role') },
+    { text: t('landing.test2.text'), name: t('landing.test2.name'), role: t('landing.test2.role') },
+    { text: t('landing.test3.text'), name: t('landing.test3.name'), role: t('landing.test3.role') },
   ]
 
   const faqs = [
-    { q: 'Es realmente gratis para empezar?', a: 'Si, puedes crear facturas gratis con watermark. Para eliminarlo, adquiere la licencia Pro.' },
-    { q: 'Que incluye el plan Pro?', a: 'Acceso de por vida, sin watermark, templates ilimitados, export multi-formato y soporte prioritario.' },
-    { q: 'Mis datos estan seguros?', a: 'Absolutamente. Usamos Firebase con cifrado y cumplimos con GDPR.' },
-    { q: 'Puedo cambiar la moneda de mis facturas?', a: 'Si, soportamos mas de 20 monedas internacionales.' },
-    { q: 'Necesito instalar algo?', a: 'No, InvoiceApp funciona 100% en el navegador. Tambien puedes instalarla como PWA.' },
+    { q: t('landing.faq1.q'), a: t('landing.faq1.a') },
+    { q: t('landing.faq2.q'), a: t('landing.faq2.a') },
+    { q: t('landing.faq3.q'), a: t('landing.faq3.a') },
+    { q: t('landing.faq4.q'), a: t('landing.faq4.a') },
+    { q: t('landing.faq5.q'), a: t('landing.faq5.a') },
+  ]
+
+  const socialProofLabels = [
+    t('landing.sp1'),
+    t('landing.sp2'),
+    t('landing.sp3'),
+    t('landing.sp4'),
+    t('landing.sp5'),
   ]
 
   return (
@@ -239,32 +251,35 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="text-center max-w-3xl mx-auto">
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-text tracking-tight leading-[1.1]">
-              Facturacion profesional,{' '}
-              <br className="hidden sm:block" />
-              simplificada.
+              {t('landing.hero').split('\n').map((line, i) => (
+                <span key={i}>
+                  {i > 0 && <br className="hidden sm:block" />}
+                  {line}
+                </span>
+              ))}
             </h1>
             <p className="mt-6 text-lg md:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto">
-              Crea facturas y presupuestos profesionales en segundos. Sin complicaciones.
+              {t('landing.heroSub')}
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/signup"
                 className="w-full sm:w-auto px-8 py-4 bg-text text-surface rounded-full font-medium hover:bg-text-secondary transition-colors text-center"
               >
-                Empezar gratis
+                {t('landing.cta')}
               </Link>
               <a
                 href="#how"
                 className="w-full sm:w-auto px-8 py-4 border border-border text-text rounded-full font-medium hover:bg-surface-tertiary transition-colors text-center"
               >
-                Ver como funciona
+                {t('landing.ctaSecondary')}
               </a>
             </div>
           </FadeIn>
 
           {/* Invoice preview */}
           <div className="mt-16 md:mt-24">
-            <InvoicePreview />
+            <InvoicePreviewDemo />
           </div>
         </div>
       </section>
@@ -274,10 +289,10 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn>
             <p className="text-center text-sm text-text-muted mb-8">
-              Mas de 2,000 profesionales ya facturan con InvoiceApp
+              {t('landing.socialProof')}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
-              {['Freelancers', 'Agencias', 'Startups', 'Consultoras', 'Despachos'].map((name) => (
+              {socialProofLabels.map((name) => (
                 <span key={name} className="text-lg font-semibold text-text-muted/40 tracking-wide uppercase">
                   {name}
                 </span>
@@ -292,10 +307,10 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
-              Todo lo que necesitas
+              {t('landing.featuresTitle')}
             </h2>
             <p className="mt-4 text-text-secondary max-w-xl mx-auto">
-              Herramientas potentes con una interfaz minimalista.
+              {t('landing.featuresSubtitle')}
             </p>
           </FadeIn>
 
@@ -318,7 +333,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="text-center mb-20">
             <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
-              Como funciona
+              {t('landing.howTitle')}
             </h2>
           </FadeIn>
 
@@ -344,14 +359,14 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="max-w-md mx-auto">
             <div className="rounded-2xl border border-border bg-surface p-10 shadow-xl text-center">
-              <p className="text-sm font-semibold text-text-muted uppercase tracking-widest mb-2">Pro</p>
-              <p className="text-lg font-medium text-text-secondary mb-6">Acceso de por vida</p>
+              <p className="text-sm font-semibold text-text-muted uppercase tracking-widest mb-2">{t('landing.pricingTitle')}</p>
+              <p className="text-lg font-medium text-text-secondary mb-6">{t('landing.pricingSubtitle')}</p>
 
               <div className="flex items-baseline justify-center gap-3 mb-2">
                 <span className="text-6xl font-black text-text">29€</span>
                 <span className="text-xl text-text-muted line-through">49€</span>
               </div>
-              <p className="text-sm text-text-muted mb-8">pago unico</p>
+              <p className="text-sm text-text-muted mb-8">{t('upgrade.oneTime')}</p>
 
               <ul className="space-y-4 text-left mb-10">
                 {proFeatures.map((feat) => (
@@ -366,11 +381,11 @@ export default function LandingPage() {
                 href="/signup"
                 className="block w-full py-4 bg-text text-surface rounded-full font-medium hover:bg-text-secondary transition-colors text-center"
               >
-                Empezar ahora
+                {t('landing.pricingCta')}
               </Link>
             </div>
             <p className="text-center mt-6 text-sm text-text-muted">
-              Empieza gratis, sin tarjeta
+              {t('landing.pricingFooter')}
             </p>
           </FadeIn>
         </div>
@@ -381,24 +396,24 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
-              Lo que dicen nuestros usuarios
+              {t('landing.testimonialsTitle')}
             </h2>
           </FadeIn>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((t, i) => (
-              <FadeIn key={t.name} delay={i * 0.1}>
+            {testimonials.map((item, i) => (
+              <FadeIn key={item.name} delay={i * 0.1}>
                 <div className="h-full p-8 rounded-2xl border border-border bg-surface">
                   <p className="text-sm text-text leading-relaxed mb-8">
-                    &ldquo;{t.text}&rdquo;
+                    &ldquo;{item.text}&rdquo;
                   </p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-surface-tertiary flex items-center justify-center text-text text-sm font-bold">
-                      {t.name.charAt(0)}
+                      {item.name.charAt(0)}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-text">{t.name}</p>
-                      <p className="text-xs text-text-muted">{t.role}</p>
+                      <p className="text-sm font-medium text-text">{item.name}</p>
+                      <p className="text-xs text-text-muted">{item.role}</p>
                     </div>
                   </div>
                 </div>
@@ -413,7 +428,7 @@ export default function LandingPage() {
         <div className="max-w-2xl mx-auto px-6">
           <FadeIn className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
-              Preguntas frecuentes
+              {t('landing.faqTitle')}
             </h2>
           </FadeIn>
 
@@ -432,16 +447,16 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
             <h2 className="text-3xl md:text-4xl font-bold text-surface tracking-tight">
-              Listo para facturar como un profesional?
+              {t('landing.finalCta')}
             </h2>
             <p className="mt-4 text-lg text-surface/70">
-              Unete a miles de freelancers y empresas que ya usan InvoiceApp
+              {t('landing.finalCtaSub')}
             </p>
             <Link
               href="/signup"
               className="mt-10 inline-block px-8 py-4 bg-surface text-text font-medium rounded-full hover:bg-surface/90 transition-colors"
             >
-              Crear cuenta gratis
+              {t('landing.finalCtaBtn')}
             </Link>
           </FadeIn>
         </div>

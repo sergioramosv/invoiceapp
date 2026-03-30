@@ -12,6 +12,7 @@ import {
 } from '@/types/invoice'
 import { TEMPLATE_STYLES, TemplateStyle } from '@/lib/invoice-templates'
 import SignaturePad from './SignaturePad'
+import { useI18n } from '@/lib/i18n'
 
 type InvoiceAction =
   | { type: 'SET_FIELD'; field: keyof InvoiceState; value: unknown }
@@ -51,6 +52,7 @@ export default function InvoiceForm({
   total,
   balanceDue,
 }: InvoiceFormProps) {
+  const { t } = useI18n()
   const labels = state.language.labels
   const sym = state.currency.symbol
 
@@ -59,7 +61,7 @@ export default function InvoiceForm({
       {/* Template selector */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-3">
-          Plantilla
+          {t('form.style')}
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {TEMPLATE_STYLES.map((tmpl) => (
@@ -142,7 +144,7 @@ export default function InvoiceForm({
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div>
           <label className="block text-sm font-medium text-text-secondary mb-1">
-            Tipo
+            {t('form.type')}
           </label>
           <select
             value={state.documentType}
@@ -163,7 +165,7 @@ export default function InvoiceForm({
         </div>
         <div>
           <label className="block text-sm font-medium text-text-secondary mb-1">
-            Título
+            {t('form.title')}
           </label>
           <input
             type="text"
@@ -176,7 +178,7 @@ export default function InvoiceForm({
         </div>
         <div>
           <label className="block text-sm font-medium text-text-secondary mb-1">
-            Moneda
+            {t('form.currency')}
           </label>
           <select
             value={state.currency.code}
@@ -195,7 +197,7 @@ export default function InvoiceForm({
         </div>
         <div>
           <label className="block text-sm font-medium text-text-secondary mb-1">
-            Idioma
+            {t('form.language')}
           </label>
           <select
             value={state.language.code}
@@ -220,7 +222,7 @@ export default function InvoiceForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Logo
+              {t('form.logo')}
             </label>
             <div
               className="border-2 border-dashed border-border rounded-lg p-6 text-center text-text-secondary text-sm cursor-pointer hover:border-primary/40 transition-colors relative"
@@ -262,17 +264,17 @@ export default function InvoiceForm({
                     }}
                     className="text-danger text-xs underline"
                   >
-                    Eliminar
+                    {t('form.logoDelete')}
                   </button>
                 </div>
               ) : (
-                <span>Arrastra tu logo aquí o haz clic para subir (PNG, JPG, SVG — máx 2MB)</span>
+                <span>{t('form.logoUpload')}</span>
               )}
             </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Nombre / Empresa
+              {t('form.companyName')}
             </label>
             <input
               type="text"
@@ -285,7 +287,7 @@ export default function InvoiceForm({
           </div>
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Email
+              {t('form.email')}
             </label>
             <input
               type="email"
@@ -298,7 +300,7 @@ export default function InvoiceForm({
           </div>
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Dirección
+              {t('form.address')}
             </label>
             <textarea
               rows={2}
@@ -312,7 +314,7 @@ export default function InvoiceForm({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Teléfono
+                {t('form.phone')}
               </label>
               <input
                 type="tel"
@@ -325,7 +327,7 @@ export default function InvoiceForm({
             </div>
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                NIF / CIF
+                {t('form.taxId')}
               </label>
               <input
                 type="text"
@@ -346,7 +348,7 @@ export default function InvoiceForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Nombre / Empresa
+              {t('form.companyName')}
             </label>
             <input
               type="text"
@@ -359,7 +361,7 @@ export default function InvoiceForm({
           </div>
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Email
+              {t('form.email')}
             </label>
             <input
               type="email"
@@ -372,7 +374,7 @@ export default function InvoiceForm({
           </div>
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Dirección
+              {t('form.address')}
             </label>
             <textarea
               rows={2}
@@ -390,7 +392,7 @@ export default function InvoiceForm({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Teléfono
+                {t('form.phone')}
               </label>
               <input
                 type="tel"
@@ -407,7 +409,7 @@ export default function InvoiceForm({
             </div>
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                NIF / CIF
+                {t('form.taxId')}
               </label>
               <input
                 type="text"
@@ -436,14 +438,14 @@ export default function InvoiceForm({
             className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20"
           />
           <span className="text-sm font-medium text-text-secondary">
-            Incluir dirección de envío
+            {t('form.includeShipping')}
           </span>
         </label>
         {state.showShipping && (
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Nombre
+                {t('form.name')}
               </label>
               <input
                 type="text"
@@ -460,7 +462,7 @@ export default function InvoiceForm({
             </div>
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Dirección
+                {t('form.address')}
               </label>
               <textarea
                 rows={2}
@@ -481,7 +483,7 @@ export default function InvoiceForm({
 
       {/* Invoice fields (number, dates, custom) */}
       <div className="border-t border-border pt-6 mt-6">
-        <h3 className="text-lg font-semibold mb-4">Detalles</h3>
+        <h3 className="text-lg font-semibold mb-4">{t('form.details')}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
@@ -542,7 +544,7 @@ export default function InvoiceForm({
           <div key={field.id} className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Etiqueta
+                {t('form.label')}
               </label>
               <input
                 type="text"
@@ -555,13 +557,13 @@ export default function InvoiceForm({
                     value: e.target.value,
                   })
                 }
-                placeholder="Nombre del campo"
+                placeholder={t('form.label')}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Valor
+                {t('form.value')}
               </label>
               <input
                 type={field.type}
@@ -590,8 +592,8 @@ export default function InvoiceForm({
                 }
                 className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface"
               >
-                <option value="text">Texto</option>
-                <option value="date">Fecha</option>
+                <option value="text">{t('form.fieldText')}</option>
+                <option value="date">{t('form.fieldDate')}</option>
               </select>
               <button
                 type="button"
@@ -599,7 +601,7 @@ export default function InvoiceForm({
                   dispatch({ type: 'REMOVE_CUSTOM_FIELD', id: field.id })
                 }
                 className="p-2 text-danger hover:bg-danger/10 rounded-lg transition-colors"
-                title="Eliminar campo"
+                title={t('action.delete')}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -614,7 +616,7 @@ export default function InvoiceForm({
           onClick={() => dispatch({ type: 'ADD_CUSTOM_FIELD' })}
           className="mt-4 text-sm text-primary font-medium hover:text-primary-dark transition-colors"
         >
-          + Añadir campo
+          {t('form.addField')}
         </button>
       </div>
 
@@ -656,7 +658,7 @@ export default function InvoiceForm({
                     value: e.target.value,
                   })
                 }
-                placeholder="Descripción"
+                placeholder={t('form.description')}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
@@ -702,7 +704,7 @@ export default function InvoiceForm({
                 onClick={() => dispatch({ type: 'REMOVE_ITEM', id: item.id })}
                 disabled={state.items.length <= 1}
                 className="p-2 text-danger hover:bg-danger/10 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                title="Eliminar línea"
+                title={t('action.delete')}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -717,7 +719,7 @@ export default function InvoiceForm({
           onClick={() => dispatch({ type: 'ADD_ITEM' })}
           className="mt-2 text-sm text-primary font-medium hover:text-primary-dark transition-colors"
         >
-          + Añadir línea
+          {t('form.addItem')}
         </button>
       </div>
 
@@ -779,7 +781,7 @@ export default function InvoiceForm({
 
           {/* Shipping */}
           <div className="flex items-center justify-between text-sm gap-2">
-            <span className="text-text-secondary">Envío</span>
+            <span className="text-text-secondary">{t('form.shipping')}</span>
             <input
               type="number"
               min={0}
@@ -804,7 +806,7 @@ export default function InvoiceForm({
 
           {/* Amount Paid */}
           <div className="flex items-center justify-between text-sm gap-2">
-            <span className="text-text-secondary">Pagado</span>
+            <span className="text-text-secondary">{t('form.amountPaid')}</span>
             <input
               type="number"
               min={0}
@@ -823,7 +825,7 @@ export default function InvoiceForm({
 
           {/* Balance Due */}
           <div className="flex items-center justify-between border-t border-border pt-3">
-            <span className="font-bold">Saldo pendiente</span>
+            <span className="font-bold">{t('form.balanceDue')}</span>
             <span
               className={`font-bold text-lg ${balanceDue > 0 ? 'text-danger' : 'text-success'}`}
             >
@@ -851,7 +853,7 @@ export default function InvoiceForm({
                     value: e.target.value,
                   })
                 }
-                placeholder="Ej: IBAN, BIC, Banco..."
+                placeholder={t('form.bankPlaceholder')}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
@@ -867,7 +869,7 @@ export default function InvoiceForm({
                     value: e.target.value,
                   })
                 }
-                placeholder="Valor"
+                placeholder={t('form.value')}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
@@ -878,7 +880,7 @@ export default function InvoiceForm({
                   dispatch({ type: 'REMOVE_BANK_FIELD', id: field.id })
                 }
                 className="p-2 text-danger hover:bg-danger/10 rounded-lg transition-colors"
-                title="Eliminar campo"
+                title={t('action.delete')}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -893,7 +895,7 @@ export default function InvoiceForm({
           onClick={() => dispatch({ type: 'ADD_BANK_FIELD' })}
           className="mt-2 text-sm text-primary font-medium hover:text-primary-dark transition-colors"
         >
-          + Añadir campo bancario
+          {t('form.addBankField')}
         </button>
       </div>
 
@@ -910,13 +912,13 @@ export default function InvoiceForm({
               onChange={(e) =>
                 dispatch({ type: 'SET_FIELD', field: 'notes', value: e.target.value })
               }
-              placeholder="Notas adicionales para el cliente..."
+              placeholder={t('form.notesPlaceholder')}
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Términos y condiciones
+              {t('form.terms')}
             </label>
             <textarea
               rows={4}
@@ -924,7 +926,7 @@ export default function InvoiceForm({
               onChange={(e) =>
                 dispatch({ type: 'SET_FIELD', field: 'terms', value: e.target.value })
               }
-              placeholder="Términos y condiciones..."
+              placeholder={t('form.termsPlaceholder')}
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
             />
           </div>
@@ -933,18 +935,18 @@ export default function InvoiceForm({
 
       {/* Firma / Sello */}
       <div className="border-t border-border pt-6 mt-6">
-        <h3 className="text-lg font-semibold mb-4">Firma / Sello</h3>
+        <h3 className="text-lg font-semibold mb-4">{t('form.signature')}</h3>
         <SignaturePad
           value={state.signatureUrl}
           onChange={(url) => dispatch({ type: 'SET_FIELD', field: 'signatureUrl', value: url })}
         />
         <div className="mt-3">
-          <label className="block text-sm font-medium text-text-secondary mb-1">Texto bajo la firma</label>
+          <label className="block text-sm font-medium text-text-secondary mb-1">{t('form.signatureLabel')}</label>
           <input
             type="text"
             value={state.signatureLabel}
             onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'signatureLabel', value: e.target.value })}
-            placeholder="Ej: Juan Pérez, Director"
+            placeholder={t('form.signaturePlaceholder')}
             className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>

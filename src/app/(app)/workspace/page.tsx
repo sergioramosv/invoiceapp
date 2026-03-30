@@ -19,14 +19,7 @@ import {
 import type { Invoice, InvoiceStatus, DocumentType } from '@/types'
 import styles from './workspace.module.css'
 import { ConfirmModal } from '@/components/ui/Modal'
-
-const STATUS_CONFIG: Record<InvoiceStatus, { label: string; className: string }> = {
-  draft: { label: 'Borrador', className: 'bg-text/10 text-text-secondary' },
-  sent: { label: 'Enviada', className: 'bg-accent/10 text-accent' },
-  paid: { label: 'Pagada', className: 'bg-success/10 text-success' },
-  overdue: { label: 'Vencida', className: 'bg-danger/10 text-danger' },
-  cancelled: { label: 'Cancelada', className: 'bg-text/5 text-text-muted' },
-}
+import { useI18n } from '@/lib/i18n'
 
 type FilterTab = 'all' | 'invoice' | 'quote'
 
@@ -38,12 +31,9 @@ function formatCurrency(value: number, currency: string): string {
   return `${sym}${value.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
-function getDocLabel(docType?: DocumentType): string {
-  return docType === 'quote' ? 'Presupuesto' : 'Factura'
-}
-
 export default function WorkspacePage() {
   const { user, loading } = useAuth()
+  const { t } = useI18n()
   const router = useRouter()
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [loadingInvoices, setLoadingInvoices] = useState(true)
@@ -55,6 +45,18 @@ export default function WorkspacePage() {
   const [showNewMenu, setShowNewMenu] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [convertTarget, setConvertTarget] = useState<Invoice | null>(null)
+
+  const STATUS_CONFIG: Record<InvoiceStatus, { label: string; className: string }> = {
+    draft: { label: t('status.draft'), className: 'bg-text/10 text-text-secondary' },
+    sent: { label: t('status.sent'), className: 'bg-accent/10 text-accent' },
+    paid: { label: t('status.paid'), className: 'bg-success/10 text-success' },
+    overdue: { label: t('status.overdue'), className: 'bg-danger/10 text-danger' },
+    cancelled: { label: t('status.cancelled'), className: 'bg-text/5 text-text-muted' },
+  }
+
+  function getDocLabel(docType?: DocumentType): string {
+    return docType === 'quote' ? t('docType.quote') : t('docType.invoice')
+  }
 
   const fetchInvoices = useCallback(async () => {
     if (!user) return
@@ -174,9 +176,9 @@ export default function WorkspacePage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Mis Documentos</h1>
+          <h1 className="text-2xl font-bold">{t('workspace.title')}</h1>
           <p className="text-text-secondary mt-1">
-            {invoices.length} documento{invoices.length !== 1 ? 's' : ''}
+            {invoices.length} {invoices.length !== 1 ? t('workspace.documents') : t('workspace.document')}
           </p>
         </div>
         <div className="relative">
@@ -184,7 +186,7 @@ export default function WorkspacePage() {
             onClick={() => setShowNewMenu(!showNewMenu)}
             className="px-6 py-2 text-sm bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors flex items-center gap-2"
           >
-            + Nuevo documento
+            {t('workspace.newDocument')}
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
@@ -198,21 +200,21 @@ export default function WorkspacePage() {
                   onClick={() => setShowNewMenu(false)}
                   className="block px-4 py-2.5 text-sm hover:bg-surface-tertiary transition-colors"
                 >
-                  <span className="font-medium">Desde cero</span>
-                  <span className="block text-text-muted text-xs mt-0.5">Documento en blanco</span>
+                  <span className="font-medium">{t('workspace.fromScratch')}</span>
+                  <span className="block text-text-muted text-xs mt-0.5">{t('workspace.fromScratchDesc')}</span>
                 </Link>
                 {templates.length > 0 && (
                   <>
                     <div className="border-t border-border my-1" />
-                    <p className="px-4 py-1.5 text-xs text-text-muted font-medium">Desde template</p>
-                    {templates.map((t) => (
+                    <p className="px-4 py-1.5 text-xs text-text-muted font-medium">{t('workspace.fromTemplate')}</p>
+                    {templates.map((tmpl) => (
                       <Link
-                        key={t.id}
-                        href={`/workspace/new?template=${t.id}`}
+                        key={tmpl.id}
+                        href={`/workspace/new?template=${tmpl.id}`}
                         onClick={() => setShowNewMenu(false)}
                         className="block px-4 py-2 text-sm hover:bg-surface-tertiary transition-colors"
                       >
-                        {t.name}
+                        {tmpl.name}
                       </Link>
                     ))}
                   </>
@@ -227,15 +229,15 @@ export default function WorkspacePage() {
       {invoices.length > 0 && (
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-surface border border-border rounded-xl p-4">
-            <p className="text-sm text-text-muted">Total facturado</p>
+            <p className="text-sm text-text-muted">{t('workspace.totalInvoiced')}</p>
             <p className="text-2xl font-bold mt-1">{formatCurrency(totalFacturado, 'EUR')}</p>
           </div>
           <div className="bg-surface border border-border rounded-xl p-4">
-            <p className="text-sm text-text-muted">Facturas</p>
+            <p className="text-sm text-text-muted">{t('workspace.invoiceCount')}</p>
             <p className="text-2xl font-bold mt-1">{invoices.filter(i => i.documentType !== 'quote').length}</p>
           </div>
           <div className="bg-surface border border-border rounded-xl p-4">
-            <p className="text-sm text-text-muted">Presupuestos</p>
+            <p className="text-sm text-text-muted">{t('workspace.quoteCount')}</p>
             <p className="text-2xl font-bold mt-1">{totalPresupuestos}</p>
           </div>
         </div>
@@ -249,26 +251,26 @@ export default function WorkspacePage() {
               onClick={() => setFilterTab('all')}
               className={`${styles.filterTab} ${filterTab === 'all' ? styles.filterTabActive : ''}`}
             >
-              Todas
+              {t('filter.all')}
             </button>
             <button
               onClick={() => setFilterTab('invoice')}
               className={`${styles.filterTab} ${filterTab === 'invoice' ? styles.filterTabActive : ''}`}
             >
-              Facturas
+              {t('filter.invoices')}
             </button>
             <button
               onClick={() => setFilterTab('quote')}
               className={`${styles.filterTab} ${filterTab === 'quote' ? styles.filterTabActive : ''}`}
             >
-              Presupuestos
+              {t('filter.quotes')}
             </button>
           </div>
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por cliente o numero..."
+            placeholder={t('workspace.search')}
             className="w-full max-w-md px-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
@@ -285,18 +287,18 @@ export default function WorkspacePage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium">No tienes documentos todavia</h3>
-          <p className="text-text-secondary mt-1">Crea tu primera factura o presupuesto en segundos</p>
+          <h3 className="text-lg font-medium">{t('workspace.noDocuments')}</h3>
+          <p className="text-text-secondary mt-1">{t('workspace.noDocumentsDesc')}</p>
           <Link
             href="/workspace/new"
             className="mt-6 inline-block px-8 py-3 bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors"
           >
-            Crear primer documento
+            {t('workspace.createFirst')}
           </Link>
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-surface border border-border rounded-xl p-8 text-center">
-          <p className="text-text-secondary">No se encontraron documentos con ese criterio</p>
+          <p className="text-text-secondary">{t('workspace.noResults')}</p>
         </div>
       ) : (
         /* Invoice table */
@@ -305,13 +307,13 @@ export default function WorkspacePage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-surface-secondary">
-                  <th className="text-left py-3 px-4 font-semibold text-text-secondary">Tipo</th>
-                  <th className="text-left py-3 px-4 font-semibold text-text-secondary">Numero</th>
-                  <th className="text-left py-3 px-4 font-semibold text-text-secondary">Cliente</th>
-                  <th className="text-left py-3 px-4 font-semibold text-text-secondary hidden sm:table-cell">Fecha</th>
-                  <th className="text-right py-3 px-4 font-semibold text-text-secondary">Total</th>
-                  <th className="text-center py-3 px-4 font-semibold text-text-secondary">Estado</th>
-                  <th className="text-right py-3 px-4 font-semibold text-text-secondary">Acciones</th>
+                  <th className="text-left py-3 px-4 font-semibold text-text-secondary">{t('table.type')}</th>
+                  <th className="text-left py-3 px-4 font-semibold text-text-secondary">{t('table.number')}</th>
+                  <th className="text-left py-3 px-4 font-semibold text-text-secondary">{t('table.client')}</th>
+                  <th className="text-left py-3 px-4 font-semibold text-text-secondary hidden sm:table-cell">{t('table.date')}</th>
+                  <th className="text-right py-3 px-4 font-semibold text-text-secondary">{t('table.total')}</th>
+                  <th className="text-center py-3 px-4 font-semibold text-text-secondary">{t('table.status')}</th>
+                  <th className="text-right py-3 px-4 font-semibold text-text-secondary">{t('table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -362,7 +364,7 @@ export default function WorkspacePage() {
                           <button
                             onClick={() => handleDownloadPDF(invoice)}
                             className="p-1.5 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                            title="Descargar PDF"
+                            title={t('action.downloadPDF')}
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -373,7 +375,7 @@ export default function WorkspacePage() {
                             <button
                               onClick={() => setConvertTarget(invoice)}
                               className="p-1.5 text-text-secondary hover:text-success hover:bg-success/10 rounded-lg transition-colors"
-                              title="Convertir en factura"
+                              title={t('action.convertToInvoice')}
                             >
                               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -384,7 +386,7 @@ export default function WorkspacePage() {
                           <Link
                             href={`/workspace/edit/${invoice.id}`}
                             className="p-1.5 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                            title="Editar"
+                            title={t('action.edit')}
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -394,7 +396,7 @@ export default function WorkspacePage() {
                           <button
                             onClick={() => handleDuplicate(invoice)}
                             className="p-1.5 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                            title="Duplicar"
+                            title={t('action.duplicate')}
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -404,7 +406,7 @@ export default function WorkspacePage() {
                           <button
                             onClick={() => setDeleteTarget(invoice.id)}
                             className="p-1.5 text-text-secondary hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
-                            title="Eliminar"
+                            title={t('action.delete')}
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -439,9 +441,9 @@ export default function WorkspacePage() {
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={confirmDelete}
-        title="Eliminar documento"
-        message="¿Estás seguro? Esta acción no se puede deshacer."
-        confirmLabel="Eliminar"
+        title={t('modal.deleteDocument')}
+        message={t('modal.deleteDocumentMsg')}
+        confirmLabel={t('modal.deleteBtn')}
         danger
       />
 
@@ -449,9 +451,9 @@ export default function WorkspacePage() {
         open={!!convertTarget}
         onClose={() => setConvertTarget(null)}
         onConfirm={confirmConvert}
-        title="Convertir en factura"
-        message="Se creará una nueva factura a partir de este presupuesto."
-        confirmLabel="Crear factura"
+        title={t('modal.convertInvoice')}
+        message={t('modal.convertInvoiceMsg')}
+        confirmLabel={t('modal.convertBtn')}
       />
     </div>
   )
