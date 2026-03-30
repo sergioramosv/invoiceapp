@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   try {
     const resend = getResend()
     await resend.emails.send({
-      from: 'InvoiceApp <noreply@invoiceapp.es>',
+      from: 'InvoiceApp <sergioramosvicente2004@gmail.com>',
       to: recipientEmail,
       subject: subject || 'Factura adjunta',
       html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px">

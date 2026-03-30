@@ -167,7 +167,7 @@ export default function TermsOfServicePage() {
               de un pago único, ofrecemos una garantía de devolución de 30 días
               naturales desde la fecha de compra. Si no estás satisfecho con el
               servicio, puedes solicitar un reembolso completo dentro de ese
-              plazo escribiendo a contacto@invoiceapp.es. Transcurridos los 30
+              plazo escribiendo a sergioramosvicente2004@gmail.com. Transcurridos los 30
               días, no se realizarán reembolsos.
             </p>
           </section>
@@ -242,10 +242,10 @@ export default function TermsOfServicePage() {
             <p>
               Para cualquier consulta sobre estos términos, puedes escribir a{' '}
               <a
-                href="mailto:contacto@invoiceapp.es"
+                href="mailto:sergioramosvicente2004@gmail.com"
                 className="text-primary hover:underline"
               >
-                contacto@invoiceapp.es
+                sergioramosvicente2004@gmail.com
               </a>
               .
             </p>

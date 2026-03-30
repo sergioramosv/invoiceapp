@@ -1,6 +1,6 @@
 import { getResend } from './resend'
 
-const FROM_EMAIL = 'InvoiceApp <noreply@invoiceapp.com>'
+const FROM_EMAIL = 'InvoiceApp <sergioramosvicente2004@gmail.com>'
 
 function baseLayout(content: string): string {
   return `

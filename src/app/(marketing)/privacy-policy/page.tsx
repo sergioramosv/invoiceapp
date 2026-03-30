@@ -32,7 +32,7 @@ export default function PrivacyPolicyPage() {
             <ul className="space-y-1.5 list-none">
               <li><strong className="text-text">Titular:</strong> InvoiceApp (SRSoftware)</li>
               <li><strong className="text-text">Responsable:</strong> Sergio Ramos Vicente</li>
-              <li><strong className="text-text">Email de contacto:</strong> contacto@invoiceapp.es</li>
+              <li><strong className="text-text">Email de contacto:</strong> sergioramosvicente2004@gmail.com</li>
               <li><strong className="text-text">Sitio web:</strong> https://invoiceapp.es</li>
             </ul>
           </section>
@@ -218,10 +218,10 @@ export default function PrivacyPolicyPage() {
             <p className="mt-3">
               Para ejercer cualquiera de estos derechos, envía un email a{' '}
               <a
-                href="mailto:contacto@invoiceapp.es"
+                href="mailto:sergioramosvicente2004@gmail.com"
                 className="text-primary hover:underline"
               >
-                contacto@invoiceapp.es
+                sergioramosvicente2004@gmail.com
               </a>{' '}
               indicando tu solicitud. Responderemos en un plazo máximo de 30
               días.
@@ -279,10 +279,10 @@ export default function PrivacyPolicyPage() {
               Para cualquier consulta relacionada con la privacidad o el
               tratamiento de tus datos, puedes escribir a{' '}
               <a
-                href="mailto:contacto@invoiceapp.es"
+                href="mailto:sergioramosvicente2004@gmail.com"
                 className="text-primary hover:underline"
               >
-                contacto@invoiceapp.es
+                sergioramosvicente2004@gmail.com
               </a>
               .
             </p>
