@@ -8,6 +8,10 @@ export const metadata: Metadata = {
   title: 'InvoiceApp — Crea facturas profesionales en segundos',
   description:
     'Genera facturas profesionales en PDF al instante. El generador de facturas más rápido para freelancers y empresas en España.',
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/logo.svg',
+  },
   metadataBase: new URL('https://invoiceapp.es'),
   openGraph: {
     title: 'InvoiceApp — Crea facturas profesionales en segundos',

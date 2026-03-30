@@ -21,8 +21,9 @@ function Navbar() {
       }`}
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="text-lg font-bold text-text tracking-tight">
-          InvoiceApp
+        <Link href="/" className="flex items-center gap-2">
+          <img src="/logo.svg" alt="InvoiceApp" className="w-6 h-6" />
+          <span className="font-bold text-lg text-text">InvoiceApp</span>
         </Link>
 
         {/* Desktop auth */}

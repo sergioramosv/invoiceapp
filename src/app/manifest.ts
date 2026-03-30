@@ -8,10 +8,11 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: '/workspace',
     display: 'standalone',
     background_color: '#ffffff',
-    theme_color: '#000000',
+    theme_color: '#0a0a0a',
     icons: [
-      { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-      { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+      { src: '/logo.svg', sizes: 'any', type: 'image/svg+xml' },
+      { src: '/logo.svg', sizes: '192x192', type: 'image/svg+xml' },
+      { src: '/logo.svg', sizes: '512x512', type: 'image/svg+xml' },
     ],
   }
 }

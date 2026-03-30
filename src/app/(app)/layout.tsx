@@ -45,8 +45,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:h-screen lg:sticky lg:top-0 border-r border-border bg-surface overflow-y-auto">
         {/* Logo */}
         <div className="px-5 py-5 border-b border-border">
-          <Link href="/workspace" className="font-bold text-xl text-text">
-            InvoiceApp
+          <Link href="/workspace" className="flex items-center gap-2">
+            <img src="/logo.svg" alt="InvoiceApp" className="w-6 h-6" />
+            <span className="font-bold text-xl text-text">InvoiceApp</span>
           </Link>
         </div>
 
@@ -109,8 +110,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile top bar */}
       <div className="lg:hidden border-b border-border bg-surface px-4 py-3 flex items-center justify-between">
-        <Link href="/workspace" className="font-bold text-lg text-text">
-          InvoiceApp
+        <Link href="/workspace" className="flex items-center gap-2">
+          <img src="/logo.svg" alt="InvoiceApp" className="w-6 h-6" />
+          <span className="font-bold text-lg text-text">InvoiceApp</span>
         </Link>
         <div className="flex items-center gap-2">
           {user && (

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Generate InvoiceApp PWA Icons</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+    canvas { border: 1px solid #ccc; margin: 10px 0; display: block; }
+    button { padding: 8px 16px; margin: 5px; cursor: pointer; }
+    h2 { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <h1>InvoiceApp Icon Generator</h1>
+  <p>Click the buttons below to download PNG icons from the SVG logo.</p>
+
+  <h2>192x192</h2>
+  <canvas id="c192" width="192" height="192"></canvas>
+  <button onclick="download('c192', 'icon-192.png')">Download icon-192.png</button>
+
+  <h2>512x512</h2>
+  <canvas id="c512" width="512" height="512"></canvas>
+  <button onclick="download('c512', 'icon-512.png')">Download icon-512.png</button>
+
+  <script>
+    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+      <path d="M6 2h14l6 6v20a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2z" fill="#0a0a0a"/>
+      <path d="M20 2v6h6" fill="#333"/>
+      <rect x="8" y="14" width="12" height="2" rx="1" fill="#fff"/>
+      <rect x="8" y="19" width="8" height="2" rx="1" fill="#fff"/>
+      <rect x="8" y="24" width="10" height="2" rx="1" fill="#fff" opacity="0.6"/>
+    </svg>`;
+
+    function renderToCanvas(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      const size = canvas.width;
+      const padding = Math.round(size * 0.1);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, size, size);
+
+      const img = new Image();
+      const blob = new Blob([svgString], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+
+      img.onload = () => {
+        ctx.drawImage(img, padding, padding, size - padding * 2, size - padding * 2);
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+    }
+
+    function download(canvasId, filename) {
+      const canvas = document.getElementById(canvasId);
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    renderToCanvas('c192');
+    renderToCanvas('c512');
+  </script>
+</body>
+</html>
