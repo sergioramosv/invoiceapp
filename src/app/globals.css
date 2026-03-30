@@ -3,6 +3,9 @@
 @theme {
   --color-*: initial;
 
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-transparent: transparent;
   --color-primary: #000000;
   --color-primary-light: #333333;
   --color-primary-dark: #000000;
