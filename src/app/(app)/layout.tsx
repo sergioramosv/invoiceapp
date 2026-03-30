@@ -6,6 +6,8 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import { useTheme } from '@/lib/theme-context'
 import { useI18n } from '@/lib/i18n'
+import CommandPalette, { useCommandPalette } from '@/components/ui/CommandPalette'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, signOut } = useAuth()
@@ -14,6 +16,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { open: openSearch } = useCommandPalette()
 
   const NAV_ITEMS = [
     {
@@ -88,6 +91,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               {item.label}
             </Link>
           ))}
+          <button
+            onClick={openSearch}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-text-secondary hover:bg-surface-tertiary hover:text-text transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <span className="flex-1 text-left">{t('search.hint')}</span>
+            <kbd className="px-1.5 py-0.5 text-[10px] font-mono border border-border rounded bg-surface-secondary text-text-muted">Ctrl+K</kbd>
+          </button>
         </nav>
 
         {/* Theme toggle + Language + User section */}
@@ -251,7 +264,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Main content */}
-      <main className="flex-1 min-h-0 overflow-y-auto">{children}</main>
+      <main className="flex-1 min-h-0 overflow-y-auto">
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </main>
+
+      <CommandPalette />
     </div>
   )
 }

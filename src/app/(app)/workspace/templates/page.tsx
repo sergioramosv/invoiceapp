@@ -8,6 +8,7 @@ import { getTemplates, deleteTemplate } from '@/lib/firestore'
 import type { Template } from '@/types'
 import { ConfirmModal } from '@/components/ui/Modal'
 import { useI18n } from '@/lib/i18n'
+import { Skeleton } from '@/components/ui/Skeleton'
 
 export default function TemplatesPage() {
   const { user, loading } = useAuth()
@@ -76,8 +77,17 @@ export default function TemplatesPage() {
       </div>
 
       {loadingTemplates ? (
-        <div className="flex items-center justify-center h-32">
-          <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="bg-surface border border-border rounded-xl p-5 space-y-3">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-4 w-24" />
+              <div className="flex gap-2 pt-2">
+                <Skeleton className="h-9 flex-1" />
+                <Skeleton className="h-9 w-9" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : templates.length === 0 ? (
         <div className="bg-surface border border-border rounded-xl p-12 text-center">

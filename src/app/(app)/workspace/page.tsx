@@ -20,6 +20,9 @@ import type { Invoice, InvoiceStatus, DocumentType } from '@/types'
 import styles from './workspace.module.css'
 import { ConfirmModal } from '@/components/ui/Modal'
 import { useI18n } from '@/lib/i18n'
+import { exportToCSV } from '@/lib/export-csv'
+import InvoiceQuickPreview from '@/components/ui/InvoiceQuickPreview'
+import { SkeletonCards, SkeletonTable } from '@/components/ui/Skeleton'
 
 type FilterTab = 'all' | 'invoice' | 'quote'
 
@@ -45,6 +48,7 @@ export default function WorkspacePage() {
   const [showNewMenu, setShowNewMenu] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [convertTarget, setConvertTarget] = useState<Invoice | null>(null)
+  const [hoverPreview, setHoverPreview] = useState<{ invoice: Invoice; x: number; y: number } | null>(null)
 
   const STATUS_CONFIG: Record<InvoiceStatus, { label: string; className: string }> = {
     draft: { label: t('status.draft'), className: 'bg-text/10 text-text-secondary' },
@@ -273,12 +277,22 @@ export default function WorkspacePage() {
             placeholder={t('workspace.search')}
             className="w-full max-w-md px-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
+          <button
+            onClick={() => exportToCSV(filtered, 'invoices')}
+            className="px-4 py-2 text-sm border border-border rounded-lg font-medium hover:bg-surface-tertiary transition-colors flex items-center gap-2 shrink-0"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            {t('export.csv')}
+          </button>
         </div>
       )}
 
       {loadingInvoices ? (
-        <div className="flex items-center justify-center h-32">
-          <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+        <div className="space-y-6">
+          <SkeletonCards count={3} />
+          <SkeletonTable rows={5} />
         </div>
       ) : invoices.length === 0 ? (
         <div className="bg-surface border border-border rounded-xl p-12 text-center">
@@ -327,7 +341,12 @@ export default function WorkspacePage() {
                           {getDocLabel(invoice.documentType)}
                         </span>
                       </td>
-                      <td className="py-3 px-4 font-medium">
+                      <td
+                        className="py-3 px-4 font-medium"
+                        onMouseEnter={(e) => setHoverPreview({ invoice, x: e.clientX, y: e.clientY })}
+                        onMouseMove={(e) => setHoverPreview((prev) => prev?.invoice.id === invoice.id ? { ...prev, x: e.clientX, y: e.clientY } : prev)}
+                        onMouseLeave={() => setHoverPreview(null)}
+                      >
                         {invoice.invoiceNumber || '---'}
                       </td>
                       <td className="py-3 px-4 text-text-secondary">
@@ -435,6 +454,14 @@ export default function WorkspacePage() {
             balanceDue={getBalanceDue(pdfPreviewState)}
           />
         </div>
+      )}
+
+      {hoverPreview && (
+        <InvoiceQuickPreview
+          invoice={hoverPreview.invoice}
+          mouseX={hoverPreview.x}
+          mouseY={hoverPreview.y}
+        />
       )}
 
       <ConfirmModal

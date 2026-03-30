@@ -329,6 +329,23 @@ const es: Record<string, string> = {
   'shortcuts.png': 'Descargar PNG',
   'shortcuts.help': 'Atajos de teclado',
 
+  // Search / Command Palette
+  'search.placeholder': 'Buscar facturas, clientes, páginas...',
+  'search.invoices': 'Facturas',
+  'search.quotes': 'Presupuestos',
+  'search.clients': 'Clientes',
+  'search.pages': 'Páginas',
+  'search.noResults': 'Sin resultados',
+  'search.hint': 'Buscar',
+
+  // Export
+  'export.csv': 'Exportar CSV',
+
+  // Error
+  'error.title': 'Algo salió mal',
+  'error.description': 'Ha ocurrido un error inesperado. Intenta recargar la página.',
+  'error.reload': 'Recargar página',
+
   // Footer
   'footer.copyright': '© 2026 InvoiceApp',
   'footer.privacy': 'Privacidad',

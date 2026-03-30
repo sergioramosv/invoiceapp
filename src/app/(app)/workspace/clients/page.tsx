@@ -8,6 +8,7 @@ import { getClients, createClient, updateClient, deleteClient } from '@/lib/fire
 import { Modal, ConfirmModal } from '@/components/ui/Modal'
 import type { Client } from '@/types'
 import styles from './clients.module.css'
+import { SkeletonTable } from '@/components/ui/Skeleton'
 
 export default function ClientsPage() {
   const { user } = useAuth()
@@ -76,8 +77,8 @@ export default function ClientsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="p-6">
+        <SkeletonTable rows={5} />
       </div>
     )
   }
