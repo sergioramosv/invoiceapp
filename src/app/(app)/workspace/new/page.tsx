@@ -328,26 +328,24 @@ function NewInvoiceEditor({
       <div className="flex-1 flex overflow-hidden">
         {/* Form panel (left) */}
         <div
-          className={`w-full lg:w-[55%] overflow-y-auto p-4 sm:p-6 bg-surface-secondary ${
+          className={`w-full lg:w-[65%] xl:w-[70%] overflow-y-auto p-3 sm:p-4 bg-surface ${
             activeTab === 'edit' ? 'block' : 'hidden lg:block'
           }`}
         >
-          <div className="max-w-2xl mx-auto bg-surface border border-border rounded-xl p-4 sm:p-6">
-            <InvoiceForm
-              state={state}
-              dispatch={dispatch}
-              subtotal={subtotal}
-              discountAmount={discountAmount}
-              taxAmount={taxAmount}
-              total={total}
-              balanceDue={balanceDue}
-            />
-          </div>
+          <InvoiceForm
+            state={state}
+            dispatch={dispatch}
+            subtotal={subtotal}
+            discountAmount={discountAmount}
+            taxAmount={taxAmount}
+            total={total}
+            balanceDue={balanceDue}
+          />
         </div>
 
         {/* Preview panel (right) */}
         <div
-          className={`w-full lg:w-[45%] overflow-y-auto p-4 sm:p-6 bg-surface-tertiary border-l border-border ${
+          className={`w-full lg:w-[35%] xl:w-[30%] overflow-y-auto p-3 bg-surface-tertiary border-l border-border ${
             activeTab === 'preview' ? 'block' : 'hidden lg:block'
           }`}
         >
