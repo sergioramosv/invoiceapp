@@ -78,7 +78,7 @@ export default function InvoiceForm({
               }`}
             >
               {/* Mini preview thumbnail */}
-              <div className="mb-2 h-14 rounded-lg overflow-hidden">
+              <div className="mb-2 h-14 rounded-lg overflow-hidden light-paper">
                 {tmpl.id === 'default' && (
                   <div className="h-full bg-white border border-border/40 p-1.5 flex flex-col gap-0.5">
                     <div className="flex justify-between">

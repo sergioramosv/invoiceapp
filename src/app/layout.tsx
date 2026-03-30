@@ -35,9 +35,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es">
       <body className="antialiased">
         <ThemeProvider>
-          <I18nProvider>
-            <AuthProvider>{children}</AuthProvider>
-          </I18nProvider>
+          <AuthProvider>
+            <I18nProvider>{children}</I18nProvider>
+          </AuthProvider>
         </ThemeProvider>
         <Analytics />
       </body>
