@@ -938,6 +938,16 @@ export default function InvoiceForm({
           value={state.signatureUrl}
           onChange={(url) => dispatch({ type: 'SET_FIELD', field: 'signatureUrl', value: url })}
         />
+        <div className="mt-3">
+          <label className="block text-sm font-medium text-text-secondary mb-1">Texto bajo la firma</label>
+          <input
+            type="text"
+            value={state.signatureLabel}
+            onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'signatureLabel', value: e.target.value })}
+            placeholder="Ej: Juan Pérez, Director"
+            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          />
+        </div>
       </div>
     </div>
   )

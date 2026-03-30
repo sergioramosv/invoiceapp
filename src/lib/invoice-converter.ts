@@ -53,6 +53,7 @@ export function invoiceStateToFirestore(
     notes: state.notes || '',
     terms: state.terms || '',
     signatureUrl: state.signatureUrl || '',
+    signatureLabel: state.signatureLabel || '',
     items: state.items.map((item, idx) => ({
       ...item,
       sortOrder: idx,
@@ -106,5 +107,6 @@ export function firestoreToInvoiceState(invoice: Invoice): InvoiceState {
     notes: invoice.notes || '',
     terms: invoice.terms || '',
     signatureUrl: invoice.signatureUrl || '',
+    signatureLabel: invoice.signatureLabel || '',
   }
 }

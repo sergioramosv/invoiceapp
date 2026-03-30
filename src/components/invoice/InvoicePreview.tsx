@@ -423,12 +423,14 @@ export default function InvoicePreview({
         )}
 
         {/* Signature / Stamp */}
-        {state.signatureUrl && (
+        {(state.signatureUrl || state.signatureLabel) && (
           <div className="mt-8 flex justify-end">
             <div className="text-center">
-              <img src={state.signatureUrl} alt="Firma" className="h-20 object-contain" />
+              {state.signatureUrl && (
+                <img src={state.signatureUrl} alt="Firma" className="h-20 object-contain" />
+              )}
               <div className="border-t border-border mt-2 pt-1">
-                <p className="text-xs text-text-muted">Firma / Sello</p>
+                <p className="text-xs text-text-muted">{state.signatureLabel || 'Firma / Sello'}</p>
               </div>
             </div>
           </div>

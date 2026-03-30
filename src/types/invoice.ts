@@ -169,6 +169,7 @@ export interface InvoiceState {
   notes: string
   terms: string
   signatureUrl: string
+  signatureLabel: string
 }
 
 function getTodayISO(): string {
@@ -218,6 +219,7 @@ export function createInitialState(): InvoiceState {
     notes: '',
     terms: '',
     signatureUrl: '',
+    signatureLabel: '',
   }
 }
 

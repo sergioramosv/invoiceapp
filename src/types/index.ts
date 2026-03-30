@@ -83,6 +83,7 @@ export interface Invoice {
   terms?: string
   // Signature
   signatureUrl?: string
+  signatureLabel?: string
   // Items
   items: InvoiceItem[]
   // Metadata
