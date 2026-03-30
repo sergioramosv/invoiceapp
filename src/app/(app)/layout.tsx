@@ -97,7 +97,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </p>
               </div>
               <button
-                onClick={() => signOut()}
+                onClick={() => signOut().then(() => router.push('/'))}
                 className="w-full px-3 py-2 text-sm text-text-secondary border border-border rounded-lg hover:bg-surface-tertiary transition-colors text-center"
               >
                 Cerrar sesion
@@ -115,7 +115,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center gap-2">
           {user && (
             <button
-              onClick={() => signOut()}
+              onClick={() => signOut().then(() => router.push('/'))}
               className="px-3 py-1.5 text-xs text-text-secondary border border-border rounded-lg hover:bg-surface-tertiary transition-colors"
             >
               Salir
@@ -174,7 +174,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {user && (
             <button
               onClick={() => {
-                signOut()
+                signOut().then(() => router.push('/'))
                 setMobileMenuOpen(false)
               }}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-text-secondary hover:bg-surface-tertiary transition-colors"
