@@ -33,13 +33,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  // Don't show sidebar on editor pages (new/edit)
-  const isEditorPage =
-    pathname.includes('/workspace/new') || pathname.includes('/workspace/edit')
-
-  if (isEditorPage) {
-    return <div className="min-h-screen bg-surface-secondary">{children}</div>
-  }
 
   function isActive(href: string): boolean {
     if (href === '/workspace') return pathname === '/workspace'

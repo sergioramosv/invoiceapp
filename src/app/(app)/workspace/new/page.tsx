@@ -328,7 +328,7 @@ function NewInvoiceEditor({
       <div className="flex-1 flex overflow-hidden">
         {/* Form panel (left) */}
         <div
-          className={`w-full lg:w-[65%] xl:w-[70%] overflow-y-auto p-3 sm:p-4 bg-surface ${
+          className={`w-full lg:w-[65%] xl:w-[70%] overflow-y-auto p-4 sm:p-6 bg-surface ${
             activeTab === 'edit' ? 'block' : 'hidden lg:block'
           }`}
         >
@@ -345,7 +345,7 @@ function NewInvoiceEditor({
 
         {/* Preview panel (right) */}
         <div
-          className={`w-full lg:w-[35%] xl:w-[30%] overflow-y-auto p-3 bg-surface-tertiary border-l border-border ${
+          className={`w-full lg:w-[35%] xl:w-[30%] overflow-y-auto p-4 bg-surface-tertiary border-l border-border ${
             activeTab === 'preview' ? 'block' : 'hidden lg:block'
           }`}
         >
