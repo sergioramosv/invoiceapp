@@ -1,6 +1,7 @@
 'use client'
 
 import { useReducer, useMemo } from 'react'
+import { uid } from '@/lib/uid'
 import {
   InvoiceState,
   Currency,
@@ -45,7 +46,7 @@ function invoiceReducer(state: InvoiceState, action: InvoiceAction): InvoiceStat
         items: [
           ...state.items,
           {
-            id: crypto.randomUUID(),
+            id: uid(),
             description: '',
             quantity: 1,
             unitPrice: 0,
@@ -75,7 +76,7 @@ function invoiceReducer(state: InvoiceState, action: InvoiceAction): InvoiceStat
         ...state,
         customFields: [
           ...state.customFields,
-          { id: crypto.randomUUID(), label: '', type: 'text', value: '' },
+          { id: uid(), label: '', type: 'text', value: '' },
         ],
       }
 
@@ -98,7 +99,7 @@ function invoiceReducer(state: InvoiceState, action: InvoiceAction): InvoiceStat
         ...state,
         bankFields: [
           ...state.bankFields,
-          { id: crypto.randomUUID(), label: '', value: '' },
+          { id: uid(), label: '', value: '' },
         ],
       }
 

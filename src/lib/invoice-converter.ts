@@ -1,3 +1,4 @@
+import { uid } from '@/lib/uid'
 import {
   InvoiceState,
   CURRENCIES,
@@ -89,7 +90,7 @@ export function firestoreToInvoiceState(invoice: Invoice): InvoiceState {
     shipToAddress: invoice.shipToAddress || '',
     items: invoice.items && invoice.items.length > 0
       ? invoice.items.map((item) => ({
-          id: item.id || crypto.randomUUID(),
+          id: item.id || uid(),
           description: item.description,
           quantity: item.quantity,
           unitPrice: item.unitPrice,

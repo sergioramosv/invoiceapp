@@ -1,3 +1,5 @@
+import { uid } from '@/lib/uid'
+
 export interface InvoiceItem {
   id: string
   description: string
@@ -200,7 +202,7 @@ export function createInitialState(): InvoiceState {
     shipToAddress: '',
     items: [
       {
-        id: crypto.randomUUID(),
+        id: uid(),
         description: '',
         quantity: 1,
         unitPrice: 0,
