@@ -52,12 +52,13 @@ export async function generatePDF(
     for (let i = 1; i <= totalPages; i++) {
       pdf.setPage(i)
       pdf.saveGraphicsState()
-      const gState = new (pdf as unknown as { GState: new (opts: Record<string, number>) => object }).GState({ opacity: 0.06 })
+      const gState = new (pdf as unknown as { GState: new (opts: Record<string, number>) => object }).GState({ opacity: 0.08 })
       pdf.setGState(gState)
-      pdf.setFontSize(14)
-      pdf.setTextColor(180, 180, 180)
-      pdf.text('invoiceapp.es', imgWidth - 8, pageHeight - 6, {
-        align: 'right',
+      pdf.setFontSize(54)
+      pdf.setTextColor(160, 160, 160)
+      pdf.text('InvoiceApp', imgWidth / 2, pageHeight / 2, {
+        align: 'center',
+        angle: 45,
       })
       pdf.restoreGraphicsState()
     }
