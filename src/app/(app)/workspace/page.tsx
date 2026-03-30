@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -36,9 +37,12 @@ export default function WorkspacePage() {
           >
             Cerrar sesión
           </button>
-          <button className="px-6 py-2 text-sm bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors">
+          <Link
+            href="/workspace/new"
+            className="px-6 py-2 text-sm bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
+          >
             + Nueva factura
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -46,9 +50,12 @@ export default function WorkspacePage() {
         <div className="text-5xl mb-4">📄</div>
         <h3 className="text-lg font-medium">No tienes facturas todavía</h3>
         <p className="text-text-secondary mt-1">Crea tu primera factura profesional en segundos</p>
-        <button className="mt-6 px-8 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors">
+        <Link
+          href="/workspace/new"
+          className="mt-6 inline-block px-8 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
+        >
           Crear primera factura
-        </button>
+        </Link>
       </div>
     </div>
   )
