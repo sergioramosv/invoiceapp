@@ -112,11 +112,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Link href="/workspace" className="font-bold text-lg text-text">
           InvoiceApp
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {user && (
-            <div className="w-8 h-8 bg-black/10 text-text rounded-full flex items-center justify-center text-sm font-bold">
-              {(user.displayName || user.email || '?')[0].toUpperCase()}
-            </div>
+            <button
+              onClick={() => signOut()}
+              className="px-3 py-1.5 text-xs text-text-secondary border border-border rounded-lg hover:bg-surface-tertiary transition-colors"
+            >
+              Salir
+            </button>
           )}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
