@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { getInvoices, deleteInvoice, duplicateInvoice, convertQuoteToInvoice } from '@/lib/firestore'
+import { getInvoices, deleteInvoice, duplicateInvoice, convertQuoteToInvoice, updateInvoice } from '@/lib/firestore'
 import { firestoreToInvoiceState } from '@/lib/invoice-converter'
 import { generatePDF } from '@/lib/generate-pdf'
 import InvoicePreview from '@/components/invoice/InvoicePreview'
@@ -138,12 +138,6 @@ export default function WorkspacePage() {
   const totalFacturado = invoices
     .filter((inv) => inv.status === 'paid' && inv.documentType !== 'quote')
     .reduce((sum, inv) => sum + (inv.total || 0), 0)
-  const facturasPendientes = invoices.filter(
-    (inv) => inv.documentType !== 'quote' && (inv.status === 'draft' || inv.status === 'sent')
-  ).length
-  const facturasPagadas = invoices.filter(
-    (inv) => inv.documentType !== 'quote' && inv.status === 'paid'
-  ).length
   const totalPresupuestos = invoices.filter(
     (inv) => inv.documentType === 'quote'
   ).length
@@ -166,7 +160,7 @@ export default function WorkspacePage() {
   const pdfPreviewState = pdfInvoice ? firestoreToInvoiceState(pdfInvoice) : null
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 p-6">
+    <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Mis Documentos</h1>
@@ -184,58 +178,18 @@ export default function WorkspacePage() {
 
       {/* Dashboard stats */}
       {invoices.length > 0 && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div className="bg-surface border border-border rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
-                <svg className="w-5 h-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm text-text-muted truncate">Total facturado</p>
-                <p className="text-2xl font-bold truncate">{formatCurrency(totalFacturado, 'EUR')}</p>
-              </div>
-            </div>
+            <p className="text-sm text-text-muted">Total facturado</p>
+            <p className="text-2xl font-bold mt-1">{formatCurrency(totalFacturado, 'EUR')}</p>
           </div>
           <div className="bg-surface border border-border rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
-                <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm text-text-muted truncate">Pendientes</p>
-                <p className="text-2xl font-bold">{facturasPendientes}</p>
-              </div>
-            </div>
+            <p className="text-sm text-text-muted">Facturas</p>
+            <p className="text-2xl font-bold mt-1">{invoices.filter(i => i.documentType !== 'quote').length}</p>
           </div>
           <div className="bg-surface border border-border rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
-                <svg className="w-5 h-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm text-text-muted truncate">Pagadas</p>
-                <p className="text-2xl font-bold">{facturasPagadas}</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-surface border border-border rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
-                <svg className="w-5 h-5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                </svg>
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm text-text-muted truncate">Presupuestos</p>
-                <p className="text-2xl font-bold">{totalPresupuestos}</p>
-              </div>
-            </div>
+            <p className="text-sm text-text-muted">Presupuestos</p>
+            <p className="text-2xl font-bold mt-1">{totalPresupuestos}</p>
           </div>
         </div>
       )}
@@ -337,9 +291,23 @@ export default function WorkspacePage() {
                         {formatCurrency(invoice.total || 0, invoice.currency || 'EUR')}
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${statusCfg.className}`}>
-                          {statusCfg.label}
-                        </span>
+                        <select
+                          value={invoice.status}
+                          onChange={async (e) => {
+                            const newStatus = e.target.value as InvoiceStatus
+                            await updateInvoice(invoice.id, { status: newStatus })
+                            setInvoices((prev) =>
+                              prev.map((inv) =>
+                                inv.id === invoice.id ? { ...inv, status: newStatus } : inv
+                              )
+                            )
+                          }}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${statusCfg.className}`}
+                        >
+                          {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
+                            <option key={key} value={key}>{cfg.label}</option>
+                          ))}
+                        </select>
                       </td>
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-1">
