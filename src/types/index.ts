@@ -33,9 +33,13 @@ export interface InvoiceItem {
   sortOrder: number
 }
 
+export type DocumentType = 'invoice' | 'quote'
+
 export interface Invoice {
   id: string
   userId: string
+  documentType?: DocumentType
+  title?: string
   invoiceNumber: string
   status: InvoiceStatus
   currency: string

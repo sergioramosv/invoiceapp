@@ -18,6 +18,8 @@ export function invoiceStateToFirestore(
 ): Omit<Invoice, 'id' | 'createdAt' | 'updatedAt'> {
   return {
     userId,
+    documentType: state.documentType,
+    title: state.title,
     invoiceNumber: state.invoiceNumber,
     status,
     currency: state.currency.code,
@@ -61,7 +63,8 @@ export function firestoreToInvoiceState(invoice: Invoice): InvoiceState {
   const language = LANGUAGES.find((l) => l.code === invoice.language) || base.language
 
   return {
-    title: base.title,
+    documentType: invoice.documentType || 'invoice',
+    title: invoice.title || base.title,
     currency,
     language,
     invoiceNumber: invoice.invoiceNumber || '',

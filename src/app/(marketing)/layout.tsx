@@ -21,45 +21,23 @@ function Navbar() {
       }`}
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-text tracking-tight">
+        <Link href="/" className="text-lg font-bold text-text tracking-tight">
           InvoiceApp
         </Link>
 
-        {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-8">
-          <a
-            href="#features"
-            className="text-sm text-text-secondary hover:text-text transition-colors"
-          >
-            Features
-          </a>
-          <a
-            href="#pricing"
-            className="text-sm text-text-secondary hover:text-text transition-colors"
-          >
-            Pricing
-          </a>
-          <a
-            href="#faq"
-            className="text-sm text-text-secondary hover:text-text transition-colors"
-          >
-            FAQ
-          </a>
-        </div>
-
         {/* Desktop auth */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-4">
           <Link
             href="/login"
-            className="text-sm text-text-secondary hover:text-text transition-colors px-4 py-2"
+            className="text-sm text-text-secondary hover:text-text transition-colors"
           >
-            Iniciar sesión
+            Iniciar sesion
           </Link>
           <Link
             href="/signup"
-            className="text-sm font-medium text-white bg-primary hover:bg-primary-dark transition-colors px-4 py-2 rounded-lg"
+            className="text-sm font-medium text-white bg-primary hover:bg-primary-light transition-colors px-5 py-2 rounded-full"
           >
-            Crear cuenta gratis
+            Empezar gratis
           </Link>
         </div>
 
@@ -96,39 +74,19 @@ function Navbar() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden bg-white/95 backdrop-blur-xl border-b border-border px-6 pb-6 pt-2 space-y-4">
-          <a
-            href="#features"
-            onClick={() => setMobileOpen(false)}
-            className="block text-sm text-text-secondary hover:text-text transition-colors"
-          >
-            Features
-          </a>
-          <a
-            href="#pricing"
-            onClick={() => setMobileOpen(false)}
-            className="block text-sm text-text-secondary hover:text-text transition-colors"
-          >
-            Pricing
-          </a>
-          <a
-            href="#faq"
-            onClick={() => setMobileOpen(false)}
-            className="block text-sm text-text-secondary hover:text-text transition-colors"
-          >
-            FAQ
-          </a>
-          <hr className="border-border" />
           <Link
             href="/login"
+            onClick={() => setMobileOpen(false)}
             className="block text-sm text-text-secondary hover:text-text transition-colors"
           >
-            Iniciar sesión
+            Iniciar sesion
           </Link>
           <Link
             href="/signup"
-            className="block text-sm font-medium text-white bg-primary hover:bg-primary-dark transition-colors px-4 py-2.5 rounded-lg text-center"
+            onClick={() => setMobileOpen(false)}
+            className="block text-sm font-medium text-white bg-primary hover:bg-primary-light transition-colors px-4 py-2.5 rounded-full text-center"
           >
-            Crear cuenta gratis
+            Empezar gratis
           </Link>
         </div>
       )}
@@ -137,71 +95,22 @@ function Navbar() {
 }
 
 function Footer() {
-  const linkGroups = [
-    {
-      title: 'Producto',
-      links: [
-        { label: 'Features', href: '#features' },
-        { label: 'Pricing', href: '#pricing' },
-        { label: 'Templates', href: '#' },
-      ],
-    },
-    {
-      title: 'Legal',
-      links: [
-        { label: 'Aviso Legal', href: '/legal-notice' },
-        { label: 'Privacidad', href: '/privacy-policy' },
-        { label: 'Términos', href: '/tos' },
-      ],
-    },
-    {
-      title: 'Empresa',
-      links: [
-        { label: 'Sobre nosotros', href: '#' },
-        { label: 'Blog', href: '#' },
-        { label: 'Contacto', href: '#' },
-      ],
-    },
-  ]
-
   return (
-    <footer className="bg-surface-secondary border-t border-border">
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-          {/* Logo + desc */}
-          <div className="col-span-2">
-            <Link href="/" className="text-xl font-bold text-text tracking-tight">
-              InvoiceApp
-            </Link>
-            <p className="mt-3 text-sm text-text-secondary leading-relaxed max-w-xs">
-              El generador de facturas más rápido y elegante para freelancers y empresas.
-            </p>
-          </div>
-
-          {linkGroups.map((group) => (
-            <div key={group.title}>
-              <h4 className="text-sm font-semibold text-text mb-4">{group.title}</h4>
-              <ul className="space-y-3">
-                {group.links.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-sm text-text-secondary hover:text-text transition-colors"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-text-muted">
-            &copy; 2026 InvoiceApp. Todos los derechos reservados.
-          </p>
-          <p className="text-xs text-text-muted">Hecho en España</p>
+    <footer className="border-t border-border">
+      <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p className="text-sm text-text-muted">
+          &copy; 2026 InvoiceApp
+        </p>
+        <div className="flex items-center gap-6">
+          <a href="/privacy-policy" className="text-sm text-text-muted hover:text-text transition-colors">
+            Privacidad
+          </a>
+          <a href="/tos" className="text-sm text-text-muted hover:text-text transition-colors">
+            Terminos
+          </a>
+          <a href="/legal-notice" className="text-sm text-text-muted hover:text-text transition-colors">
+            Legal
+          </a>
         </div>
       </div>
     </footer>

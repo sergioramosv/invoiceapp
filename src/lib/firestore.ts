@@ -67,6 +67,20 @@ export async function getNextInvoiceNumber(userId: string): Promise<string> {
   return `${prefix}${next.toString().padStart(3, '0')}`
 }
 
+export async function convertQuoteToInvoice(quote: Invoice): Promise<string> {
+  const nextNum = await getNextInvoiceNumber(quote.userId)
+  const { id, createdAt, updatedAt, ...data } = quote
+  void id; void createdAt; void updatedAt
+  return createInvoice({
+    ...data,
+    documentType: 'invoice',
+    title: 'Factura',
+    invoiceNumber: nextNum,
+    status: 'draft',
+    issueDate: new Date().toISOString().split('T')[0],
+  })
+}
+
 export async function duplicateInvoice(
   invoice: Invoice
 ): Promise<string> {

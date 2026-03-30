@@ -3,9 +3,20 @@
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useCallback } from 'react'
-import { getInvoices, deleteInvoice, duplicateInvoice } from '@/lib/firestore'
-import type { Invoice, InvoiceStatus } from '@/types'
+import { useEffect, useState, useCallback, useRef } from 'react'
+import { getInvoices, deleteInvoice, duplicateInvoice, convertQuoteToInvoice } from '@/lib/firestore'
+import { firestoreToInvoiceState } from '@/lib/invoice-converter'
+import { generatePDF } from '@/lib/generate-pdf'
+import InvoicePreview from '@/components/invoice/InvoicePreview'
+import {
+  getSubtotal,
+  getDiscountAmount,
+  getTaxAmount,
+  getTotal,
+  getBalanceDue,
+} from '@/types/invoice'
+import type { Invoice, InvoiceStatus, DocumentType } from '@/types'
+import styles from './workspace.module.css'
 
 const STATUS_CONFIG: Record<InvoiceStatus, { label: string; className: string }> = {
   draft: { label: 'Borrador', className: 'bg-gray-100 text-gray-700' },
@@ -15,6 +26,8 @@ const STATUS_CONFIG: Record<InvoiceStatus, { label: string; className: string }>
   cancelled: { label: 'Cancelada', className: 'bg-gray-200 text-gray-600' },
 }
 
+type FilterTab = 'all' | 'invoice' | 'quote'
+
 function formatCurrency(value: number, currency: string): string {
   const symbols: Record<string, string> = {
     EUR: '\u20AC', USD: '$', GBP: '\u00A3', MXN: 'MX$',
@@ -23,12 +36,19 @@ function formatCurrency(value: number, currency: string): string {
   return `${sym}${value.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
+function getDocLabel(docType?: DocumentType): string {
+  return docType === 'quote' ? 'Presupuesto' : 'Factura'
+}
+
 export default function WorkspacePage() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [loadingInvoices, setLoadingInvoices] = useState(true)
   const [search, setSearch] = useState('')
+  const [filterTab, setFilterTab] = useState<FilterTab>('all')
+  const [pdfInvoice, setPdfInvoice] = useState<Invoice | null>(null)
+  const pdfRef = useRef<HTMLDivElement>(null)
 
   const fetchInvoices = useCallback(async () => {
     if (!user) return
@@ -50,6 +70,27 @@ export default function WorkspacePage() {
     if (user) fetchInvoices()
   }, [user, fetchInvoices])
 
+  // When pdfInvoice is set, wait for render then generate PDF
+  useEffect(() => {
+    if (!pdfInvoice || !pdfRef.current) return
+    const timer = setTimeout(async () => {
+      if (!pdfRef.current) return
+      try {
+        const isQuote = pdfInvoice.documentType === 'quote'
+        const prefix = isQuote ? 'presupuesto' : 'factura'
+        const filename = pdfInvoice.invoiceNumber
+          ? `${prefix}-${pdfInvoice.invoiceNumber}.pdf`
+          : `${prefix}.pdf`
+        await generatePDF(pdfRef.current, filename, false)
+      } catch (err) {
+        console.error('Error generating PDF:', err)
+      } finally {
+        setPdfInvoice(null)
+      }
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [pdfInvoice])
+
   async function handleDelete(id: string) {
     if (!window.confirm('Estas seguro de que quieres eliminar esta factura?')) return
     try {
@@ -69,6 +110,20 @@ export default function WorkspacePage() {
     }
   }
 
+  function handleDownloadPDF(invoice: Invoice) {
+    setPdfInvoice(invoice)
+  }
+
+  async function handleConvertToInvoice(quote: Invoice) {
+    if (!window.confirm('Crear una factura a partir de este presupuesto?')) return
+    try {
+      await convertQuoteToInvoice(quote)
+      await fetchInvoices()
+    } catch (err) {
+      console.error('Error converting quote to invoice:', err)
+    }
+  }
+
   if (loading || (!user && loading)) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -80,6 +135,11 @@ export default function WorkspacePage() {
   if (!user) return null
 
   const filtered = invoices.filter((inv) => {
+    // Filter by document type
+    if (filterTab === 'invoice' && inv.documentType === 'quote') return false
+    if (filterTab === 'quote' && inv.documentType !== 'quote') return false
+
+    // Filter by search
     if (!search) return true
     const q = search.toLowerCase()
     return (
@@ -88,31 +148,54 @@ export default function WorkspacePage() {
     )
   })
 
+  // Render the off-screen preview for PDF generation
+  const pdfPreviewState = pdfInvoice ? firestoreToInvoiceState(pdfInvoice) : null
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Mis Facturas</h1>
+          <h1 className="text-2xl font-bold">Mis Documentos</h1>
           <p className="text-text-secondary mt-1">
-            {invoices.length} factura{invoices.length !== 1 ? 's' : ''}
+            {invoices.length} documento{invoices.length !== 1 ? 's' : ''}
           </p>
         </div>
         <Link
           href="/workspace/new"
           className="px-6 py-2 text-sm bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
         >
-          + Nueva factura
+          + Nuevo documento
         </Link>
       </div>
 
-      {/* Search */}
+      {/* Filter tabs + Search */}
       {invoices.length > 0 && (
-        <div>
+        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+          <div className={styles.filterTabs}>
+            <button
+              onClick={() => setFilterTab('all')}
+              className={`${styles.filterTab} ${filterTab === 'all' ? styles.filterTabActive : ''}`}
+            >
+              Todas
+            </button>
+            <button
+              onClick={() => setFilterTab('invoice')}
+              className={`${styles.filterTab} ${filterTab === 'invoice' ? styles.filterTabActive : ''}`}
+            >
+              Facturas
+            </button>
+            <button
+              onClick={() => setFilterTab('quote')}
+              className={`${styles.filterTab} ${filterTab === 'quote' ? styles.filterTabActive : ''}`}
+            >
+              Presupuestos
+            </button>
+          </div>
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por cliente o numero de factura..."
+            placeholder="Buscar por cliente o numero..."
             className="w-full max-w-md px-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
@@ -129,18 +212,18 @@ export default function WorkspacePage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium">No tienes facturas todavia</h3>
-          <p className="text-text-secondary mt-1">Crea tu primera factura profesional en segundos</p>
+          <h3 className="text-lg font-medium">No tienes documentos todavia</h3>
+          <p className="text-text-secondary mt-1">Crea tu primera factura o presupuesto en segundos</p>
           <Link
             href="/workspace/new"
             className="mt-6 inline-block px-8 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
           >
-            Crear primera factura
+            Crear primer documento
           </Link>
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-surface border border-border rounded-xl p-8 text-center">
-          <p className="text-text-secondary">No se encontraron facturas con ese criterio</p>
+          <p className="text-text-secondary">No se encontraron documentos con ese criterio</p>
         </div>
       ) : (
         /* Invoice table */
@@ -149,7 +232,8 @@ export default function WorkspacePage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-surface-secondary">
-                  <th className="text-left py-3 px-4 font-semibold text-text-secondary">N Factura</th>
+                  <th className="text-left py-3 px-4 font-semibold text-text-secondary">Tipo</th>
+                  <th className="text-left py-3 px-4 font-semibold text-text-secondary">Numero</th>
                   <th className="text-left py-3 px-4 font-semibold text-text-secondary">Cliente</th>
                   <th className="text-left py-3 px-4 font-semibold text-text-secondary hidden sm:table-cell">Fecha</th>
                   <th className="text-right py-3 px-4 font-semibold text-text-secondary">Total</th>
@@ -160,8 +244,14 @@ export default function WorkspacePage() {
               <tbody>
                 {filtered.map((invoice) => {
                   const statusCfg = STATUS_CONFIG[invoice.status] || STATUS_CONFIG.draft
+                  const isQuote = invoice.documentType === 'quote'
                   return (
                     <tr key={invoice.id} className="border-b border-border last:border-0 hover:bg-surface-secondary transition-colors">
+                      <td className="py-3 px-4">
+                        <span className={isQuote ? styles.badgeQuote : styles.badgeInvoice}>
+                          {getDocLabel(invoice.documentType)}
+                        </span>
+                      </td>
                       <td className="py-3 px-4 font-medium">
                         {invoice.invoiceNumber || '---'}
                       </td>
@@ -181,6 +271,29 @@ export default function WorkspacePage() {
                       </td>
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-1">
+                          {/* Download PDF */}
+                          <button
+                            onClick={() => handleDownloadPDF(invoice)}
+                            className="p-1.5 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                            title="Descargar PDF"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </button>
+                          {/* Convert quote to invoice */}
+                          {isQuote && (
+                            <button
+                              onClick={() => handleConvertToInvoice(invoice)}
+                              className="p-1.5 text-text-secondary hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                              title="Convertir en factura"
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                              </svg>
+                            </button>
+                          )}
+                          {/* Edit */}
                           <Link
                             href={`/workspace/edit/${invoice.id}`}
                             className="p-1.5 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
@@ -190,6 +303,7 @@ export default function WorkspacePage() {
                               <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                           </Link>
+                          {/* Duplicate */}
                           <button
                             onClick={() => handleDuplicate(invoice)}
                             className="p-1.5 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
@@ -199,6 +313,7 @@ export default function WorkspacePage() {
                               <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                             </svg>
                           </button>
+                          {/* Delete */}
                           <button
                             onClick={() => handleDelete(invoice.id)}
                             className="p-1.5 text-text-secondary hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
@@ -216,6 +331,20 @@ export default function WorkspacePage() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Off-screen PDF render target */}
+      {pdfPreviewState && (
+        <div className={styles.pdfRendererOffscreen} ref={pdfRef}>
+          <InvoicePreview
+            state={pdfPreviewState}
+            subtotal={getSubtotal(pdfPreviewState)}
+            discountAmount={getDiscountAmount(pdfPreviewState)}
+            taxAmount={getTaxAmount(pdfPreviewState)}
+            total={getTotal(pdfPreviewState)}
+            balanceDue={getBalanceDue(pdfPreviewState)}
+          />
         </div>
       )}
     </div>

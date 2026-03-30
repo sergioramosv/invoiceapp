@@ -50,7 +50,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 border-r border-border bg-surface">
         {/* Logo */}
         <div className="px-5 py-5 border-b border-border">
-          <Link href="/workspace" className="font-bold text-xl text-primary">
+          <Link href="/workspace" className="font-bold text-xl text-text">
             InvoiceApp
           </Link>
         </div>
@@ -63,7 +63,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive(item.href)
-                  ? 'bg-primary/10 text-primary'
+                  ? 'bg-black/5 text-text'
                   : 'text-text-secondary hover:bg-surface-tertiary hover:text-text'
               }`}
             >
@@ -77,7 +77,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {user && (
           <div className="border-t border-border px-4 py-4">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center text-sm font-bold shrink-0">
+              <div className="w-8 h-8 bg-black/10 text-text rounded-full flex items-center justify-center text-sm font-bold shrink-0">
                 {(user.displayName || user.email || '?')[0].toUpperCase()}
               </div>
               <p className="text-sm text-text-secondary truncate">
@@ -96,12 +96,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile top bar */}
       <div className="lg:hidden border-b border-border bg-surface px-4 py-3 flex items-center justify-between">
-        <Link href="/workspace" className="font-bold text-lg text-primary">
+        <Link href="/workspace" className="font-bold text-lg text-text">
           InvoiceApp
         </Link>
         <div className="flex items-center gap-3">
           {user && (
-            <div className="w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center text-sm font-bold">
+            <div className="w-8 h-8 bg-black/10 text-text rounded-full flex items-center justify-center text-sm font-bold">
               {(user.displayName || user.email || '?')[0].toUpperCase()}
             </div>
           )}
@@ -132,7 +132,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               onClick={() => setMobileMenuOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive(item.href)
-                  ? 'bg-primary/10 text-primary'
+                  ? 'bg-black/5 text-text'
                   : 'text-text-secondary hover:bg-surface-tertiary hover:text-text'
               }`}
             >
