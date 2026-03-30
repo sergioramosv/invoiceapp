@@ -81,26 +81,17 @@ export default function InvoicePreview({
           <div className={`flex justify-between items-start gap-6 ${tmpl === 'minimal' ? 'mb-10' : 'mb-8'}`}>
             {/* Left: From info */}
             <div className="space-y-1 min-w-0 flex-1">
-              {state.logoUrl && (
+              {state.logoUrl ? (
                 <div className="mb-3">
-                  {tmpl === 'creative' ? (
-                    <div className="w-16 h-16 rounded-xl overflow-hidden">
-                      <img src={state.logoUrl} alt="Logo" className="w-full h-full object-contain" />
-                    </div>
-                  ) : (
-                    <div className="w-16 h-16 bg-surface-tertiary rounded-lg flex items-center justify-center text-xs text-text-secondary">
-                      <img src={state.logoUrl} alt="Logo" className="h-12 object-contain" />
-                    </div>
-                  )}
+                  <img src={state.logoUrl} alt="Logo" className="h-14 max-w-[140px] object-contain" />
                 </div>
-              )}
-              {!state.logoUrl && state.logoUrl !== undefined && tmpl !== 'minimal' && (
+              ) : tmpl !== 'minimal' ? (
                 <div className="mb-3">
-                  <div className="w-16 h-16 bg-surface-tertiary rounded-lg flex items-center justify-center text-xs text-text-secondary">
+                  <div className="w-14 h-14 bg-surface-tertiary rounded-lg flex items-center justify-center text-xs text-text-muted">
                     Logo
                   </div>
                 </div>
-              )}
+              ) : null}
               {state.fromName && (
                 <p className={`font-bold ${tmpl === 'creative' ? 'text-xl text-accent' : 'text-lg'}`}>
                   {state.fromName}
