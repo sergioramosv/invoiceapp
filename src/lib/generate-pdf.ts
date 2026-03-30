@@ -1,11 +1,14 @@
-import html2canvas from 'html2canvas'
+import { toPng } from 'html-to-image'
 import { jsPDF } from 'jspdf'
 
 export async function downloadPNG(element: HTMLElement, filename: string): Promise<void> {
-  const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
+  const dataUrl = await toPng(element, {
+    pixelRatio: 2,
+    backgroundColor: '#ffffff',
+  })
   const link = document.createElement('a')
   link.download = `${filename}.png`
-  link.href = canvas.toDataURL('image/png')
+  link.href = dataUrl
   link.click()
 }
 
@@ -14,30 +17,33 @@ export async function generatePDF(
   filename: string,
   addWatermark?: boolean
 ): Promise<void> {
-  const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-    logging: false,
+  const dataUrl = await toPng(element, {
+    pixelRatio: 2,
     backgroundColor: '#ffffff',
   })
 
-  const imgWidth = 210 // A4 width in mm
-  const pageHeight = 297 // A4 height in mm
-  const imgHeight = (canvas.height * imgWidth) / canvas.width
+  const img = new Image()
+  img.src = dataUrl
+  await new Promise<void>((resolve) => {
+    img.onload = () => resolve()
+  })
+
+  const imgWidth = 210 // A4 mm
+  const pageHeight = 297
+  const imgHeight = (img.height * imgWidth) / img.width
 
   const pdf = new jsPDF('p', 'mm', 'a4')
-  const imgData = canvas.toDataURL('image/png')
 
   let heightLeft = imgHeight
   let position = 0
 
-  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+  pdf.addImage(dataUrl, 'PNG', 0, position, imgWidth, imgHeight)
   heightLeft -= pageHeight
 
   while (heightLeft > 0) {
     position = heightLeft - imgHeight
     pdf.addPage()
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+    pdf.addImage(dataUrl, 'PNG', 0, position, imgWidth, imgHeight)
     heightLeft -= pageHeight
   }
 
@@ -49,10 +55,8 @@ export async function generatePDF(
       const gState = new (pdf as unknown as { GState: new (opts: Record<string, number>) => object }).GState({ opacity: 0.12 })
       pdf.setGState(gState)
       pdf.setFontSize(50)
-      pdf.setTextColor(79, 70, 229)
-      const centerX = imgWidth / 2
-      const centerY = pageHeight / 2
-      pdf.text('InvoiceApp — Free', centerX, centerY, {
+      pdf.setTextColor(100, 100, 100)
+      pdf.text('InvoiceApp — Free', imgWidth / 2, pageHeight / 2, {
         align: 'center',
         angle: 45,
       })
