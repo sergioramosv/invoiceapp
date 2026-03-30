@@ -37,7 +37,7 @@ export default function LegalNoticePage() {
             </p>
             <ul className="mt-3 space-y-1.5 list-none">
               <li><strong className="text-text">Titular:</strong> InvoiceApp</li>
-              <li><strong className="text-text">Responsable:</strong> El responsable de InvoiceApp</li>
+              <li><strong className="text-text">Responsable:</strong> Sergio Ramos Vicente</li>
               <li><strong className="text-text">Email de contacto:</strong> sergioramosvicente2004@gmail.com</li>
               <li><strong className="text-text">Sitio web:</strong> https://invoiceapp.es</li>
             </ul>
