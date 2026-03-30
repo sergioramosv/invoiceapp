@@ -42,7 +42,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-surface-secondary flex flex-col lg:flex-row">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 border-r border-border bg-surface">
+      <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:h-screen lg:sticky lg:top-0 border-r border-border bg-surface overflow-y-auto">
         {/* Logo */}
         <div className="px-5 py-5 border-b border-border">
           <Link href="/workspace" className="font-bold text-xl text-text">
