@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getStripe } from '@/lib/stripe'
-import { adminDb } from '@/lib/firebase-admin'
+import { getAdminDb } from '@/lib/firebase-admin'
 import { sendPaymentConfirmation } from '@/lib/emails'
 
 export async function POST(request: Request) {
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
       const customerEmail = session.customer_details?.email
 
       if (customerEmail) {
-        const usersRef = adminDb.collection('users')
+        const usersRef = getAdminDb().collection('users')
         const snapshot = await usersRef
           .where('email', '==', customerEmail)
           .limit(1)
