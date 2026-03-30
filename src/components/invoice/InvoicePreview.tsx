@@ -30,11 +30,11 @@ export default function InvoicePreview({
 
   /* ── Container classes ── */
   const containerClass = [
-    'bg-white shadow-sm text-text',
-    tmpl === 'default' && 'p-8 border border-border rounded-xl',
-    tmpl === 'minimal' && 'p-10 rounded-xl',
-    tmpl === 'corporate' && 'rounded-xl border border-border overflow-hidden',
-    tmpl === 'creative' && 'p-8 rounded-2xl border border-border relative overflow-hidden',
+    'text-text',
+    tmpl === 'default' && 'p-8',
+    tmpl === 'minimal' && 'p-10',
+    tmpl === 'corporate' && 'overflow-hidden',
+    tmpl === 'creative' && 'p-8 relative overflow-hidden',
   ]
     .filter(Boolean)
     .join(' ')
