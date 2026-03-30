@@ -14,6 +14,7 @@ import { downloadPDF, downloadPNG } from '@/lib/generate-pdf'
 import { createInvoice, getTemplate, createTemplate, getNextInvoiceNumber } from '@/lib/firestore'
 import { invoiceStateToFirestore } from '@/lib/invoice-converter'
 import { InvoiceState, createInitialState } from '@/types/invoice'
+import { PromptModal } from '@/components/ui/Modal'
 
 export default function NewInvoicePageWrapper() {
   return (
@@ -88,6 +89,7 @@ function NewInvoiceEditor({
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit')
   const [saving, setSaving] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [showTemplatePrompt, setShowTemplatePrompt] = useState(false)
   const [downloadingPNG, setDownloadingPNG] = useState(false)
   const [isPaid, setIsPaid] = useState(false)
   const previewRef = useRef<HTMLDivElement>(null)
@@ -144,15 +146,9 @@ function NewInvoiceEditor({
     setSaving(true)
     try {
       if (saveAsTemplateMode) {
-        const name = window.prompt('Nombre del template:')
-        if (!name) { setSaving(false); return }
-        await createTemplate({
-          userId: user.uid,
-          name,
-          data: state as unknown as Record<string, unknown>,
-          isDefault: false,
-        })
-        router.push('/workspace/templates')
+        setShowTemplatePrompt(true)
+        setSaving(false)
+        return
       } else {
         let invoiceNumber = state.invoiceNumber
         if (!invoiceNumber) {
@@ -201,10 +197,8 @@ function NewInvoiceEditor({
     }
   }
 
-  async function handleSaveAsTemplate() {
+  async function saveTemplate(name: string) {
     if (!user) return
-    const name = window.prompt('Nombre del template:')
-    if (!name) return
     try {
       await createTemplate({
         userId: user.uid,
@@ -212,7 +206,9 @@ function NewInvoiceEditor({
         data: state as unknown as Record<string, unknown>,
         isDefault: false,
       })
-      alert('Template guardado correctamente')
+      if (saveAsTemplateMode) {
+        router.push('/workspace/templates')
+      }
     } catch (err) {
       console.error('Error saving template:', err)
     }
@@ -286,7 +282,7 @@ function NewInvoiceEditor({
           </div>
 
           <button
-            onClick={handleSaveAsTemplate}
+            onClick={() => setShowTemplatePrompt(true)}
             className="hidden sm:flex px-3 py-2 text-sm border border-border rounded-lg font-medium hover:bg-surface-tertiary transition-colors items-center gap-2 text-text-secondary"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -378,6 +374,15 @@ function NewInvoiceEditor({
           </div>
         </div>
       </div>
+
+      <PromptModal
+        open={showTemplatePrompt}
+        onClose={() => setShowTemplatePrompt(false)}
+        onSubmit={saveTemplate}
+        title="Nombre del template"
+        placeholder="Ej: Mi empresa, Cliente habitual..."
+        submitLabel="Guardar template"
+      />
     </div>
   )
 }

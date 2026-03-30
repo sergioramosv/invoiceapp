@@ -6,12 +6,14 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
 import { getTemplates, deleteTemplate } from '@/lib/firestore'
 import type { Template } from '@/types'
+import { ConfirmModal } from '@/components/ui/Modal'
 
 export default function TemplatesPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [templates, setTemplates] = useState<Template[]>([])
   const [loadingTemplates, setLoadingTemplates] = useState(true)
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
 
   const fetchTemplates = useCallback(async () => {
     if (!user) return
@@ -33,14 +35,15 @@ export default function TemplatesPage() {
     if (user) fetchTemplates()
   }, [user, fetchTemplates])
 
-  async function handleDelete(id: string) {
-    if (!window.confirm('Eliminar este template?')) return
+  async function confirmDelete() {
+    if (!deleteTarget) return
     try {
-      await deleteTemplate(id)
-      setTemplates((prev) => prev.filter((t) => t.id !== id))
+      await deleteTemplate(deleteTarget)
+      setTemplates((prev) => prev.filter((t) => t.id !== deleteTarget))
     } catch (err) {
       console.error('Error deleting template:', err)
     }
+    setDeleteTarget(null)
   }
 
   if (loading) {
@@ -119,7 +122,7 @@ export default function TemplatesPage() {
                   Usar template
                 </Link>
                 <button
-                  onClick={() => handleDelete(template.id)}
+                  onClick={() => setDeleteTarget(template.id)}
                   className="p-2 text-text-secondary hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
                   title="Eliminar"
                 >
@@ -132,6 +135,16 @@ export default function TemplatesPage() {
           ))}
         </div>
       )}
+
+      <ConfirmModal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title="Eliminar template"
+        message="¿Estás seguro? Esta acción no se puede deshacer."
+        confirmLabel="Eliminar"
+        danger
+      />
     </div>
   )
 }

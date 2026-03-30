@@ -18,6 +18,7 @@ import {
 } from '@/types/invoice'
 import type { Invoice, InvoiceStatus, DocumentType } from '@/types'
 import styles from './workspace.module.css'
+import { ConfirmModal } from '@/components/ui/Modal'
 
 const STATUS_CONFIG: Record<InvoiceStatus, { label: string; className: string }> = {
   draft: { label: 'Borrador', className: 'bg-text/10 text-text-secondary' },
@@ -52,6 +53,8 @@ export default function WorkspacePage() {
   const pdfRef = useRef<HTMLDivElement>(null)
   const [templates, setTemplates] = useState<Template[]>([])
   const [showNewMenu, setShowNewMenu] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
+  const [convertTarget, setConvertTarget] = useState<Invoice | null>(null)
 
   const fetchInvoices = useCallback(async () => {
     if (!user) return
@@ -97,14 +100,15 @@ export default function WorkspacePage() {
     return () => clearTimeout(timer)
   }, [pdfInvoice])
 
-  async function handleDelete(id: string) {
-    if (!window.confirm('Estas seguro de que quieres eliminar esta factura?')) return
+  async function confirmDelete() {
+    if (!deleteTarget) return
     try {
-      await deleteInvoice(id)
-      setInvoices((prev) => prev.filter((inv) => inv.id !== id))
+      await deleteInvoice(deleteTarget)
+      setInvoices((prev) => prev.filter((inv) => inv.id !== deleteTarget))
     } catch (err) {
       console.error('Error deleting invoice:', err)
     }
+    setDeleteTarget(null)
   }
 
   async function handleDuplicate(invoice: Invoice) {
@@ -120,14 +124,15 @@ export default function WorkspacePage() {
     setPdfInvoice(invoice)
   }
 
-  async function handleConvertToInvoice(quote: Invoice) {
-    if (!window.confirm('Crear una factura a partir de este presupuesto?')) return
+  async function confirmConvert() {
+    if (!convertTarget) return
     try {
-      await convertQuoteToInvoice(quote)
+      await convertQuoteToInvoice(convertTarget)
       await fetchInvoices()
     } catch (err) {
       console.error('Error converting quote to invoice:', err)
     }
+    setConvertTarget(null)
   }
 
   if (loading || (!user && loading)) {
@@ -366,7 +371,7 @@ export default function WorkspacePage() {
                           {/* Convert quote to invoice */}
                           {isQuote && (
                             <button
-                              onClick={() => handleConvertToInvoice(invoice)}
+                              onClick={() => setConvertTarget(invoice)}
                               className="p-1.5 text-text-secondary hover:text-success hover:bg-success/10 rounded-lg transition-colors"
                               title="Convertir en factura"
                             >
@@ -397,7 +402,7 @@ export default function WorkspacePage() {
                           </button>
                           {/* Delete */}
                           <button
-                            onClick={() => handleDelete(invoice.id)}
+                            onClick={() => setDeleteTarget(invoice.id)}
                             className="p-1.5 text-text-secondary hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
                             title="Eliminar"
                           >
@@ -429,6 +434,25 @@ export default function WorkspacePage() {
           />
         </div>
       )}
+
+      <ConfirmModal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title="Eliminar documento"
+        message="¿Estás seguro? Esta acción no se puede deshacer."
+        confirmLabel="Eliminar"
+        danger
+      />
+
+      <ConfirmModal
+        open={!!convertTarget}
+        onClose={() => setConvertTarget(null)}
+        onConfirm={confirmConvert}
+        title="Convertir en factura"
+        message="Se creará una nueva factura a partir de este presupuesto."
+        confirmLabel="Crear factura"
+      />
     </div>
   )
 }
