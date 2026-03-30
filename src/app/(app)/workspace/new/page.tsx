@@ -9,6 +9,7 @@ import { useAuth } from '@/lib/auth-context'
 import { getFirebaseDb } from '@/lib/firebase'
 import InvoiceForm from '@/components/invoice/InvoiceForm'
 import InvoicePreview from '@/components/invoice/InvoicePreview'
+import A4Page from '@/components/invoice/A4Page'
 import { downloadPDF, downloadPNG } from '@/lib/generate-pdf'
 import { createInvoice, getTemplate, createTemplate, getNextInvoiceNumber } from '@/lib/firestore'
 import { invoiceStateToFirestore } from '@/lib/invoice-converter'
@@ -349,15 +350,17 @@ function NewInvoiceEditor({
             activeTab === 'preview' ? 'block' : 'hidden lg:block'
           }`}
         >
-          <div className="lg:sticky lg:top-0" ref={previewRef}>
-            <InvoicePreview
-              state={state}
-              subtotal={subtotal}
-              discountAmount={discountAmount}
-              taxAmount={taxAmount}
-              total={total}
-              balanceDue={balanceDue}
-            />
+          <div className="lg:sticky lg:top-0">
+            <A4Page ref={previewRef}>
+              <InvoicePreview
+                state={state}
+                subtotal={subtotal}
+                discountAmount={discountAmount}
+                taxAmount={taxAmount}
+                total={total}
+                balanceDue={balanceDue}
+              />
+            </A4Page>
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { useInvoice } from '@/hooks/useInvoice'
 import { useAuth } from '@/lib/auth-context'
 import InvoiceForm from '@/components/invoice/InvoiceForm'
 import InvoicePreview from '@/components/invoice/InvoicePreview'
+import A4Page from '@/components/invoice/A4Page'
 import { downloadPDF } from '@/lib/generate-pdf'
 import { getInvoice, updateInvoice } from '@/lib/firestore'
 import { invoiceStateToFirestore, firestoreToInvoiceState } from '@/lib/invoice-converter'
@@ -224,15 +225,17 @@ function EditInvoiceEditor({
             activeTab === 'preview' ? 'block' : 'hidden lg:block'
           }`}
         >
-          <div className="lg:sticky lg:top-0" ref={previewRef}>
-            <InvoicePreview
-              state={state}
-              subtotal={subtotal}
-              discountAmount={discountAmount}
-              taxAmount={taxAmount}
-              total={total}
-              balanceDue={balanceDue}
-            />
+          <div className="lg:sticky lg:top-0">
+            <A4Page ref={previewRef}>
+              <InvoicePreview
+                state={state}
+                subtotal={subtotal}
+                discountAmount={discountAmount}
+                taxAmount={taxAmount}
+                total={total}
+                balanceDue={balanceDue}
+              />
+            </A4Page>
           </div>
         </div>
       </div>
