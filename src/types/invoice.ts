@@ -118,7 +118,15 @@ export const LANGUAGES = [
 
 export type Language = (typeof LANGUAGES)[number]
 
+export type DocumentType = 'invoice' | 'quote'
+
+export const DOCUMENT_TYPES: { value: DocumentType; labels: Record<string, string> }[] = [
+  { value: 'invoice', labels: { es: 'Factura', en: 'Invoice', de: 'Rechnung' } },
+  { value: 'quote', labels: { es: 'Presupuesto', en: 'Quote', de: 'Angebot' } },
+]
+
 export interface InvoiceState {
+  documentType: DocumentType
   title: string
   currency: Currency
   language: Language
@@ -164,6 +172,7 @@ function getTodayISO(): string {
 
 export function createInitialState(): InvoiceState {
   return {
+    documentType: 'invoice',
     title: 'Factura',
     currency: CURRENCIES[0],
     language: LANGUAGES[0],

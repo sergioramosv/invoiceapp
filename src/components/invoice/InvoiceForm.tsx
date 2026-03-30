@@ -5,8 +5,10 @@ import {
   InvoiceState,
   CURRENCIES,
   LANGUAGES,
+  DOCUMENT_TYPES,
   Currency,
   Language,
+  DocumentType,
 } from '@/types/invoice'
 
 type InvoiceAction =
@@ -52,8 +54,29 @@ export default function InvoiceForm({
 
   return (
     <div className="space-y-6">
-      {/* Header row: Title, Currency, Language */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* Header row: Doc Type, Title, Currency, Language */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-text-secondary mb-1">
+            Tipo
+          </label>
+          <select
+            value={state.documentType}
+            onChange={(e) => {
+              const dt = e.target.value as DocumentType
+              const label = DOCUMENT_TYPES.find((d) => d.value === dt)?.labels[state.language.code] || dt
+              dispatch({ type: 'SET_FIELD', field: 'documentType', value: dt })
+              dispatch({ type: 'SET_FIELD', field: 'title', value: label })
+            }}
+            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface"
+          >
+            {DOCUMENT_TYPES.map((d) => (
+              <option key={d.value} value={d.value}>
+                {d.labels[state.language.code]}
+              </option>
+            ))}
+          </select>
+        </div>
         <div>
           <label className="block text-sm font-medium text-text-secondary mb-1">
             Título
@@ -115,22 +138,51 @@ export default function InvoiceForm({
             <label className="block text-sm font-medium text-text-secondary mb-1">
               Logo
             </label>
-            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center text-text-secondary text-sm cursor-pointer hover:border-primary/40 transition-colors">
+            <div
+              className="border-2 border-dashed border-border rounded-lg p-6 text-center text-text-secondary text-sm cursor-pointer hover:border-primary/40 transition-colors relative"
+              onDragOver={(e) => { e.preventDefault(); e.stopPropagation() }}
+              onDrop={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                const file = e.dataTransfer.files?.[0]
+                if (file && file.size <= 2 * 1024 * 1024 && /\.(png|jpe?g|svg|webp)$/i.test(file.name)) {
+                  const reader = new FileReader()
+                  reader.onload = () => dispatch({ type: 'SET_FIELD', field: 'logoUrl', value: reader.result as string })
+                  reader.readAsDataURL(file)
+                }
+              }}
+              onClick={() => document.getElementById('logo-input')?.click()}
+            >
+              <input
+                id="logo-input"
+                type="file"
+                accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file && file.size <= 2 * 1024 * 1024) {
+                    const reader = new FileReader()
+                    reader.onload = () => dispatch({ type: 'SET_FIELD', field: 'logoUrl', value: reader.result as string })
+                    reader.readAsDataURL(file)
+                  }
+                }}
+              />
               {state.logoUrl ? (
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-success">Logo cargado</span>
+                <div className="flex items-center justify-center gap-3">
+                  <img src={state.logoUrl} alt="Logo" className="h-12 object-contain" />
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation()
                       dispatch({ type: 'SET_FIELD', field: 'logoUrl', value: '' })
-                    }
+                    }}
                     className="text-danger text-xs underline"
                   >
                     Eliminar
                   </button>
                 </div>
               ) : (
-                <span>Arrastra tu logo aquí o haz clic para subir</span>
+                <span>Arrastra tu logo aquí o haz clic para subir (PNG, JPG, SVG — máx 2MB)</span>
               )}
             </div>
           </div>
