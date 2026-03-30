@@ -7,19 +7,19 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   text-decoration: none;
   margin-bottom: 1.5rem;
   transition: color 0.15s;
 }
 
 .backLink:hover {
-  color: var(--text);
+  color: var(--color-text);
 }
 
 .clientCard {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -36,7 +36,7 @@
   flex-wrap: wrap;
   gap: 1.5rem;
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .clientInfoItem {
@@ -53,15 +53,15 @@
 }
 
 .statCard {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   padding: 1rem 1.25rem;
 }
 
 .statCard p {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   font-weight: 600;
   margin-bottom: 0.25rem;
@@ -83,14 +83,14 @@
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--text-secondary);
-  border-bottom: 1px solid var(--border);
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .table td {
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .table tr:hover td {
@@ -98,7 +98,7 @@
 }
 
 .invoiceLink {
-  color: var(--primary);
+  color: var(--color-primary);
   text-decoration: none;
   font-weight: 500;
 }
@@ -118,5 +118,5 @@
 .empty {
   text-align: center;
   padding: 3rem 1rem;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
