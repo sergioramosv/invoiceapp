@@ -14,8 +14,12 @@ import { downloadPDF, downloadPNG } from '@/lib/generate-pdf'
 import { createInvoice, getTemplate, createTemplate, getNextInvoiceNumber } from '@/lib/firestore'
 import { invoiceStateToFirestore } from '@/lib/invoice-converter'
 import { InvoiceState, createInitialState } from '@/types/invoice'
-import { PromptModal } from '@/components/ui/Modal'
+import { PromptModal, Modal } from '@/components/ui/Modal'
+import { SendEmailModal } from '@/components/ui/SendEmailModal'
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useI18n } from '@/lib/i18n'
+import { toPng } from 'html-to-image'
+import { jsPDF } from 'jspdf'
 
 export default function NewInvoicePageWrapper() {
   return (
@@ -94,6 +98,8 @@ function NewInvoiceEditor({
   const [showTemplatePrompt, setShowTemplatePrompt] = useState(false)
   const [downloadingPNG, setDownloadingPNG] = useState(false)
   const [isPaid, setIsPaid] = useState(false)
+  const [showEmailModal, setShowEmailModal] = useState(false)
+  const [showShortcutsHelp, setShowShortcutsHelp] = useState(false)
   const previewRef = useRef<HTMLDivElement>(null)
 
   // Auto-set invoice number on mount
@@ -101,12 +107,8 @@ function NewInvoiceEditor({
     async function autoSetNumber() {
       if (!user || state.invoiceNumber) return
       try {
-        const nextNum = await getNextInvoiceNumber(user.uid)
-        // If document type is quote, replace the prefix with PRES-
-        const number = state.documentType === 'quote'
-          ? nextNum.replace(/^[A-Z]+-/, 'PRES-')
-          : nextNum
-        dispatch({ type: 'SET_FIELD', field: 'invoiceNumber', value: number })
+        const nextNum = await getNextInvoiceNumber(user.uid, state.documentType || 'invoice')
+        dispatch({ type: 'SET_FIELD', field: 'invoiceNumber', value: nextNum })
       } catch (err) {
         console.error('Error getting next invoice number:', err)
       }
@@ -115,15 +117,18 @@ function NewInvoiceEditor({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
-  // Update invoice number prefix when document type changes
+  // Update invoice number when document type changes
   useEffect(() => {
-    if (!state.invoiceNumber) return
-    const currentNum = state.invoiceNumber.replace(/^[A-Z]+-/, '')
-    if (state.documentType === 'quote') {
-      dispatch({ type: 'SET_FIELD', field: 'invoiceNumber', value: `PRES-${currentNum}` })
-    } else {
-      dispatch({ type: 'SET_FIELD', field: 'invoiceNumber', value: `INV-${currentNum}` })
+    if (!user) return
+    async function updateNumber() {
+      try {
+        const nextNum = await getNextInvoiceNumber(user!.uid, state.documentType || 'invoice')
+        dispatch({ type: 'SET_FIELD', field: 'invoiceNumber', value: nextNum })
+      } catch (err) {
+        console.error('Error getting next invoice number:', err)
+      }
     }
+    updateNumber()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.documentType])
 
@@ -198,6 +203,58 @@ function NewInvoiceEditor({
       setDownloadingPNG(false)
     }
   }
+
+  async function generatePDFBase64(): Promise<string | null> {
+    if (!previewRef.current) return null
+    const dataUrl = await toPng(previewRef.current, {
+      pixelRatio: 2,
+      backgroundColor: '#ffffff',
+    })
+    const img = new Image()
+    img.src = dataUrl
+    await new Promise<void>((resolve) => { img.onload = () => resolve() })
+
+    const imgWidth = 210
+    const pageHeight = 297
+    const imgHeight = (img.height * imgWidth) / img.width
+
+    const pdf = new jsPDF('p', 'mm', 'a4')
+    let heightLeft = imgHeight
+    let position = 0
+    pdf.addImage(dataUrl, 'PNG', 0, position, imgWidth, imgHeight)
+    heightLeft -= pageHeight
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight
+      pdf.addPage()
+      pdf.addImage(dataUrl, 'PNG', 0, position, imgWidth, imgHeight)
+      heightLeft -= pageHeight
+    }
+    return pdf.output('datauristring').split(',')[1]
+  }
+
+  async function handleSendEmail(data: { recipientEmail: string; subject: string; message: string }) {
+    const pdfBase64 = await generatePDFBase64()
+    if (!pdfBase64) throw new Error('Failed to generate PDF')
+    const filename = state.invoiceNumber ? `factura-${state.invoiceNumber}.pdf` : 'factura.pdf'
+    const res = await fetch('/api/invoices/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        recipientEmail: data.recipientEmail,
+        subject: data.subject,
+        message: data.message,
+        pdfBase64,
+        filename,
+      }),
+    })
+    if (!res.ok) throw new Error('Failed to send')
+  }
+
+  useKeyboardShortcuts([
+    { key: 's', ctrl: true, handler: () => handleSave() },
+    { key: 'p', ctrl: true, handler: () => handleDownloadPDF() },
+    { key: 'p', ctrl: true, shift: true, handler: () => handleDownloadPNG() },
+  ])
 
   async function saveTemplate(name: string) {
     if (!user) return
@@ -313,6 +370,16 @@ function NewInvoiceEditor({
           </button>
 
           <button
+            onClick={() => setShowEmailModal(true)}
+            className="hidden sm:flex px-3 py-2 text-sm border border-border rounded-lg font-medium hover:bg-surface-tertiary transition-colors items-center gap-2 text-text-secondary"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+            {t('email.send')}
+          </button>
+
+          <button
             onClick={handleDownloadPDF}
             disabled={downloading}
             className="px-4 py-2 text-sm bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors flex items-center gap-2 disabled:opacity-50"
@@ -333,6 +400,16 @@ function NewInvoiceEditor({
             <span className="hidden sm:inline">
               {downloading ? t('editor.generating') : t('editor.downloadPDF')}
             </span>
+          </button>
+
+          <button
+            onClick={() => setShowShortcutsHelp(true)}
+            className="p-2 text-sm border border-border rounded-lg font-medium hover:bg-surface-tertiary transition-colors text-text-secondary"
+            title={t('shortcuts.help')}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+            </svg>
           </button>
         </div>
       </div>
@@ -385,6 +462,42 @@ function NewInvoiceEditor({
         placeholder={t('modal.templatePlaceholder')}
         submitLabel={t('modal.saveTemplate')}
       />
+
+      <SendEmailModal
+        open={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+        onSend={handleSendEmail}
+        defaultEmail={state.billToEmail}
+        defaultSubject={`${t('email.subjectDefault')} ${state.invoiceNumber || ''}`}
+      />
+
+      <Modal open={showShortcutsHelp} onClose={() => setShowShortcutsHelp(false)}>
+        <div className="p-6 space-y-4">
+          <h3 className="text-lg font-semibold">{t('shortcuts.title')}</h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center justify-between py-1.5 border-b border-border">
+              <span className="text-text-secondary">{t('shortcuts.save')}</span>
+              <kbd className="px-2 py-1 bg-surface-tertiary border border-border rounded text-xs font-mono">Ctrl+S</kbd>
+            </div>
+            <div className="flex items-center justify-between py-1.5 border-b border-border">
+              <span className="text-text-secondary">{t('shortcuts.pdf')}</span>
+              <kbd className="px-2 py-1 bg-surface-tertiary border border-border rounded text-xs font-mono">Ctrl+P</kbd>
+            </div>
+            <div className="flex items-center justify-between py-1.5">
+              <span className="text-text-secondary">{t('shortcuts.png')}</span>
+              <kbd className="px-2 py-1 bg-surface-tertiary border border-border rounded text-xs font-mono">Ctrl+Shift+P</kbd>
+            </div>
+          </div>
+          <div className="flex justify-end pt-2">
+            <button
+              onClick={() => setShowShortcutsHelp(false)}
+              className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-surface-tertiary transition-colors"
+            >
+              {t('modal.cancel')}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

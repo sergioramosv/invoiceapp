@@ -4,6 +4,8 @@ const en: Record<string, string> = {
   'nav.templates': 'Templates',
   'nav.logout': 'Log out',
   'nav.logoutShort': 'Log out',
+  'nav.clients': 'Clients',
+  'nav.settings': 'Settings',
   'nav.darkMode': 'Dark mode',
   'nav.lightMode': 'Light mode',
 
@@ -270,6 +272,61 @@ const en: Record<string, string> = {
   'landing.sp3': 'Startups',
   'landing.sp4': 'Consultants',
   'landing.sp5': 'Law Firms',
+
+  // Settings
+  'settings.title': 'Settings',
+  'settings.apiKey': 'API Key',
+  'settings.generateKey': 'Generate API key',
+  'settings.regenerateKey': 'Regenerate key',
+  'settings.copyKey': 'Copy',
+  'settings.keyCopied': 'Copied!',
+  'settings.apiDocs': 'Use your API key to access your invoices and clients from any application.',
+  'settings.numbering': 'Invoice numbering',
+  'settings.numberingDesc': 'Configure the automatic numbering format for your documents.',
+  'settings.prefix': 'Invoice prefix',
+  'settings.quotePrefix': 'Quote prefix',
+  'settings.includeYear': 'Include year',
+  'settings.separator': 'Separator',
+  'settings.resetYearly': 'Reset numbering yearly',
+  'settings.nextNumber': 'Next number',
+
+  // Offline
+  'offline.ready': 'App ready for offline use',
+  'offline.cached': 'Resources cached',
+
+  // Clients
+  'nav.clients': 'Clients',
+  'clients.title': 'Clients',
+  'clients.subtitle': 'Manage your recurring clients',
+  'clients.new': 'New client',
+  'clients.edit': 'Edit client',
+  'clients.empty': 'You have no saved clients',
+  'clients.save': 'Save client',
+  'clients.search': 'Search by name, email, tax ID...',
+  'clients.history': 'Client history',
+  'clients.totalInvoiced': 'Total invoiced',
+  'clients.selectClient': 'Select saved client',
+  'clients.saveClient': 'Save client',
+  'clients.newClient': 'New client',
+
+  // Email
+  'email.send': 'Send by email',
+  'email.sending': 'Sending...',
+  'email.sent': 'Sent',
+  'email.subject': 'Subject',
+  'email.message': 'Message',
+  'email.recipient': 'Recipient',
+  'email.subjectDefault': 'Invoice',
+  'email.messageDefault': 'Please find your invoice attached. Thank you for your trust.',
+  'email.success': 'Email sent successfully',
+  'email.error': 'Error sending email',
+
+  // Keyboard shortcuts
+  'shortcuts.title': 'Keyboard shortcuts',
+  'shortcuts.save': 'Save document',
+  'shortcuts.pdf': 'Download PDF',
+  'shortcuts.png': 'Download PNG',
+  'shortcuts.help': 'Keyboard shortcuts',
 
   // Footer
   'footer.copyright': '© 2026 InvoiceApp',

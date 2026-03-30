@@ -4,6 +4,8 @@ const es: Record<string, string> = {
   'nav.templates': 'Templates',
   'nav.logout': 'Cerrar sesión',
   'nav.logoutShort': 'Salir',
+  'nav.clients': 'Clientes',
+  'nav.settings': 'Ajustes',
   'nav.darkMode': 'Modo oscuro',
   'nav.lightMode': 'Modo claro',
 
@@ -270,6 +272,61 @@ const es: Record<string, string> = {
   'landing.sp3': 'Startups',
   'landing.sp4': 'Consultoras',
   'landing.sp5': 'Despachos',
+
+  // Settings
+  'settings.title': 'Ajustes',
+  'settings.apiKey': 'Clave API',
+  'settings.generateKey': 'Generar clave API',
+  'settings.regenerateKey': 'Regenerar clave',
+  'settings.copyKey': 'Copiar',
+  'settings.keyCopied': '¡Copiada!',
+  'settings.apiDocs': 'Usa tu clave API para acceder a tus facturas y clientes desde cualquier aplicación.',
+  'settings.numbering': 'Numeración de facturas',
+  'settings.numberingDesc': 'Configura el formato de numeración automática para tus documentos.',
+  'settings.prefix': 'Prefijo factura',
+  'settings.quotePrefix': 'Prefijo presupuesto',
+  'settings.includeYear': 'Incluir año',
+  'settings.separator': 'Separador',
+  'settings.resetYearly': 'Reiniciar numeración cada año',
+  'settings.nextNumber': 'Próximo número',
+
+  // Offline
+  'offline.ready': 'App lista para uso offline',
+  'offline.cached': 'Recursos almacenados en caché',
+
+  // Clients
+  'nav.clients': 'Clientes',
+  'clients.title': 'Clientes',
+  'clients.subtitle': 'Gestiona tus clientes recurrentes',
+  'clients.new': 'Nuevo cliente',
+  'clients.edit': 'Editar cliente',
+  'clients.empty': 'No tienes clientes guardados',
+  'clients.save': 'Guardar cliente',
+  'clients.search': 'Buscar por nombre, email, NIF...',
+  'clients.history': 'Historial del cliente',
+  'clients.totalInvoiced': 'Total facturado',
+  'clients.selectClient': 'Seleccionar cliente guardado',
+  'clients.saveClient': 'Guardar cliente',
+  'clients.newClient': 'Nuevo cliente',
+
+  // Email
+  'email.send': 'Enviar por email',
+  'email.sending': 'Enviando...',
+  'email.sent': 'Enviada',
+  'email.subject': 'Asunto',
+  'email.message': 'Mensaje',
+  'email.recipient': 'Destinatario',
+  'email.subjectDefault': 'Factura',
+  'email.messageDefault': 'Adjuntamos su factura. Gracias por su confianza.',
+  'email.success': 'Email enviado correctamente',
+  'email.error': 'Error al enviar el email',
+
+  // Keyboard shortcuts
+  'shortcuts.title': 'Atajos de teclado',
+  'shortcuts.save': 'Guardar documento',
+  'shortcuts.pdf': 'Descargar PDF',
+  'shortcuts.png': 'Descargar PNG',
+  'shortcuts.help': 'Atajos de teclado',
 
   // Footer
   'footer.copyright': '© 2026 InvoiceApp',

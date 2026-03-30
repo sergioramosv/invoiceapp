@@ -101,3 +101,15 @@ export interface Template {
   createdAt: string
   updatedAt: string
 }
+
+export interface Client {
+  id: string
+  userId: string
+  name: string
+  email?: string
+  address?: string
+  phone?: string
+  taxId?: string
+  createdAt: string
+  updatedAt: string
+}

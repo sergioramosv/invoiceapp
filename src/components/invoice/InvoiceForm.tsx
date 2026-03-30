@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch } from 'react'
+import { Dispatch, useState, useEffect, useCallback } from 'react'
 import {
   InvoiceState,
   CURRENCIES,
@@ -13,6 +13,9 @@ import {
 import { TEMPLATE_STYLES, TemplateStyle } from '@/lib/invoice-templates'
 import SignaturePad from './SignaturePad'
 import { useI18n } from '@/lib/i18n'
+import { useAuth } from '@/lib/auth-context'
+import { getClients, createClient } from '@/lib/firestore'
+import type { Client } from '@/types'
 
 type InvoiceAction =
   | { type: 'SET_FIELD'; field: keyof InvoiceState; value: unknown }
@@ -53,8 +56,57 @@ export default function InvoiceForm({
   balanceDue,
 }: InvoiceFormProps) {
   const { t } = useI18n()
+  const { user } = useAuth()
   const labels = state.language.labels
   const sym = state.currency.symbol
+
+  const [clients, setClients] = useState<Client[]>([])
+  const [savingClient, setSavingClient] = useState(false)
+
+  const loadClients = useCallback(async () => {
+    if (!user) return
+    try {
+      const data = await getClients(user.uid)
+      setClients(data)
+    } catch {
+      // silent
+    }
+  }, [user])
+
+  useEffect(() => {
+    loadClients()
+  }, [loadClients])
+
+  function handleSelectClient(clientId: string) {
+    if (!clientId) return
+    const client = clients.find((c) => c.id === clientId)
+    if (!client) return
+    dispatch({ type: 'SET_FIELD', field: 'billToName', value: client.name })
+    dispatch({ type: 'SET_FIELD', field: 'billToEmail', value: client.email || '' })
+    dispatch({ type: 'SET_FIELD', field: 'billToAddress', value: client.address || '' })
+    dispatch({ type: 'SET_FIELD', field: 'billToPhone', value: client.phone || '' })
+    dispatch({ type: 'SET_FIELD', field: 'billToTaxId', value: client.taxId || '' })
+  }
+
+  async function handleSaveAsClient() {
+    if (!user || !state.billToName) return
+    setSavingClient(true)
+    try {
+      await createClient({
+        userId: user.uid,
+        name: state.billToName,
+        email: state.billToEmail || undefined,
+        address: state.billToAddress || undefined,
+        phone: state.billToPhone || undefined,
+        taxId: state.billToTaxId || undefined,
+      })
+      await loadClients()
+    } catch (err) {
+      console.error('Error saving client:', err)
+    } finally {
+      setSavingClient(false)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -344,7 +396,43 @@ export default function InvoiceForm({
 
       {/* Bill To section */}
       <div className="border-t border-border pt-6 mt-6">
-        <h3 className="text-lg font-semibold mb-4">{labels.billTo}</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">{labels.billTo}</h3>
+          {state.billToName && (
+            <button
+              type="button"
+              onClick={handleSaveAsClient}
+              disabled={savingClient}
+              className="text-sm text-primary font-medium hover:text-primary-dark transition-colors disabled:opacity-50"
+            >
+              {savingClient ? t('editor.saving') : t('clients.saveClient')}
+            </button>
+          )}
+        </div>
+
+        {/* Client selector */}
+        {clients.length > 0 && (
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              {t('clients.selectClient')}
+            </label>
+            <select
+              onChange={(e) => handleSelectClient(e.target.value)}
+              defaultValue=""
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface"
+            >
+              <option value="">—</option>
+              {clients.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}{c.taxId ? ` (${c.taxId})` : ''}
+                </option>
+              ))}
+              <option value="" disabled>───────────</option>
+              <option value="">{t('clients.newClient')}</option>
+            </select>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">

@@ -3,6 +3,7 @@ import { AuthProvider } from '@/lib/auth-context'
 import { ThemeProvider } from '@/lib/theme-context'
 import { I18nProvider } from '@/lib/i18n'
 import { Analytics } from '@/components/Analytics'
+import { ServiceWorkerRegistrar } from '@/components/ServiceWorkerRegistrar'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </AuthProvider>
         </ThemeProvider>
         <Analytics />
+        <ServiceWorkerRegistrar />
       </body>
     </html>
   )

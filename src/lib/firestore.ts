@@ -13,7 +13,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore'
 import { getFirebaseDb } from './firebase'
-import type { Invoice, CompanyProfile, Template } from '@/types'
+import type { Invoice, CompanyProfile, Template, Client } from '@/types'
 
 // ── Invoices ──
 
@@ -47,24 +47,82 @@ export async function deleteInvoice(id: string) {
   await deleteDoc(doc(getFirebaseDb(), 'invoices', id))
 }
 
-export async function getNextInvoiceNumber(userId: string): Promise<string> {
+export interface NumberingConfig {
+  invoicePrefix: string
+  quotePrefix: string
+  includeYear: boolean
+  separator: string
+  resetYearly: boolean
+}
+
+const DEFAULT_NUMBERING: NumberingConfig = {
+  invoicePrefix: 'FAC',
+  quotePrefix: 'PRES',
+  includeYear: true,
+  separator: '-',
+  resetYearly: true,
+}
+
+async function getUserNumberingConfig(userId: string): Promise<NumberingConfig> {
+  try {
+    const userDoc = await getDoc(doc(getFirebaseDb(), 'users', userId))
+    if (userDoc.exists() && userDoc.data().numberingConfig) {
+      return { ...DEFAULT_NUMBERING, ...userDoc.data().numberingConfig }
+    }
+  } catch {
+    // fallback to defaults
+  }
+  return DEFAULT_NUMBERING
+}
+
+export async function getNextInvoiceNumber(userId: string, docType?: 'invoice' | 'quote'): Promise<string> {
+  const config = await getUserNumberingConfig(userId)
+  const prefix = docType === 'quote' ? config.quotePrefix : config.invoicePrefix
+  const sep = config.separator
+  const currentYear = new Date().getFullYear()
+
+  // Query latest invoices to find the last number with this prefix
   const q = query(
     collection(getFirebaseDb(), 'invoices'),
     where('userId', '==', userId),
     orderBy('createdAt', 'desc'),
-    limit(1)
+    limit(50)
   )
   const snap = await getDocs(q)
-  if (snap.empty) return 'INV-001'
 
-  const lastInvoice = snap.docs[0].data() as Invoice
-  const lastNumber = lastInvoice.invoiceNumber || 'INV-000'
-  const match = lastNumber.match(/(\d+)$/)
-  if (!match) return 'INV-001'
+  let nextNum = 1
 
-  const next = parseInt(match[1], 10) + 1
-  const prefix = lastNumber.replace(/\d+$/, '')
-  return `${prefix}${next.toString().padStart(3, '0')}`
+  if (!snap.empty) {
+    for (const d of snap.docs) {
+      const inv = d.data() as Invoice
+      const num = inv.invoiceNumber || ''
+      if (!num.startsWith(prefix)) continue
+
+      const match = num.match(/(\d+)$/)
+      if (!match) continue
+
+      const lastNum = parseInt(match[1], 10)
+
+      // If resetYearly, check if the invoice is from the current year
+      if (config.resetYearly && config.includeYear) {
+        const yearStr = String(currentYear)
+        if (!num.includes(yearStr)) {
+          // Last invoice is from a previous year, reset to 1
+          nextNum = 1
+          break
+        }
+      }
+
+      nextNum = lastNum + 1
+      break
+    }
+  }
+
+  const parts = [prefix]
+  if (config.includeYear) parts.push(String(currentYear))
+  parts.push(nextNum.toString().padStart(3, '0'))
+
+  return parts.join(sep)
 }
 
 export async function convertQuoteToInvoice(quote: Invoice): Promise<string> {
@@ -128,4 +186,36 @@ export async function createTemplate(data: Omit<Template, 'id' | 'createdAt' | '
 
 export async function deleteTemplate(id: string) {
   await deleteDoc(doc(getFirebaseDb(), 'templates', id))
+}
+
+// ── Clients ──
+
+export async function getClients(userId: string) {
+  const q = query(
+    collection(getFirebaseDb(), 'clients'),
+    where('userId', '==', userId),
+    orderBy('name', 'asc')
+  )
+  const snap = await getDocs(q)
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Client)
+}
+
+export async function getClient(id: string) {
+  const snap = await getDoc(doc(getFirebaseDb(), 'clients', id))
+  if (!snap.exists()) return null
+  return { id: snap.id, ...snap.data() } as Client
+}
+
+export async function createClient(data: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>) {
+  const ref = doc(collection(getFirebaseDb(), 'clients'))
+  await setDoc(ref, { ...data, createdAt: serverTimestamp(), updatedAt: serverTimestamp() })
+  return ref.id
+}
+
+export async function updateClient(id: string, data: Partial<Client>) {
+  await updateDoc(doc(getFirebaseDb(), 'clients', id), { ...data, updatedAt: serverTimestamp() })
+}
+
+export async function deleteClient(id: string) {
+  await deleteDoc(doc(getFirebaseDb(), 'clients', id))
 }
