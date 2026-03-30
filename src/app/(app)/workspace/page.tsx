@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { getInvoices, deleteInvoice, duplicateInvoice, convertQuoteToInvoice, updateInvoice } from '@/lib/firestore'
+import { getInvoices, getTemplates, deleteInvoice, duplicateInvoice, convertQuoteToInvoice, updateInvoice } from '@/lib/firestore'
+import type { Template } from '@/types'
 import { firestoreToInvoiceState } from '@/lib/invoice-converter'
 import { generatePDF } from '@/lib/generate-pdf'
 import InvoicePreview from '@/components/invoice/InvoicePreview'
@@ -49,6 +50,8 @@ export default function WorkspacePage() {
   const [filterTab, setFilterTab] = useState<FilterTab>('all')
   const [pdfInvoice, setPdfInvoice] = useState<Invoice | null>(null)
   const pdfRef = useRef<HTMLDivElement>(null)
+  const [templates, setTemplates] = useState<Template[]>([])
+  const [showNewMenu, setShowNewMenu] = useState(false)
 
   const fetchInvoices = useCallback(async () => {
     if (!user) return
@@ -67,7 +70,10 @@ export default function WorkspacePage() {
   }, [user, loading, router])
 
   useEffect(() => {
-    if (user) fetchInvoices()
+    if (user) {
+      fetchInvoices()
+      getTemplates(user.uid).then(setTemplates).catch(() => {})
+    }
   }, [user, fetchInvoices])
 
   // When pdfInvoice is set, wait for render then generate PDF
@@ -168,12 +174,48 @@ export default function WorkspacePage() {
             {invoices.length} documento{invoices.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <Link
-          href="/workspace/new"
-          className="px-6 py-2 text-sm bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors"
-        >
-          + Nuevo documento
-        </Link>
+        <div className="relative">
+          <button
+            onClick={() => setShowNewMenu(!showNewMenu)}
+            className="px-6 py-2 text-sm bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors flex items-center gap-2"
+          >
+            + Nuevo documento
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {showNewMenu && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowNewMenu(false)} />
+              <div className="absolute right-0 mt-2 w-64 bg-surface border border-border rounded-xl shadow-lg z-20 py-2">
+                <Link
+                  href="/workspace/new"
+                  onClick={() => setShowNewMenu(false)}
+                  className="block px-4 py-2.5 text-sm hover:bg-surface-tertiary transition-colors"
+                >
+                  <span className="font-medium">Desde cero</span>
+                  <span className="block text-text-muted text-xs mt-0.5">Documento en blanco</span>
+                </Link>
+                {templates.length > 0 && (
+                  <>
+                    <div className="border-t border-border my-1" />
+                    <p className="px-4 py-1.5 text-xs text-text-muted font-medium">Desde template</p>
+                    {templates.map((t) => (
+                      <Link
+                        key={t.id}
+                        href={`/workspace/new?template=${t.id}`}
+                        onClick={() => setShowNewMenu(false)}
+                        className="block px-4 py-2 text-sm hover:bg-surface-tertiary transition-colors"
+                      >
+                        {t.name}
+                      </Link>
+                    ))}
+                  </>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Dashboard stats */}

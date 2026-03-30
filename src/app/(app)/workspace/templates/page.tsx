@@ -54,19 +54,19 @@ export default function TemplatesPage() {
   if (!user) return null
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 p-6">
+    <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Templates</h1>
           <p className="text-text-secondary mt-1">
-            Plantillas guardadas para reutilizar
+            Plantillas reutilizables para crear documentos rápido
           </p>
         </div>
         <Link
-          href="/workspace/new"
+          href="/workspace/new?saveAsTemplate=true"
           className="px-6 py-2 text-sm bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors"
         >
-          + Nueva factura
+          + Crear template
         </Link>
       </div>
 
@@ -81,15 +81,15 @@ export default function TemplatesPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium">No tienes templates todavia</h3>
+          <h3 className="text-lg font-medium">No tienes templates todavía</h3>
           <p className="text-text-secondary mt-1">
-            Crea una factura y guardala como template para reutilizarla
+            Crea un template con los datos de tu empresa, banco, etc. y reutilízalo cada vez que crees un documento.
           </p>
           <Link
-            href="/workspace/new"
+            href="/workspace/new?saveAsTemplate=true"
             className="mt-6 inline-block px-8 py-3 bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors"
           >
-            Crear factura
+            Crear primer template
           </Link>
         </div>
       ) : (
@@ -114,7 +114,7 @@ export default function TemplatesPage() {
               <div className="flex items-center gap-2 mt-4">
                 <Link
                   href={`/workspace/new?template=${template.id}`}
-                  className="flex-1 px-3 py-2 text-sm text-center bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors"
+                  className="flex-1 px-3 py-2 text-sm text-center border border-border rounded-lg font-medium hover:bg-surface-tertiary transition-colors"
                 >
                   Usar template
                 </Link>

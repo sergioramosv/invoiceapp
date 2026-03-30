@@ -34,6 +34,7 @@ function NewInvoicePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const templateId = searchParams.get('template')
+  const saveAsTemplateMode = searchParams.get('saveAsTemplate') === 'true'
 
   const [initialState, setInitialState] = useState<InvoiceState | null>(null)
   const [loadingTemplate, setLoadingTemplate] = useState(!!templateId)
@@ -69,17 +70,19 @@ function NewInvoicePage() {
     )
   }
 
-  return <NewInvoiceEditor initialState={initialState} user={user} router={router} />
+  return <NewInvoiceEditor initialState={initialState} user={user} router={router} saveAsTemplateMode={saveAsTemplateMode} />
 }
 
 function NewInvoiceEditor({
   initialState,
   user,
   router,
+  saveAsTemplateMode,
 }: {
   initialState: InvoiceState
   user: ReturnType<typeof useAuth>['user']
   router: ReturnType<typeof useRouter>
+  saveAsTemplateMode: boolean
 }) {
   const { state, dispatch, subtotal, discountAmount, taxAmount, total, balanceDue } =
     useInvoice(initialState)
@@ -141,20 +144,32 @@ function NewInvoiceEditor({
     if (!user) return
     setSaving(true)
     try {
-      let invoiceNumber = state.invoiceNumber
-      if (!invoiceNumber) {
-        invoiceNumber = await getNextInvoiceNumber(user.uid)
-        dispatch({ type: 'SET_FIELD', field: 'invoiceNumber', value: invoiceNumber })
+      if (saveAsTemplateMode) {
+        const name = window.prompt('Nombre del template:')
+        if (!name) { setSaving(false); return }
+        await createTemplate({
+          userId: user.uid,
+          name,
+          data: state as unknown as Record<string, unknown>,
+          isDefault: false,
+        })
+        router.push('/workspace/templates')
+      } else {
+        let invoiceNumber = state.invoiceNumber
+        if (!invoiceNumber) {
+          invoiceNumber = await getNextInvoiceNumber(user.uid)
+          dispatch({ type: 'SET_FIELD', field: 'invoiceNumber', value: invoiceNumber })
+        }
+        const data = invoiceStateToFirestore(
+          { ...state, invoiceNumber },
+          user.uid,
+          'draft'
+        )
+        await createInvoice(data)
+        router.push('/workspace')
       }
-      const data = invoiceStateToFirestore(
-        { ...state, invoiceNumber },
-        user.uid,
-        'draft'
-      )
-      await createInvoice(data)
-      router.push('/workspace')
     } catch (err) {
-      console.error('Error saving invoice:', err)
+      console.error('Error saving:', err)
     } finally {
       setSaving(false)
     }
@@ -243,7 +258,7 @@ function NewInvoiceEditor({
               />
             </svg>
           </Link>
-          <h1 className="text-lg font-semibold">Nueva Factura</h1>
+          <h1 className="text-lg font-semibold">{saveAsTemplateMode ? 'Nuevo Template' : 'Nuevo Documento'}</h1>
         </div>
 
         <div className="flex items-center gap-2">
@@ -286,7 +301,7 @@ function NewInvoiceEditor({
             disabled={saving}
             className="px-4 py-2 text-sm border border-border rounded-lg font-medium hover:bg-surface-tertiary transition-colors disabled:opacity-50"
           >
-            {saving ? 'Guardando...' : 'Guardar'}
+            {saving ? 'Guardando...' : saveAsTemplateMode ? 'Guardar template' : 'Guardar'}
           </button>
 
           <button
