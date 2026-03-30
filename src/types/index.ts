@@ -38,6 +38,7 @@ export type DocumentType = 'invoice' | 'quote'
 export interface Invoice {
   id: string
   userId: string
+  templateStyle?: string
   documentType?: DocumentType
   title?: string
   invoiceNumber: string

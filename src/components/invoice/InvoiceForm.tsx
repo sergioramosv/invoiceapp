@@ -10,6 +10,7 @@ import {
   Language,
   DocumentType,
 } from '@/types/invoice'
+import { TEMPLATE_STYLES, TemplateStyle } from '@/lib/invoice-templates'
 
 type InvoiceAction =
   | { type: 'SET_FIELD'; field: keyof InvoiceState; value: unknown }
@@ -54,6 +55,88 @@ export default function InvoiceForm({
 
   return (
     <div className="space-y-6">
+      {/* Template selector */}
+      <div>
+        <label className="block text-sm font-medium text-text-secondary mb-3">
+          Plantilla
+        </label>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {TEMPLATE_STYLES.map((tmpl) => (
+            <button
+              key={tmpl.id}
+              type="button"
+              onClick={() =>
+                dispatch({ type: 'SET_FIELD', field: 'templateStyle', value: tmpl.id as TemplateStyle })
+              }
+              className={`relative p-3 rounded-xl border-2 text-left transition-all ${
+                state.templateStyle === tmpl.id
+                  ? 'border-primary ring-2 ring-primary/20 bg-primary/5'
+                  : 'border-border hover:border-primary/40 bg-surface'
+              }`}
+            >
+              {/* Mini preview thumbnail */}
+              <div className="mb-2 h-14 rounded-lg overflow-hidden">
+                {tmpl.id === 'default' && (
+                  <div className="h-full bg-white border border-border/40 p-1.5 flex flex-col gap-0.5">
+                    <div className="flex justify-between">
+                      <div className="w-4 h-2 bg-text/20 rounded-sm" />
+                      <div className="w-6 h-2 bg-primary/30 rounded-sm" />
+                    </div>
+                    <div className="flex-1 space-y-0.5 mt-1">
+                      <div className="h-1 bg-border rounded-full" />
+                      <div className="h-1 bg-border rounded-full" />
+                      <div className="h-1 bg-border/60 rounded-full w-3/4" />
+                    </div>
+                    <div className="h-2 bg-text/10 rounded-sm w-1/2 ml-auto" />
+                  </div>
+                )}
+                {tmpl.id === 'minimal' && (
+                  <div className="h-full bg-white p-1.5 flex flex-col gap-1">
+                    <div className="flex justify-between">
+                      <div className="w-5 h-1.5 bg-text/10 rounded-sm" />
+                      <div className="w-4 h-1.5 bg-text/10 rounded-sm" />
+                    </div>
+                    <div className="flex-1 space-y-1 mt-1">
+                      <div className="h-px bg-text/10" />
+                      <div className="h-px bg-text/10" />
+                    </div>
+                    <div className="h-1.5 bg-text/10 rounded-sm w-1/3 ml-auto" />
+                  </div>
+                )}
+                {tmpl.id === 'corporate' && (
+                  <div className="h-full bg-white flex flex-col">
+                    <div className="h-3 bg-text rounded-t-sm px-1 flex items-center">
+                      <div className="w-3 h-1 bg-white/40 rounded-sm" />
+                    </div>
+                    <div className="flex-1 p-1 space-y-0.5">
+                      <div className="h-1 bg-text/10 rounded-full" />
+                      <div className="h-1 bg-text/5 rounded-full" />
+                      <div className="h-1 bg-text/10 rounded-full" />
+                      <div className="h-1 bg-text/5 rounded-full" />
+                    </div>
+                  </div>
+                )}
+                {tmpl.id === 'creative' && (
+                  <div className="h-full bg-white flex">
+                    <div className="w-1 bg-accent rounded-l-sm" />
+                    <div className="flex-1 p-1.5 flex flex-col gap-0.5">
+                      <div className="w-5 h-1.5 bg-accent/30 rounded-sm" />
+                      <div className="flex-1 space-y-0.5 mt-0.5">
+                        <div className="h-1 bg-border rounded-full" />
+                        <div className="h-1 bg-border rounded-full" />
+                      </div>
+                      <div className="h-1.5 bg-accent/20 rounded-md w-1/2 ml-auto" />
+                    </div>
+                  </div>
+                )}
+              </div>
+              <p className="text-xs font-semibold text-text">{tmpl.name}</p>
+              <p className="text-[10px] text-text-secondary leading-tight mt-0.5">{tmpl.description}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Header row: Doc Type, Title, Currency, Language */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div>

@@ -9,7 +9,7 @@ import { useAuth } from '@/lib/auth-context'
 import { getFirebaseDb } from '@/lib/firebase'
 import InvoiceForm from '@/components/invoice/InvoiceForm'
 import InvoicePreview from '@/components/invoice/InvoicePreview'
-import { downloadPDF } from '@/lib/generate-pdf'
+import { downloadPDF, downloadPNG } from '@/lib/generate-pdf'
 import { createInvoice, getTemplate, createTemplate, getNextInvoiceNumber } from '@/lib/firestore'
 import { invoiceStateToFirestore } from '@/lib/invoice-converter'
 import { InvoiceState, createInitialState } from '@/types/invoice'
@@ -85,8 +85,40 @@ function NewInvoiceEditor({
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit')
   const [saving, setSaving] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [downloadingPNG, setDownloadingPNG] = useState(false)
   const [isPaid, setIsPaid] = useState(false)
   const previewRef = useRef<HTMLDivElement>(null)
+
+  // Auto-set invoice number on mount
+  useEffect(() => {
+    async function autoSetNumber() {
+      if (!user || state.invoiceNumber) return
+      try {
+        const nextNum = await getNextInvoiceNumber(user.uid)
+        // If document type is quote, replace the prefix with PRES-
+        const number = state.documentType === 'quote'
+          ? nextNum.replace(/^[A-Z]+-/, 'PRES-')
+          : nextNum
+        dispatch({ type: 'SET_FIELD', field: 'invoiceNumber', value: number })
+      } catch (err) {
+        console.error('Error getting next invoice number:', err)
+      }
+    }
+    autoSetNumber()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
+
+  // Update invoice number prefix when document type changes
+  useEffect(() => {
+    if (!state.invoiceNumber) return
+    const currentNum = state.invoiceNumber.replace(/^[A-Z]+-/, '')
+    if (state.documentType === 'quote') {
+      dispatch({ type: 'SET_FIELD', field: 'invoiceNumber', value: `PRES-${currentNum}` })
+    } else {
+      dispatch({ type: 'SET_FIELD', field: 'invoiceNumber', value: `INV-${currentNum}` })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.documentType])
 
   useEffect(() => {
     async function checkPaidStatus() {
@@ -136,6 +168,21 @@ function NewInvoiceEditor({
       console.error('Error generating PDF:', err)
     } finally {
       setDownloading(false)
+    }
+  }
+
+  async function handleDownloadPNG() {
+    if (!previewRef.current) return
+    setDownloadingPNG(true)
+    try {
+      const filename = state.invoiceNumber
+        ? `factura-${state.invoiceNumber}`
+        : 'factura'
+      await downloadPNG(previewRef.current, filename)
+    } catch (err) {
+      console.error('Error generating PNG:', err)
+    } finally {
+      setDownloadingPNG(false)
     }
   }
 
@@ -239,6 +286,17 @@ function NewInvoiceEditor({
             className="px-4 py-2 text-sm border border-border rounded-lg font-medium hover:bg-surface-tertiary transition-colors disabled:opacity-50"
           >
             {saving ? 'Guardando...' : 'Guardar'}
+          </button>
+
+          <button
+            onClick={handleDownloadPNG}
+            disabled={downloadingPNG}
+            className="hidden sm:flex px-3 py-2 text-sm border border-border rounded-lg font-medium hover:bg-surface-tertiary transition-colors items-center gap-2 text-text-secondary disabled:opacity-50"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            {downloadingPNG ? 'Exportando...' : 'PNG'}
           </button>
 
           <button

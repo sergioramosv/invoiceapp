@@ -134,6 +134,20 @@ export default function WorkspacePage() {
 
   if (!user) return null
 
+  // Dashboard stats
+  const totalFacturado = invoices
+    .filter((inv) => inv.status === 'paid' && inv.documentType !== 'quote')
+    .reduce((sum, inv) => sum + (inv.total || 0), 0)
+  const facturasPendientes = invoices.filter(
+    (inv) => inv.documentType !== 'quote' && (inv.status === 'draft' || inv.status === 'sent')
+  ).length
+  const facturasPagadas = invoices.filter(
+    (inv) => inv.documentType !== 'quote' && inv.status === 'paid'
+  ).length
+  const totalPresupuestos = invoices.filter(
+    (inv) => inv.documentType === 'quote'
+  ).length
+
   const filtered = invoices.filter((inv) => {
     // Filter by document type
     if (filterTab === 'invoice' && inv.documentType === 'quote') return false
@@ -167,6 +181,64 @@ export default function WorkspacePage() {
           + Nuevo documento
         </Link>
       </div>
+
+      {/* Dashboard stats */}
+      {invoices.length > 0 && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-surface border border-border rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm text-text-muted truncate">Total facturado</p>
+                <p className="text-2xl font-bold truncate">{formatCurrency(totalFacturado, 'EUR')}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-surface border border-border rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm text-text-muted truncate">Pendientes</p>
+                <p className="text-2xl font-bold">{facturasPendientes}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-surface border border-border rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm text-text-muted truncate">Pagadas</p>
+                <p className="text-2xl font-bold">{facturasPagadas}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-surface border border-border rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm text-text-muted truncate">Presupuestos</p>
+                <p className="text-2xl font-bold">{totalPresupuestos}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Filter tabs + Search */}
       {invoices.length > 0 && (

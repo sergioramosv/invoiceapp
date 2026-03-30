@@ -1,7 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { FadeIn } from '@/components/ui/FadeIn'
 
 /* ───────────────────────────── Icons ───────────────────────────── */
@@ -58,7 +58,34 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
 
 /* ───────────────────────────── Invoice Preview ───────────────────────────── */
 
+const STATUS_CYCLE = [
+  { label: 'Pagada', className: 'bg-success/10 text-success' },
+  { label: 'Pendiente', className: 'bg-amber-100 text-amber-700' },
+  { label: 'Enviada', className: 'bg-primary/10 text-primary' },
+] as const
+
+const TOTAL_CYCLE = ['10.164,00', '8.400,00', '12.936,00'] as const
+
 function InvoicePreview() {
+  const [statusIdx, setStatusIdx] = useState(0)
+  const [totalIdx, setTotalIdx] = useState(0)
+
+  useEffect(() => {
+    const statusTimer = setInterval(() => {
+      setStatusIdx((prev) => (prev + 1) % STATUS_CYCLE.length)
+    }, 3000)
+    const totalTimer = setInterval(() => {
+      setTotalIdx((prev) => (prev + 1) % TOTAL_CYCLE.length)
+    }, 4000)
+    return () => {
+      clearInterval(statusTimer)
+      clearInterval(totalTimer)
+    }
+  }, [])
+
+  const currentStatus = STATUS_CYCLE[statusIdx]
+  const currentTotal = TOTAL_CYCLE[totalIdx]
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 60, rotate: 0 }}
@@ -66,70 +93,97 @@ function InvoicePreview() {
       transition={{ duration: 1, delay: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
       className="mx-auto max-w-lg"
     >
-      <div className="bg-white rounded-2xl shadow-2xl border border-border p-8 md:p-10">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-text rounded-full flex items-center justify-center text-white font-bold text-sm">
-              A
-            </div>
-            <div>
-              <p className="font-bold text-text text-sm">ACME Studio</p>
-              <p className="text-xs text-text-muted">Calle Gran Via 42, 28013 Madrid</p>
-              <p className="text-xs text-text-muted">NIF: B12345678</p>
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-xs font-semibold text-text-muted uppercase tracking-widest">Factura</p>
-            <p className="text-sm font-bold text-text mt-1">#INV-2026-047</p>
-            <span className="inline-block mt-2 px-2.5 py-0.5 bg-success/10 text-success text-xs font-semibold rounded-full">
-              Pagada
-            </span>
-          </div>
+      <div className="relative group">
+        {/* Live preview badge */}
+        <div className="absolute -top-3 -right-3 z-10 px-3 py-1 bg-primary text-white text-xs font-semibold rounded-full shadow-lg">
+          Vista previa en vivo
         </div>
 
-        {/* Bill to */}
-        <div className="mb-8">
-          <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-1">Facturar a</p>
-          <p className="text-sm font-medium text-text">TechCorp S.L.</p>
-          <p className="text-xs text-text-muted">Av. Diagonal 123, 08028 Barcelona</p>
-        </div>
-
-        {/* Items table */}
-        <div className="mb-6">
-          <div className="grid grid-cols-12 gap-2 pb-3 border-b border-border">
-            <p className="col-span-6 text-xs font-semibold text-text-muted uppercase tracking-widest">Concepto</p>
-            <p className="col-span-2 text-xs font-semibold text-text-muted uppercase tracking-widest text-right">Cant.</p>
-            <p className="col-span-2 text-xs font-semibold text-text-muted uppercase tracking-widest text-right">Precio</p>
-            <p className="col-span-2 text-xs font-semibold text-text-muted uppercase tracking-widest text-right">Total</p>
-          </div>
-          {[
-            { name: 'Diseno UI/UX', qty: 1, price: '2.400', total: '2.400' },
-            { name: 'Desarrollo Frontend', qty: 1, price: '4.800', total: '4.800' },
-            { name: 'Consultoria estrategica', qty: 1, price: '1.200', total: '1.200' },
-          ].map((item) => (
-            <div key={item.name} className="grid grid-cols-12 gap-2 py-3 border-b border-border-light">
-              <p className="col-span-6 text-sm text-text">{item.name}</p>
-              <p className="col-span-2 text-sm text-text-secondary text-right">{item.qty}</p>
-              <p className="col-span-2 text-sm text-text-secondary text-right">{item.price}€</p>
-              <p className="col-span-2 text-sm text-text font-medium text-right">{item.total}€</p>
+        <div className="bg-white rounded-2xl shadow-2xl border border-border p-8 md:p-10 transition-all duration-300 group-hover:shadow-3xl group-hover:scale-[1.02]">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-text rounded-full flex items-center justify-center text-white font-bold text-sm">
+                A
+              </div>
+              <div>
+                <p className="font-bold text-text text-sm">ACME Studio</p>
+                <p className="text-xs text-text-muted">Calle Gran Via 42, 28013 Madrid</p>
+                <p className="text-xs text-text-muted">NIF: B12345678</p>
+              </div>
             </div>
-          ))}
-        </div>
+            <div className="text-right">
+              <p className="text-xs font-semibold text-text-muted uppercase tracking-widest">Factura</p>
+              <p className="text-sm font-bold text-text mt-1">#INV-2026-047</p>
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={currentStatus.label}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.3 }}
+                  className={`inline-block mt-2 px-2.5 py-0.5 text-xs font-semibold rounded-full ${currentStatus.className}`}
+                >
+                  {currentStatus.label}
+                </motion.span>
+              </AnimatePresence>
+            </div>
+          </div>
 
-        {/* Totals */}
-        <div className="space-y-2 ml-auto max-w-[200px]">
-          <div className="flex justify-between text-sm">
-            <span className="text-text-secondary">Subtotal</span>
-            <span className="text-text">8.400,00€</span>
+          {/* Bill to */}
+          <div className="mb-8">
+            <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-1">Facturar a</p>
+            <p className="text-sm font-medium text-text">TechCorp S.L.</p>
+            <p className="text-xs text-text-muted">Av. Diagonal 123, 08028 Barcelona</p>
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-text-secondary">IVA 21%</span>
-            <span className="text-text">1.764,00€</span>
+
+          {/* Items table */}
+          <div className="mb-6">
+            <div className="grid grid-cols-12 gap-2 pb-3 border-b border-border">
+              <p className="col-span-6 text-xs font-semibold text-text-muted uppercase tracking-widest">Concepto</p>
+              <p className="col-span-2 text-xs font-semibold text-text-muted uppercase tracking-widest text-right">Cant.</p>
+              <p className="col-span-2 text-xs font-semibold text-text-muted uppercase tracking-widest text-right">Precio</p>
+              <p className="col-span-2 text-xs font-semibold text-text-muted uppercase tracking-widest text-right">Total</p>
+            </div>
+            {[
+              { name: 'Diseno UI/UX', qty: 1, price: '2.400', total: '2.400' },
+              { name: 'Desarrollo Frontend', qty: 1, price: '4.800', total: '4.800' },
+              { name: 'Consultoria estrategica', qty: 1, price: '1.200', total: '1.200' },
+            ].map((item) => (
+              <div key={item.name} className="grid grid-cols-12 gap-2 py-3 border-b border-border-light">
+                <p className="col-span-6 text-sm text-text">{item.name}</p>
+                <p className="col-span-2 text-sm text-text-secondary text-right">{item.qty}</p>
+                <p className="col-span-2 text-sm text-text-secondary text-right">{item.price}€</p>
+                <p className="col-span-2 text-sm text-text font-medium text-right">{item.total}€</p>
+              </div>
+            ))}
           </div>
-          <div className="flex justify-between text-base font-bold pt-2 border-t border-border">
-            <span className="text-text">Total</span>
-            <span className="text-text">10.164,00€</span>
+
+          {/* Totals */}
+          <div className="space-y-2 ml-auto max-w-[200px]">
+            <div className="flex justify-between text-sm">
+              <span className="text-text-secondary">Subtotal</span>
+              <span className="text-text">8.400,00€</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-text-secondary">IVA 21%</span>
+              <span className="text-text">1.764,00€</span>
+            </div>
+            <div className="flex justify-between text-base font-bold pt-2 border-t border-border">
+              <span className="text-text">Total</span>
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={currentTotal}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.05 }}
+                  transition={{ duration: 0.4 }}
+                  className="text-text"
+                >
+                  {currentTotal}€
+                </motion.span>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>

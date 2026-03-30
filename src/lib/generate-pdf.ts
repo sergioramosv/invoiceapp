@@ -1,6 +1,14 @@
 import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
 
+export async function downloadPNG(element: HTMLElement, filename: string): Promise<void> {
+  const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
+  const link = document.createElement('a')
+  link.download = `${filename}.png`
+  link.href = canvas.toDataURL('image/png')
+  link.click()
+}
+
 export async function generatePDF(
   element: HTMLElement,
   filename: string,

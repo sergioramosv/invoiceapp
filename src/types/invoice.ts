@@ -125,7 +125,10 @@ export const DOCUMENT_TYPES: { value: DocumentType; labels: Record<string, strin
   { value: 'quote', labels: { es: 'Presupuesto', en: 'Quote', de: 'Angebot' } },
 ]
 
+import type { TemplateStyle } from '@/lib/invoice-templates'
+
 export interface InvoiceState {
+  templateStyle: TemplateStyle
   documentType: DocumentType
   title: string
   currency: Currency
@@ -172,6 +175,7 @@ function getTodayISO(): string {
 
 export function createInitialState(): InvoiceState {
   return {
+    templateStyle: 'default',
     documentType: 'invoice',
     title: 'Factura',
     currency: CURRENCIES[0],
