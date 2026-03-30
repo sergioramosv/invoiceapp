@@ -3,17 +3,73 @@
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { getInvoices, deleteInvoice, duplicateInvoice } from '@/lib/firestore'
+import type { Invoice, InvoiceStatus } from '@/types'
+
+const STATUS_CONFIG: Record<InvoiceStatus, { label: string; className: string }> = {
+  draft: { label: 'Borrador', className: 'bg-gray-100 text-gray-700' },
+  sent: { label: 'Enviada', className: 'bg-blue-100 text-blue-700' },
+  paid: { label: 'Pagada', className: 'bg-green-100 text-green-700' },
+  overdue: { label: 'Vencida', className: 'bg-red-100 text-red-700' },
+  cancelled: { label: 'Cancelada', className: 'bg-gray-200 text-gray-600' },
+}
+
+function formatCurrency(value: number, currency: string): string {
+  const symbols: Record<string, string> = {
+    EUR: '\u20AC', USD: '$', GBP: '\u00A3', MXN: 'MX$',
+  }
+  const sym = symbols[currency] || currency
+  return `${sym}${value.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
 
 export default function WorkspacePage() {
-  const { user, loading, signOut } = useAuth()
+  const { user, loading } = useAuth()
   const router = useRouter()
+  const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [loadingInvoices, setLoadingInvoices] = useState(true)
+  const [search, setSearch] = useState('')
+
+  const fetchInvoices = useCallback(async () => {
+    if (!user) return
+    try {
+      const data = await getInvoices(user.uid)
+      setInvoices(data)
+    } catch (err) {
+      console.error('Error fetching invoices:', err)
+    } finally {
+      setLoadingInvoices(false)
+    }
+  }, [user])
 
   useEffect(() => {
     if (!loading && !user) router.push('/login')
   }, [user, loading, router])
 
-  if (loading) {
+  useEffect(() => {
+    if (user) fetchInvoices()
+  }, [user, fetchInvoices])
+
+  async function handleDelete(id: string) {
+    if (!window.confirm('Estas seguro de que quieres eliminar esta factura?')) return
+    try {
+      await deleteInvoice(id)
+      setInvoices((prev) => prev.filter((inv) => inv.id !== id))
+    } catch (err) {
+      console.error('Error deleting invoice:', err)
+    }
+  }
+
+  async function handleDuplicate(invoice: Invoice) {
+    try {
+      await duplicateInvoice(invoice)
+      await fetchInvoices()
+    } catch (err) {
+      console.error('Error duplicating invoice:', err)
+    }
+  }
+
+  if (loading || (!user && loading)) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
@@ -23,40 +79,145 @@ export default function WorkspacePage() {
 
   if (!user) return null
 
+  const filtered = invoices.filter((inv) => {
+    if (!search) return true
+    const q = search.toLowerCase()
+    return (
+      (inv.invoiceNumber || '').toLowerCase().includes(q) ||
+      (inv.billToName || '').toLowerCase().includes(q)
+    )
+  })
+
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Mis Facturas</h1>
-          <p className="text-text-secondary mt-1">Hola, {user.displayName || user.email}</p>
+          <p className="text-text-secondary mt-1">
+            {invoices.length} factura{invoices.length !== 1 ? 's' : ''}
+          </p>
         </div>
-        <div className="flex gap-3">
-          <button
-            onClick={() => signOut().then(() => router.push('/'))}
-            className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-surface-tertiary transition-colors"
-          >
-            Cerrar sesión
-          </button>
-          <Link
-            href="/workspace/new"
-            className="px-6 py-2 text-sm bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
-          >
-            + Nueva factura
-          </Link>
-        </div>
-      </div>
-
-      <div className="bg-surface border border-border rounded-xl p-12 text-center">
-        <div className="text-5xl mb-4">📄</div>
-        <h3 className="text-lg font-medium">No tienes facturas todavía</h3>
-        <p className="text-text-secondary mt-1">Crea tu primera factura profesional en segundos</p>
         <Link
           href="/workspace/new"
-          className="mt-6 inline-block px-8 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
+          className="px-6 py-2 text-sm bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
         >
-          Crear primera factura
+          + Nueva factura
         </Link>
       </div>
+
+      {/* Search */}
+      {invoices.length > 0 && (
+        <div>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por cliente o numero de factura..."
+            className="w-full max-w-md px-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          />
+        </div>
+      )}
+
+      {loadingInvoices ? (
+        <div className="flex items-center justify-center h-32">
+          <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : invoices.length === 0 ? (
+        <div className="bg-surface border border-border rounded-xl p-12 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-surface-tertiary rounded-full flex items-center justify-center">
+            <svg className="w-8 h-8 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium">No tienes facturas todavia</h3>
+          <p className="text-text-secondary mt-1">Crea tu primera factura profesional en segundos</p>
+          <Link
+            href="/workspace/new"
+            className="mt-6 inline-block px-8 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
+          >
+            Crear primera factura
+          </Link>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="bg-surface border border-border rounded-xl p-8 text-center">
+          <p className="text-text-secondary">No se encontraron facturas con ese criterio</p>
+        </div>
+      ) : (
+        /* Invoice table */
+        <div className="bg-surface border border-border rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-surface-secondary">
+                  <th className="text-left py-3 px-4 font-semibold text-text-secondary">N Factura</th>
+                  <th className="text-left py-3 px-4 font-semibold text-text-secondary">Cliente</th>
+                  <th className="text-left py-3 px-4 font-semibold text-text-secondary hidden sm:table-cell">Fecha</th>
+                  <th className="text-right py-3 px-4 font-semibold text-text-secondary">Total</th>
+                  <th className="text-center py-3 px-4 font-semibold text-text-secondary">Estado</th>
+                  <th className="text-right py-3 px-4 font-semibold text-text-secondary">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((invoice) => {
+                  const statusCfg = STATUS_CONFIG[invoice.status] || STATUS_CONFIG.draft
+                  return (
+                    <tr key={invoice.id} className="border-b border-border last:border-0 hover:bg-surface-secondary transition-colors">
+                      <td className="py-3 px-4 font-medium">
+                        {invoice.invoiceNumber || '---'}
+                      </td>
+                      <td className="py-3 px-4 text-text-secondary">
+                        {invoice.billToName || '---'}
+                      </td>
+                      <td className="py-3 px-4 text-text-secondary hidden sm:table-cell">
+                        {invoice.issueDate || '---'}
+                      </td>
+                      <td className="py-3 px-4 text-right font-medium">
+                        {formatCurrency(invoice.total || 0, invoice.currency || 'EUR')}
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${statusCfg.className}`}>
+                          {statusCfg.label}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <Link
+                            href={`/workspace/edit/${invoice.id}`}
+                            className="p-1.5 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                            title="Editar"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </Link>
+                          <button
+                            onClick={() => handleDuplicate(invoice)}
+                            className="p-1.5 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                            title="Duplicar"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleDelete(invoice.id)}
+                            className="p-1.5 text-text-secondary hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
+                            title="Eliminar"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -124,8 +124,11 @@ function invoiceReducer(state: InvoiceState, action: InvoiceAction): InvoiceStat
   }
 }
 
-export function useInvoice() {
-  const [state, dispatch] = useReducer(invoiceReducer, undefined, createInitialState)
+export function useInvoice(initialState?: InvoiceState) {
+  const [state, dispatch] = useReducer(
+    invoiceReducer,
+    initialState || createInitialState()
+  )
 
   const computed = useMemo(
     () => ({

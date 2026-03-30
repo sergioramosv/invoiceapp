@@ -9,6 +9,7 @@ import {
   query,
   where,
   orderBy,
+  limit,
   serverTimestamp,
 } from 'firebase/firestore'
 import { getFirebaseDb } from './firebase'
@@ -46,6 +47,39 @@ export async function deleteInvoice(id: string) {
   await deleteDoc(doc(getFirebaseDb(), 'invoices', id))
 }
 
+export async function getNextInvoiceNumber(userId: string): Promise<string> {
+  const q = query(
+    collection(getFirebaseDb(), 'invoices'),
+    where('userId', '==', userId),
+    orderBy('createdAt', 'desc'),
+    limit(1)
+  )
+  const snap = await getDocs(q)
+  if (snap.empty) return 'INV-001'
+
+  const lastInvoice = snap.docs[0].data() as Invoice
+  const lastNumber = lastInvoice.invoiceNumber || 'INV-000'
+  const match = lastNumber.match(/(\d+)$/)
+  if (!match) return 'INV-001'
+
+  const next = parseInt(match[1], 10) + 1
+  const prefix = lastNumber.replace(/\d+$/, '')
+  return `${prefix}${next.toString().padStart(3, '0')}`
+}
+
+export async function duplicateInvoice(
+  invoice: Invoice
+): Promise<string> {
+  const nextNum = await getNextInvoiceNumber(invoice.userId)
+  const { id, createdAt, updatedAt, ...data } = invoice
+  void id; void createdAt; void updatedAt
+  return createInvoice({
+    ...data,
+    invoiceNumber: nextNum,
+    status: 'draft',
+  })
+}
+
 // ── Company Profile ──
 
 export async function getCompanyProfile(userId: string) {
@@ -64,6 +98,12 @@ export async function getTemplates(userId: string) {
   const q = query(collection(getFirebaseDb(), 'templates'), where('userId', '==', userId))
   const snap = await getDocs(q)
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Template)
+}
+
+export async function getTemplate(id: string) {
+  const snap = await getDoc(doc(getFirebaseDb(), 'templates', id))
+  if (!snap.exists()) return null
+  return { id: snap.id, ...snap.data() } as Template
 }
 
 export async function createTemplate(data: Omit<Template, 'id' | 'createdAt' | 'updatedAt'>) {

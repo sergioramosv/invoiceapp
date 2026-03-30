@@ -1,64 +1,56 @@
 'use client'
 
-import { Suspense, useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, use } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useInvoice } from '@/hooks/useInvoice'
 import { useAuth } from '@/lib/auth-context'
 import InvoiceForm from '@/components/invoice/InvoiceForm'
 import InvoicePreview from '@/components/invoice/InvoicePreview'
 import { downloadPDF } from '@/lib/generate-pdf'
-import { createInvoice, getTemplate, createTemplate, getNextInvoiceNumber } from '@/lib/firestore'
-import { invoiceStateToFirestore } from '@/lib/invoice-converter'
-import { InvoiceState, createInitialState } from '@/types/invoice'
+import { getInvoice, updateInvoice } from '@/lib/firestore'
+import { invoiceStateToFirestore, firestoreToInvoiceState } from '@/lib/invoice-converter'
+import { InvoiceState } from '@/types/invoice'
 
-export default function NewInvoicePageWrapper() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
-      }
-    >
-      <NewInvoicePage />
-    </Suspense>
-  )
-}
-
-function NewInvoicePage() {
-  const { user } = useAuth()
+export default function EditInvoicePage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = use(params)
+  const { user, loading: authLoading } = useAuth()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const templateId = searchParams.get('template')
-
   const [initialState, setInitialState] = useState<InvoiceState | null>(null)
-  const [loadingTemplate, setLoadingTemplate] = useState(!!templateId)
+  const [loadingInvoice, setLoadingInvoice] = useState(true)
+  const [invoiceId, setInvoiceId] = useState('')
 
   useEffect(() => {
-    async function loadTemplate() {
-      if (templateId) {
-        try {
-          const template = await getTemplate(templateId)
-          if (template && template.data) {
-            const state = template.data as unknown as InvoiceState
-            setInitialState(state)
-          } else {
-            setInitialState(createInitialState())
-          }
-        } catch {
-          setInitialState(createInitialState())
+    if (!authLoading && !user) {
+      router.push('/login')
+      return
+    }
+
+    async function loadInvoice() {
+      try {
+        const invoice = await getInvoice(id)
+        if (!invoice) {
+          router.push('/workspace')
+          return
         }
-        setLoadingTemplate(false)
-      } else {
-        setInitialState(createInitialState())
-        setLoadingTemplate(false)
+        setInvoiceId(invoice.id)
+        setInitialState(firestoreToInvoiceState(invoice))
+      } catch (err) {
+        console.error('Error loading invoice:', err)
+        router.push('/workspace')
+      } finally {
+        setLoadingInvoice(false)
       }
     }
-    loadTemplate()
-  }, [templateId])
 
-  if (loadingTemplate || !initialState) {
+    if (user) loadInvoice()
+  }, [id, user, authLoading, router])
+
+  if (authLoading || loadingInvoice || !initialState) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
@@ -66,15 +58,24 @@ function NewInvoicePage() {
     )
   }
 
-  return <NewInvoiceEditor initialState={initialState} user={user} router={router} />
+  return (
+    <EditInvoiceEditor
+      initialState={initialState}
+      invoiceId={invoiceId}
+      user={user}
+      router={router}
+    />
+  )
 }
 
-function NewInvoiceEditor({
+function EditInvoiceEditor({
   initialState,
+  invoiceId,
   user,
   router,
 }: {
   initialState: InvoiceState
+  invoiceId: string
   user: ReturnType<typeof useAuth>['user']
   router: ReturnType<typeof useRouter>
 }) {
@@ -90,20 +91,11 @@ function NewInvoiceEditor({
     if (!user) return
     setSaving(true)
     try {
-      let invoiceNumber = state.invoiceNumber
-      if (!invoiceNumber) {
-        invoiceNumber = await getNextInvoiceNumber(user.uid)
-        dispatch({ type: 'SET_FIELD', field: 'invoiceNumber', value: invoiceNumber })
-      }
-      const data = invoiceStateToFirestore(
-        { ...state, invoiceNumber },
-        user.uid,
-        'draft'
-      )
-      await createInvoice(data)
+      const data = invoiceStateToFirestore(state, user.uid, 'draft')
+      await updateInvoice(invoiceId, data)
       router.push('/workspace')
     } catch (err) {
-      console.error('Error saving invoice:', err)
+      console.error('Error updating invoice:', err)
     } finally {
       setSaving(false)
     }
@@ -118,23 +110,6 @@ function NewInvoiceEditor({
       console.error('Error generating PDF:', err)
     } finally {
       setDownloading(false)
-    }
-  }
-
-  async function handleSaveAsTemplate() {
-    if (!user) return
-    const name = window.prompt('Nombre del template:')
-    if (!name) return
-    try {
-      await createTemplate({
-        userId: user.uid,
-        name,
-        data: state as unknown as Record<string, unknown>,
-        isDefault: false,
-      })
-      alert('Template guardado correctamente')
-    } catch (err) {
-      console.error('Error saving template:', err)
     }
   }
 
@@ -161,7 +136,9 @@ function NewInvoiceEditor({
               />
             </svg>
           </Link>
-          <h1 className="text-lg font-semibold">Nueva Factura</h1>
+          <h1 className="text-lg font-semibold">
+            Editar Factura {state.invoiceNumber && `- ${state.invoiceNumber}`}
+          </h1>
         </div>
 
         <div className="flex items-center gap-2">
@@ -188,16 +165,6 @@ function NewInvoiceEditor({
               Preview
             </button>
           </div>
-
-          <button
-            onClick={handleSaveAsTemplate}
-            className="hidden sm:flex px-3 py-2 text-sm border border-border rounded-lg font-medium hover:bg-surface-tertiary transition-colors items-center gap-2 text-text-secondary"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-            </svg>
-            Template
-          </button>
 
           <button
             onClick={handleSave}
