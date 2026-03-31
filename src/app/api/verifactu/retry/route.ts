@@ -89,7 +89,7 @@ export async function POST(request: Request) {
           })
           results.push({ invoiceId: doc.id, success: true })
         } else {
-          const retryCount = ((invoice as Record<string, unknown>).retryCount as number || 0) + 1
+          const retryCount = ((invoice as unknown as Record<string, unknown>).retryCount as number || 0) + 1
           await doc.ref.update({
             verifactuStatus: 'rejected',
             aeatResponseCode: aeatResponse.errorCode || '',

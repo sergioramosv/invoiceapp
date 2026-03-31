@@ -31,6 +31,12 @@ type InvoiceAction =
   | { type: 'UPDATE_BANK_FIELD'; id: string; field: string; value: unknown }
   | { type: 'REMOVE_BANK_FIELD'; id: string }
   | { type: 'TOGGLE_SHIPPING' }
+  | { type: 'UPDATE_VAT_LINE'; id: string; rate: number; base?: number }
+  | { type: 'REMOVE_VAT_LINE'; id: string }
+  | { type: 'ADD_VAT_LINE'; rate: number }
+  | { type: 'ADD_SIGNATURE' }
+  | { type: 'REMOVE_SIGNATURE'; id: string }
+  | { type: 'UPDATE_SIGNATURE'; id: string; field: 'url' | 'label'; value: string }
 
 interface InvoiceFormProps {
   state: InvoiceState

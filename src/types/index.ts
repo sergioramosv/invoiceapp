@@ -100,6 +100,7 @@ export interface Invoice {
   // Signature
   signatureUrl?: string
   signatureLabel?: string
+  signatures?: { id: string; url: string; label: string }[]
   // Items
   items: InvoiceItem[]
   // VeriFactu

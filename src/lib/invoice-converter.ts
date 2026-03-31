@@ -135,7 +135,7 @@ export function firestoreToInvoiceState(invoice: Invoice): InvoiceState {
     terms: invoice.terms || '',
     signatureUrl: invoice.signatureUrl || '',
     signatureLabel: invoice.signatureLabel || '',
-    signatures: (invoice as Record<string, unknown>).signatures as InvoiceState['signatures'] || [],
+    signatures: (invoice as unknown as Record<string, unknown>).signatures as InvoiceState['signatures'] || [],
     // VeriFactu (read-only)
     verifactuStatus: invoice.verifactuStatus || 'none',
     verifactuHash: invoice.verifactuHash || '',
