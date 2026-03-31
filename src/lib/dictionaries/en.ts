@@ -489,7 +489,7 @@ const en: Record<string, string> = {
   'demo.dashboardSub': 'Overview of your activity',
 
   // Footer
-  'footer.copyright': '© 2026',
+  'footer.copyright': 'MIT — use it, fork it, deploy your own instance.',
 }
 
 export default en
