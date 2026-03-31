@@ -71,3 +71,32 @@ export async function sendWelcomeEmail(email: string, name: string) {
     html: baseLayout(content),
   })
 }
+
+export async function sendPaymentConfirmation(email: string, name: string, amount: string) {
+  const content = `
+    <h2 style="margin:0 0 16px;font-size:22px;color:#1a1a1a;">
+      Pago confirmado
+    </h2>
+    <p style="margin:0 0 24px;font-size:15px;color:#555;line-height:1.6;">
+      Hola ${name}, hemos recibido tu pago de <strong>${amount}</strong>. Tu cuenta ha sido actualizada.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+      <tr>
+        <td style="background-color:#4f46e5;border-radius:10px;">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL}/workspace" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
+            Ir a mi cuenta
+          </a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0;font-size:14px;color:#888;">
+      Gracias por confiar en nosotros.
+    </p>`
+
+  await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: email,
+    subject: 'Pago confirmado',
+    html: baseLayout(content),
+  })
+}

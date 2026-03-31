@@ -33,27 +33,102 @@ function IconChevron({ open }: { open: boolean }) {
   )
 }
 
-/* ───────────────────────────── FAQ Accordion ───────────────────────────── */
+/* ───────────────────────────── Feature Icons ───────────────────────────── */
 
-function FaqItem({ question, answer }: { question: string; answer: string }) {
-  const [open, setOpen] = useState(false)
+function IconShieldCheck() {
   return (
-    <div className="border-b border-border last:border-b-0">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-6 text-left gap-4"
-      >
-        <span className="text-base font-medium text-text">{question}</span>
-        <IconChevron open={open} />
-      </button>
-      <div
-        className={`overflow-hidden transition-all duration-300 ${
-          open ? 'max-h-40 pb-6' : 'max-h-0'
-        }`}
-      >
-        <p className="text-sm text-text-secondary leading-relaxed">{answer}</p>
-      </div>
-    </div>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <polyline points="9 12 11 14 15 10" />
+    </svg>
+  )
+}
+
+function IconPencil() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+    </svg>
+  )
+}
+
+function IconLayout() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+      <line x1="3" y1="9" x2="21" y2="9" />
+      <line x1="9" y1="21" x2="9" y2="9" />
+    </svg>
+  )
+}
+
+function IconGlobe() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+  )
+}
+
+function IconChart() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10" />
+      <line x1="12" y1="20" x2="12" y2="4" />
+      <line x1="6" y1="20" x2="6" y2="14" />
+    </svg>
+  )
+}
+
+function IconArrowsConvert() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="17 1 21 5 17 9" />
+      <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+      <polyline points="7 23 3 19 7 15" />
+      <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+    </svg>
+  )
+}
+
+function IconCode() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </svg>
+  )
+}
+
+function IconHeart() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  )
+}
+
+function IconQr() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="8" height="8" rx="1" />
+      <rect x="14" y="2" width="8" height="8" rx="1" />
+      <rect x="2" y="14" width="8" height="8" rx="1" />
+      <rect x="14" y="14" width="4" height="4" rx="0.5" />
+      <line x1="22" y1="14" x2="22" y2="14.01" />
+      <line x1="22" y1="18" x2="22" y2="22" />
+      <line x1="18" y1="22" x2="18" y2="22.01" />
+    </svg>
+  )
+}
+
+function IconGitHub() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+    </svg>
   )
 }
 
@@ -193,57 +268,64 @@ function InvoicePreviewDemo() {
   )
 }
 
+/* ───────────────────────────── Features Data ───────────────────────────── */
+
+const FEATURES = [
+  {
+    icon: IconShieldCheck,
+    title: 'VeriFactu / Facturacion electronica',
+    desc: 'Integracion con la AEAT. Emite facturas electronicas con hash SHA-256 encadenado.',
+  },
+  {
+    icon: IconPencil,
+    title: 'Editor WYSIWYG en tiempo real',
+    desc: 'Vista previa en vivo mientras editas. Split-screen con formulario y preview A4.',
+  },
+  {
+    icon: IconLayout,
+    title: '4 estilos de plantilla',
+    desc: 'Clasico, Minimal, Corporate y Creative. Cada factura con tu estilo.',
+  },
+  {
+    icon: IconGlobe,
+    title: 'Multi-moneda e idioma',
+    desc: '20+ monedas (EUR, USD, GBP...) y 3 idiomas (ES, EN, DE).',
+  },
+  {
+    icon: IconChart,
+    title: 'Dashboard con analytics',
+    desc: 'KPIs, graficos de ingresos mensuales, distribucion por estado, top clientes.',
+  },
+  {
+    icon: IconArrowsConvert,
+    title: 'Presupuestos → Facturas',
+    desc: 'Crea presupuestos y conviertelos en factura con un clic.',
+  },
+  {
+    icon: IconCode,
+    title: 'API REST',
+    desc: 'Integra con cualquier sistema. Endpoints para facturas y clientes.',
+  },
+  {
+    icon: IconHeart,
+    title: 'Open source',
+    desc: 'Codigo abierto. Despliega tu propia instancia. MIT License.',
+  },
+]
+
+const TECH_STACK = [
+  { label: 'Framework', name: 'Next.js 16' },
+  { label: 'UI', name: 'React 19' },
+  { label: 'Lenguaje', name: 'TypeScript' },
+  { label: 'Backend', name: 'Firebase' },
+  { label: 'Estilos', name: 'Tailwind CSS 4' },
+  { label: 'PDF', name: 'jsPDF' },
+]
+
 /* ───────────────────────────── Main Page ───────────────────────────── */
 
 export default function LandingPage() {
   const { t } = useI18n()
-
-  const features = [
-    { icon: '✏️', title: t('landing.feat1.title'), desc: t('landing.feat1.desc') },
-    { icon: '🌍', title: t('landing.feat2.title'), desc: t('landing.feat2.desc') },
-    { icon: '📄', title: t('landing.feat3.title'), desc: t('landing.feat3.desc') },
-    { icon: '📋', title: t('landing.feat4.title'), desc: t('landing.feat4.desc') },
-    { icon: '📊', title: t('landing.feat5.title'), desc: t('landing.feat5.desc') },
-    { icon: '🔒', title: t('landing.feat6.title'), desc: t('landing.feat6.desc') },
-  ]
-
-  const steps = [
-    { num: '01', title: t('landing.step1.title'), desc: t('landing.step1.desc') },
-    { num: '02', title: t('landing.step2.title'), desc: t('landing.step2.desc') },
-    { num: '03', title: t('landing.step3.title'), desc: t('landing.step3.desc') },
-  ]
-
-  const proFeatures = [
-    t('landing.proFeat1'),
-    t('landing.proFeat2'),
-    t('landing.proFeat3'),
-    t('landing.proFeat4'),
-    t('landing.proFeat5'),
-    t('landing.proFeat6'),
-  ]
-
-  const testimonials = [
-    { text: t('landing.test1.text'), name: t('landing.test1.name'), role: t('landing.test1.role') },
-    { text: t('landing.test2.text'), name: t('landing.test2.name'), role: t('landing.test2.role') },
-    { text: t('landing.test3.text'), name: t('landing.test3.name'), role: t('landing.test3.role') },
-  ]
-
-  const faqs = [
-    { q: t('landing.faq1.q'), a: t('landing.faq1.a') },
-    { q: t('landing.faq2.q'), a: t('landing.faq2.a') },
-    { q: t('landing.faq3.q'), a: t('landing.faq3.a') },
-    { q: t('landing.faq4.q'), a: t('landing.faq4.a') },
-    { q: t('landing.faq5.q'), a: t('landing.faq5.a') },
-    { q: t('landing.faq6.q'), a: t('landing.faq6.a') },
-  ]
-
-  const socialProofLabels = [
-    t('landing.sp1'),
-    t('landing.sp2'),
-    t('landing.sp3'),
-    t('landing.sp4'),
-    t('landing.sp5'),
-  ]
 
   return (
     <>
@@ -262,19 +344,17 @@ export default function LandingPage() {
             <p className="mt-6 text-lg md:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto">
               {t('landing.heroSub')}
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="mt-10 flex items-center justify-center">
               <Link
-                href="/signup"
-                className="w-full sm:w-auto px-8 py-4 bg-text text-surface rounded-full font-medium hover:bg-text-secondary transition-colors text-center"
+                href="/demo"
+                className="px-10 py-4 bg-text text-surface rounded-full font-medium hover:bg-text-secondary transition-colors text-center flex items-center justify-center gap-2"
               >
-                {t('landing.cta')}
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {t('landing.demo')}
               </Link>
-              <a
-                href="#how"
-                className="w-full sm:w-auto px-8 py-4 border border-border text-text rounded-full font-medium hover:bg-surface-tertiary transition-colors text-center"
-              >
-                {t('landing.ctaSecondary')}
-              </a>
             </div>
           </FadeIn>
 
@@ -285,43 +365,27 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Social Proof ─── */}
-      <section className="py-16 border-y border-border">
-        <div className="max-w-6xl mx-auto px-6">
-          <FadeIn>
-            <p className="text-center text-sm text-text-muted mb-8">
-              {t('landing.socialProof')}
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
-              {socialProofLabels.map((name) => (
-                <span key={name} className="text-lg font-semibold text-text-muted/40 tracking-wide uppercase">
-                  {name}
-                </span>
-              ))}
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* ─── Features ─── */}
+      {/* ─── Features Grid ─── */}
       <section id="features" className="py-24 md:py-32">
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
-              {t('landing.featuresTitle')}
+              Todo lo que necesitas para facturar
             </h2>
-            <p className="mt-4 text-text-secondary max-w-xl mx-auto">
-              {t('landing.featuresSubtitle')}
+            <p className="mt-4 text-text-secondary max-w-2xl mx-auto">
+              Facturacion electronica, editor en tiempo real, multi-moneda, analytics y mas. Open source y listo para produccion.
             </p>
           </FadeIn>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((f, i) => (
-              <FadeIn key={f.title} delay={i * 0.1}>
-                <div className="h-full p-8 rounded-2xl border border-border bg-surface hover:shadow-lg hover:shadow-text/5 hover:-translate-y-1 transition-all duration-300">
-                  <span className="text-3xl mb-4 block">{f.icon}</span>
-                  <h3 className="text-lg font-semibold text-text mb-2">{f.title}</h3>
-                  <p className="text-sm text-text-secondary leading-relaxed">{f.desc}</p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {FEATURES.map((f, i) => (
+              <FadeIn key={f.title} delay={i * 0.05}>
+                <div className="h-full p-6 md:p-8 rounded-2xl border border-border bg-surface hover:shadow-lg hover:shadow-text/5 hover:-translate-y-1 transition-all duration-300">
+                  <div className="w-10 h-10 rounded-xl bg-surface-secondary flex items-center justify-center text-text mb-4">
+                    <f.icon />
+                  </div>
+                  <h3 className="text-sm md:text-base font-semibold text-text mb-2">{f.title}</h3>
+                  <p className="text-xs md:text-sm text-text-secondary leading-relaxed">{f.desc}</p>
                 </div>
               </FadeIn>
             ))}
@@ -329,139 +393,149 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── How it Works ─── */}
-      <section id="how" className="py-24 md:py-32 bg-surface-secondary">
-        <div className="max-w-6xl mx-auto px-6">
-          <FadeIn className="text-center mb-20">
-            <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
-              {t('landing.howTitle')}
-            </h2>
-          </FadeIn>
-
-          <div className="relative grid md:grid-cols-3 gap-12 md:gap-8">
-            {/* Connector line */}
-            <div className="hidden md:block absolute top-16 left-[20%] right-[20%] h-px bg-border" />
-
-            {steps.map((step, i) => (
-              <FadeIn key={step.num} delay={i * 0.2} className="relative text-center">
-                <div className="relative z-10 w-32 h-32 rounded-full bg-surface border border-border mx-auto flex items-center justify-center mb-8">
-                  <span className="text-4xl font-black text-text">{step.num}</span>
-                </div>
-                <h3 className="text-xl font-semibold text-text mb-3">{step.title}</h3>
-                <p className="text-sm text-text-secondary max-w-xs mx-auto">{step.desc}</p>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Pricing ─── */}
-      <section id="pricing" className="py-24 md:py-32">
-        <div className="px-6">
-          <FadeIn className="max-w-md mx-auto">
-            <div className="rounded-2xl border-2 border-text bg-surface p-10 shadow-xl text-center relative">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                <span className="px-4 py-1.5 bg-text text-surface text-xs font-semibold rounded-full whitespace-nowrap">
-                  {t('landing.pricingBadge')}
-                </span>
-              </div>
-              <p className="text-sm font-semibold text-text-muted uppercase tracking-widest mb-2 mt-2">{t('landing.pricingTitle')}</p>
-
-              <div className="flex items-baseline justify-center gap-3 mb-2">
-                <span className="text-6xl font-black text-text">{t('landing.pricingFree')}</span>
-              </div>
-              <p className="text-sm text-text-secondary mb-8">{t('landing.pricingFreeDesc')}</p>
-
-              <ul className="space-y-4 text-left mb-10">
-                {proFeatures.map((feat) => (
-                  <li key={feat} className="flex items-center gap-3 text-sm text-text">
-                    <IconCheck />
-                    {feat}
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href="/signup"
-                className="block w-full py-4 bg-text text-surface rounded-full font-medium hover:bg-text-secondary transition-colors text-center"
-              >
-                {t('landing.pricingCta')}
-              </Link>
-            </div>
-            <p className="text-center mt-6 text-sm text-text-muted">
-              {t('landing.pricingFooter')}
-            </p>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* ─── Testimonials ─── */}
+      {/* ─── VeriFactu Highlight ─── */}
       <section className="py-24 md:py-32 bg-surface-secondary">
         <div className="max-w-6xl mx-auto px-6">
-          <FadeIn className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
-              {t('landing.testimonialsTitle')}
-            </h2>
-          </FadeIn>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((item, i) => (
-              <FadeIn key={item.name} delay={i * 0.1}>
-                <div className="h-full p-8 rounded-2xl border border-border bg-surface">
-                  <p className="text-sm text-text leading-relaxed mb-8">
-                    &ldquo;{item.text}&rdquo;
+          <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+            <FadeIn>
+              <div>
+                <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-success/10 text-success mb-6">
+                  Cumplimiento normativo
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight mb-6">
+                  Facturacion electronica con VeriFactu
+                </h2>
+                <div className="space-y-4 text-text-secondary text-sm md:text-base leading-relaxed">
+                  <p>
+                    Cada factura se firma con un hash SHA-256 encadenado al registro anterior, garantizando la integridad y trazabilidad de toda tu facturacion.
                   </p>
+                  <ul className="space-y-3">
+                    <li className="flex items-start gap-3">
+                      <IconCheck />
+                      <span>Registro automatico con la AEAT</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <IconCheck />
+                      <span>Tipos de factura F1-R5 soportados</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <IconCheck />
+                      <span>QR de verificacion en cada factura</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <IconCheck />
+                      <span>Bloqueo post-emision para inmutabilidad</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </FadeIn>
+
+            <FadeIn delay={0.2}>
+              <div className="bg-surface rounded-2xl border border-border p-8 shadow-lg">
+                {/* VeriFactu status card */}
+                <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-surface-tertiary flex items-center justify-center text-text text-sm font-bold">
-                      {item.name.charAt(0)}
+                    <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
+                      <IconShieldCheck />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-text">{item.name}</p>
-                      <p className="text-xs text-text-muted">{item.role}</p>
+                      <p className="text-sm font-semibold text-text">Estado VeriFactu</p>
+                      <p className="text-xs text-text-muted">INV-2026-047</p>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 text-xs font-semibold rounded-full bg-success/10 text-success">
+                    Aceptada
+                  </span>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="p-4 rounded-xl bg-surface-secondary">
+                    <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-2">Hash SHA-256</p>
+                    <p className="text-xs text-text font-mono break-all">
+                      a1b2c3d4e5f6...8f9a0b1c2d3e
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-surface-secondary">
+                    <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-2">Hash anterior</p>
+                    <p className="text-xs text-text font-mono break-all">
+                      f7e6d5c4b3a2...1a2b3c4d5e6f
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 rounded-xl bg-surface-secondary">
+                    <div>
+                      <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-1">QR Verificacion</p>
+                      <p className="text-xs text-text-secondary">Escanear para validar</p>
+                    </div>
+                    <div className="w-12 h-12 rounded-lg bg-text/5 flex items-center justify-center text-text-muted">
+                      <IconQr />
                     </div>
                   </div>
                 </div>
+              </div>
+            </FadeIn>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Tech Stack ─── */}
+      <section className="py-24 md:py-32">
+        <div className="max-w-6xl mx-auto px-6">
+          <FadeIn className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
+              Construido con tecnologia moderna
+            </h2>
+            <p className="mt-4 text-text-secondary">
+              Stack moderno, rendimiento optimizado, developer experience de primera.
+            </p>
+          </FadeIn>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {TECH_STACK.map((tech, i) => (
+              <FadeIn key={tech.name} delay={i * 0.05}>
+                <div className="text-center p-6 rounded-2xl border border-border bg-surface hover:shadow-md transition-all duration-300">
+                  <p className="text-xs text-text-muted uppercase tracking-widest mb-2">{tech.label}</p>
+                  <p className="text-sm md:text-base font-semibold text-text">{tech.name}</p>
+                </div>
               </FadeIn>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── FAQ ─── */}
-      <section id="faq" className="py-24 md:py-32">
-        <div className="max-w-2xl mx-auto px-6">
-          <FadeIn className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
-              {t('landing.faqTitle')}
-            </h2>
-          </FadeIn>
-
-          <FadeIn>
-            <div>
-              {faqs.map((faq) => (
-                <FaqItem key={faq.q} question={faq.q} answer={faq.a} />
-              ))}
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* ─── Final CTA ─── */}
+      {/* ─── Open Source CTA ─── */}
       <section className="py-24 md:py-32 bg-text">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
             <h2 className="text-3xl md:text-4xl font-bold text-surface tracking-tight">
-              {t('landing.finalCta')}
+              Open source. Tuyo para siempre.
             </h2>
             <p className="mt-4 text-lg text-surface/70">
-              {t('landing.finalCtaSub')}
+              Despliega tu propia instancia en minutos. MIT License.
             </p>
-            <Link
-              href="/signup"
-              className="mt-10 inline-block px-8 py-4 bg-surface text-text font-medium rounded-full hover:bg-surface/90 transition-colors"
-            >
-              {t('landing.finalCtaBtn')}
-            </Link>
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-surface text-text font-medium rounded-full hover:bg-surface/90 transition-colors"
+              >
+                <IconGitHub />
+                Ver en GitHub
+              </a>
+              <Link
+                href="/demo"
+                className="inline-flex items-center gap-2 px-8 py-4 border border-surface/30 text-surface font-medium rounded-full hover:bg-surface/10 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Ver demo
+              </Link>
+            </div>
           </FadeIn>
         </div>
       </section>

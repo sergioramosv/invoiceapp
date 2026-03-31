@@ -2,6 +2,25 @@
 
 All notable changes to InvoiceApp are documented here.
 
+## [0.9.0] — 2026-03-31
+
+### Added
+- **Demo mode** — Full sandbox section (`/demo`) with all pages (invoices, clients, quotes, templates, settings) using in-memory state, no auth required
+- **Demo PDF** — `downloadDemoPDF` generates PDF with diagonal watermark "InvoiceApp Demo Free"
+- **Demo context** — `DemoContext` provider managing ephemeral demo state
+- **Landing redesign** — SVG icon components, 2×4 features grid, VeriFactu highlight section with status card mockup, tech stack section; hero CTA now links to `/demo` instead of signup
+- **Payment confirmation email** — `sendPaymentConfirmation` transactional email
+
+### Changed
+- VeriFactu emit: two-phase transaction — invoice is locked with `verifactuStatus: 'emitting'` before the AEAT SOAP call to prevent race conditions on concurrent emit requests
+- AEAT client: added 15s timeout with graceful `TIMEOUT` error response
+- `VeriFactuStatus` type now includes `'emitting'` state
+
+### Fixed
+- VeriFactu emit: concurrent emit requests on the same invoice are now rejected immediately
+
+---
+
 ## [0.8.0] — 2026-03-31
 
 ### Added

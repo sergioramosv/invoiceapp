@@ -26,7 +26,7 @@ export type InvoiceStatus = 'draft' | 'emitted' | 'sent' | 'paid' | 'overdue' | 
 
 // VeriFactu types
 export type VeriFactuInvoiceType = 'F1' | 'F2' | 'R1' | 'R2' | 'R3' | 'R4' | 'R5'
-export type VeriFactuStatus = 'none' | 'pending' | 'sent' | 'accepted' | 'rejected'
+export type VeriFactuStatus = 'none' | 'pending' | 'emitting' | 'sent' | 'accepted' | 'rejected'
 
 export interface VatBreakdownLine {
   rate: number

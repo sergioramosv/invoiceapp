@@ -89,6 +89,7 @@ export async function submitToAEAT(soapXml: string): Promise<AEATResponse> {
       path: url.pathname,
       method: 'POST',
       agent,
+      timeout: 15000,
       headers: {
         'Content-Type': 'text/xml; charset=utf-8',
         'SOAPAction': '',
@@ -146,6 +147,16 @@ export async function submitToAEAT(soapXml: string): Promise<AEATResponse> {
         estado: 'Incorrecto',
         errorCode: 'NETWORK',
         errorMessage: err.message,
+      })
+    })
+
+    req.on('timeout', () => {
+      console.error('[VeriFactu LIVE] Request timeout')
+      req.destroy()
+      resolve({
+        estado: 'Incorrecto',
+        errorCode: 'TIMEOUT',
+        errorMessage: 'Tiempo de espera agotado (Timeout) al conectar con AEAT',
       })
     })
 

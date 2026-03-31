@@ -23,9 +23,8 @@ export async function POST(request: Request) {
   const db = getAdminDb()
 
   try {
-    // Use a transaction to ensure hash chain integrity
-    const result = await db.runTransaction(async (transaction) => {
-      // 1. Load the invoice
+    // === PHASE 1: LOCK AND PREPARE ===
+    const prepareResult = await db.runTransaction(async (transaction) => {
       const invoiceRef = db.collection('invoices').doc(invoiceId)
       const invoiceSnap = await transaction.get(invoiceRef)
 
@@ -35,24 +34,13 @@ export async function POST(request: Request) {
 
       const invoice = { id: invoiceSnap.id, ...invoiceSnap.data() } as Invoice
 
-      // 2. Validations
-      if (invoice.emittedAt) {
-        throw new Error('Invoice already emitted')
-      }
-      if (invoice.documentType === 'quote') {
-        throw new Error('Quotes cannot be emitted to VeriFactu')
-      }
-      if (!invoice.fromTaxId) {
-        throw new Error('Sender NIF/CIF is required for VeriFactu')
-      }
-      if (!invoice.invoiceNumber) {
-        throw new Error('Invoice number is required')
-      }
-      if (!invoice.items || invoice.items.length === 0) {
-        throw new Error('Invoice must have at least one item')
-      }
+      if (invoice.emittedAt) throw new Error('Invoice already emitted')
+      if (invoice.verifactuStatus === 'emitting') throw new Error('Invoice is currently being emitted (processing)')
+      if (invoice.documentType === 'quote') throw new Error('Quotes cannot be emitted to VeriFactu')
+      if (!invoice.fromTaxId) throw new Error('Sender NIF/CIF is required for VeriFactu')
+      if (!invoice.invoiceNumber) throw new Error('Invoice number is required')
+      if (!invoice.items || invoice.items.length === 0) throw new Error('Invoice must have at least one item')
 
-      // 3. Get previous hash (last emitted invoice with SAME NIF emisor)
       const nifEmisor = (invoice.fromTaxId || '').replace(/[\s\-\.]/g, '').toUpperCase()
       const prevQuery = await db.collection('invoices')
         .where('userId', '==', invoice.userId)
@@ -78,7 +66,6 @@ export async function POST(request: Request) {
         }
       }
 
-      // 3b. Ensure vatBreakdown is populated (may be missing on old invoices)
       if (!invoice.vatBreakdown || invoice.vatBreakdown.length === 0) {
         const tr = invoice.taxRate || 0
         const ta = invoice.taxAmount || 0
@@ -88,7 +75,6 @@ export async function POST(request: Request) {
         }
       }
 
-      // 4. Compute hash
       const taxAmount = invoice.taxAmount || 0
       const total = invoice.total || 0
       const hash = await computeVeriFactuHash({
@@ -101,63 +87,88 @@ export async function POST(request: Request) {
         huellaAnterior: previousHash,
       })
 
-      // 5. Build SOAP XML
       const soapXml = buildAltaFacturaXml(invoice, hash, previousHash, previousInvoice)
 
-      // 6. Submit to AEAT
-      const aeatResponse = await submitToAEAT(soapXml)
-
-      // 7. Build QR URL
-      const qrUrl = buildVerifactuQrUrl({
-        nif: invoice.fromTaxId,
-        numSerie: invoice.invoiceNumber,
-        fecha: invoice.issueDate,
-        importe: total,
+      transaction.update(invoiceRef, { 
+        verifactuStatus: 'emitting',
+        updatedAt: new Date().toISOString()
       })
 
-      // 8. Update invoice based on response
-      const now = new Date().toISOString()
-
-      if (aeatResponse.estado === 'Correcto' || aeatResponse.estado === 'AceptadoConErrores') {
-        transaction.update(invoiceRef, {
-          status: 'emitted',
-          verifactuStatus: 'accepted',
-          verifactuHash: hash,
-          verifactuPreviousHash: previousHash,
-          verifactuQrUrl: qrUrl,
-          emittedAt: now,
-          aeatCsv: aeatResponse.csv || '',
-          aeatResponseCode: '',
-          aeatResponseMessage: '',
-          updatedAt: now,
-        })
-
-        return {
-          success: true,
-          hash,
-          csv: aeatResponse.csv,
-          qrUrl,
-          estado: aeatResponse.estado,
-        }
-      } else {
-        transaction.update(invoiceRef, {
-          verifactuStatus: 'rejected',
-          aeatResponseCode: aeatResponse.errorCode || '',
-          aeatResponseMessage: aeatResponse.errorMessage || 'Unknown error',
-          updatedAt: now,
-        })
-
-        return {
-          success: false,
-          error: aeatResponse.errorMessage || 'AEAT rejected the invoice',
-          errorCode: aeatResponse.errorCode,
-        }
-      }
+      return { invoice, hash, previousHash, soapXml, total, taxAmount }
     })
 
-    return NextResponse.json(result)
+    const { invoice, hash, previousHash, soapXml, total } = prepareResult
+
+    // === PHASE 2: EXTERNAL CALL ===
+    const aeatResponse = await submitToAEAT(soapXml)
+
+    const qrUrl = buildVerifactuQrUrl({
+      nif: invoice.fromTaxId!,
+      numSerie: invoice.invoiceNumber!,
+      fecha: invoice.issueDate!,
+      importe: total,
+    })
+
+    // === PHASE 3: WRITE FINAL RESULT ===
+    const now = new Date().toISOString()
+    const invoiceRef = db.collection('invoices').doc(invoiceId)
+
+    if (aeatResponse.estado === 'Correcto' || aeatResponse.estado === 'AceptadoConErrores') {
+      await invoiceRef.update({
+        status: 'emitted',
+        verifactuStatus: 'accepted',
+        verifactuHash: hash,
+        verifactuPreviousHash: previousHash,
+        verifactuQrUrl: qrUrl,
+        emittedAt: now,
+        aeatCsv: aeatResponse.csv || '',
+        aeatResponseCode: '',
+        aeatResponseMessage: '',
+        updatedAt: now,
+      })
+
+      return NextResponse.json({
+        success: true,
+        hash,
+        csv: aeatResponse.csv,
+        qrUrl,
+        estado: aeatResponse.estado,
+      })
+    } else {
+      await invoiceRef.update({
+        verifactuStatus: 'rejected',
+        aeatResponseCode: aeatResponse.errorCode || '',
+        aeatResponseMessage: aeatResponse.errorMessage || 'Unknown error',
+        updatedAt: now,
+      })
+
+      return NextResponse.json({
+        success: false,
+        error: aeatResponse.errorMessage || 'AEAT rejected the invoice',
+        errorCode: aeatResponse.errorCode,
+      })
+    }
+
   } catch (error) {
+    // Also revert lock if we threw before the update
     const message = error instanceof Error ? error.message : 'Emission failed'
+    
+    // Attempt to revert the 'emitting' state if we failed during the transaction or network call.
+    // We ignore the error of this rollback.
+    try {
+      const db = getAdminDb()
+      const invoiceRef = db.collection('invoices').doc(invoiceId)
+      const snap = await invoiceRef.get()
+      if (snap.exists && snap.data()?.verifactuStatus === 'emitting') {
+        await invoiceRef.update({
+          verifactuStatus: 'rejected',
+          aeatResponseCode: 'SYSTEM_ERROR',
+          aeatResponseMessage: message,
+          updatedAt: new Date().toISOString()
+        })
+      }
+    } catch (_) {}
+
     return NextResponse.json({ success: false, error: message }, { status: 400 })
   }
 }
