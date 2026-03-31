@@ -293,8 +293,6 @@ const en: Record<string, string> = {
   'landing.faq4.a': 'Yes, we support over 20 international currencies.',
   'landing.faq5.q': 'Do I need to install anything?',
   'landing.faq5.a': 'No, the app works 100% in the browser. You can also install it as a PWA.',
-  'landing.faq6.q': 'Is this electronic invoicing / tax compliance software?',
-  'landing.faq6.a': 'No. the app is a commercial document design tool that generates PDFs. It is not fiscal management software and does not comply with VeriFactu or similar electronic invoicing regulations. Users are responsible for complying with applicable tax laws in their jurisdiction.',
 
   // Landing social proof labels
   'landing.sp1': 'Freelancers',
@@ -425,12 +423,16 @@ const en: Record<string, string> = {
   'error.description': 'An unexpected error occurred. Try reloading the page.',
   'error.reload': 'Reload page',
 
+  // Demo
+  'landing.demo': 'Try demo',
+  'demo.banner': 'Demo mode — Data is not saved. Sign up free to get started.',
+  'demo.bannerOpen': 'Demo mode — Data is temporary and not saved.',
+  'demo.exit': 'Exit demo',
+  'demo.noDelete': 'Delete not available in demo',
+  'demo.dashboardSub': 'Overview of your activity',
+
   // Footer
   'footer.copyright': '© 2026',
-  'footer.privacy': 'Privacy',
-  'footer.terms': 'Terms',
-  'footer.legal': 'Legal',
-  'footer.disclaimer': 'This is a commercial document design tool (invoices, quotes) in PDF format. It is not a fiscal management software nor an electronic invoicing system. The user is responsible for complying with applicable tax regulations.',
 }
 
 export default en

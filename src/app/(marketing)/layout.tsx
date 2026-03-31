@@ -50,16 +50,14 @@ function Navbar() {
             </button>
           </div>
           <Link
-            href="/login"
-            className="text-sm text-text-secondary hover:text-text transition-colors"
+            href="/demo"
+            className="text-sm font-medium text-surface bg-text hover:bg-text-secondary transition-colors px-5 py-2 rounded-full flex items-center gap-1.5"
           >
-            {t('auth.login')}
-          </Link>
-          <Link
-            href="/signup"
-            className="text-sm font-medium text-surface bg-text hover:bg-text-secondary transition-colors px-5 py-2 rounded-full"
-          >
-            {t('landing.cta')}
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {t('landing.demo')}
           </Link>
         </div>
 
@@ -116,18 +114,15 @@ function Navbar() {
             </button>
           </div>
           <Link
-            href="/login"
+            href="/demo"
             onClick={() => setMobileOpen(false)}
-            className="block text-sm text-text-secondary hover:text-text transition-colors"
+            className="flex items-center justify-center gap-2 text-sm font-medium text-surface bg-text hover:bg-text-secondary transition-colors px-4 py-2.5 rounded-full"
           >
-            {t('auth.login')}
-          </Link>
-          <Link
-            href="/signup"
-            onClick={() => setMobileOpen(false)}
-            className="block text-sm font-medium text-surface bg-text hover:bg-text-secondary transition-colors px-4 py-2.5 rounded-full text-center"
-          >
-            {t('landing.cta')}
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {t('landing.demo')}
           </Link>
         </div>
       )}
@@ -145,21 +140,6 @@ function Footer() {
           <p className="text-sm text-text-muted">
             {t('footer.copyright')}
           </p>
-          <div className="flex items-center gap-6">
-            <a href="/privacy-policy" className="text-sm text-text-muted hover:text-text transition-colors">
-              {t('footer.privacy')}
-            </a>
-            <a href="/tos" className="text-sm text-text-muted hover:text-text transition-colors">
-              {t('footer.terms')}
-            </a>
-            <a href="/legal-notice" className="text-sm text-text-muted hover:text-text transition-colors">
-              {t('footer.legal')}
-            </a>
-          </div>
-        </div>
-        <p className="text-[11px] text-text-muted text-center leading-relaxed">
-          {t('footer.disclaimer')}
-        </p>
       </div>
     </footer>
   )
