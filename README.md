@@ -90,7 +90,6 @@ Authentication via `x-api-key` header or `Authorization: Bearer <key>`.
 | Styling | Tailwind CSS v4 |
 | PDF | jsPDF + html-to-image |
 | Email | Resend |
-| Payments | Stripe |
 | Testing | Vitest + Playwright |
 | PWA | Next.js manifest + Service Worker |
 
@@ -127,10 +126,11 @@ FIREBASE_ADMIN_PRIVATE_KEY=
 # Email
 RESEND_API_KEY=
 
-# Stripe (optional)
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+# VeriFactu (optional — stub mode works without these)
+VERIFACTU_LIVE=false                    # Set to true to send to AEAT staging
+VERIFACTU_CERT_PATH=./certs/cert.p12   # Path to your .p12 digital certificate
+VERIFACTU_CERT_PASSWORD=               # Password for the .p12 certificate
+VERIFACTU_URL=                         # Override AEAT endpoint (default: staging)
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
