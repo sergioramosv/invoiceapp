@@ -135,11 +135,10 @@ function Footer() {
 
   return (
     <footer className="border-t border-border">
-      <div className="px-6 py-8 space-y-4">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-text-muted">
-            {t('footer.copyright')}
-          </p>
+      <div className="px-6 py-8">
+        <p className="text-sm text-text-muted text-center">
+          {t('footer.copyright')}
+        </p>
       </div>
     </footer>
   )
