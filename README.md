@@ -4,6 +4,8 @@
 
 Create beautiful invoices and quotes, export them as PDF, manage your clients, and stay compliant with Spanish electronic invoicing law (VeriFactu). Live demo included, no account needed.
 
+🌐 **Live:** [invoiceapp.es](https://www.invoiceapp.es/) &nbsp;·&nbsp; 🚀 **Try the demo:** [invoiceapp.es/demo](https://www.invoiceapp.es/demo)
+
 ---
 
 ## Features
@@ -189,6 +191,14 @@ To enable AEAT submission you need:
 4. Test against the AEAT staging environment before going live
 
 See [`VERIFACTU.md`](./VERIFACTU.md) for the full technical spec and implementation details.
+
+---
+
+## Custom Development
+
+Want something more advanced? Need a tailored invoicing system, custom integrations, or a full SaaS built from scratch?
+
+I'm available for freelance work — reach out at **sergioramosvicente2004@gmail.com**
 
 ---
 
