@@ -198,7 +198,7 @@ See [`VERIFACTU.md`](./VERIFACTU.md) for the full technical spec and implementat
 
 Want something more advanced? Need a tailored invoicing system, custom integrations, or a full SaaS built from scratch?
 
-I'm available for freelance work — reach out at **sergioramosvicente2004@gmail.com**
+I'm available for freelance work — reach out at **sergioramosvicente2004@gmail.com** or visit **[sergioramosvicente.com](https://sergioramosvicente.com)**
 
 ---
 
