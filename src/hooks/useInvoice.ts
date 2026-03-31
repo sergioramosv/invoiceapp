@@ -6,12 +6,14 @@ import {
   InvoiceState,
   Currency,
   Language,
+  VatLine,
   createInitialState,
   getSubtotal,
   getDiscountAmount,
   getTaxAmount,
   getTotal,
   getBalanceDue,
+  getVatBreakdown,
 } from '@/types/invoice'
 
 type InvoiceAction =
@@ -28,6 +30,12 @@ type InvoiceAction =
   | { type: 'UPDATE_BANK_FIELD'; id: string; field: string; value: unknown }
   | { type: 'REMOVE_BANK_FIELD'; id: string }
   | { type: 'TOGGLE_SHIPPING' }
+  | { type: 'ADD_VAT_LINE'; rate: number }
+  | { type: 'REMOVE_VAT_LINE'; id: string }
+  | { type: 'UPDATE_VAT_LINE'; id: string; rate: number }
+  | { type: 'ADD_SIGNATURE' }
+  | { type: 'UPDATE_SIGNATURE'; id: string; field: 'url' | 'label'; value: string }
+  | { type: 'REMOVE_SIGNATURE'; id: string }
 
 function invoiceReducer(state: InvoiceState, action: InvoiceAction): InvoiceState {
   switch (action.type) {
@@ -51,6 +59,7 @@ function invoiceReducer(state: InvoiceState, action: InvoiceAction): InvoiceStat
             quantity: 1,
             unitPrice: 0,
             amount: 0,
+            vatLineId: state.vatLines[0]?.id || 'vat-21',
           },
         ],
       }
@@ -120,6 +129,56 @@ function invoiceReducer(state: InvoiceState, action: InvoiceAction): InvoiceStat
     case 'TOGGLE_SHIPPING':
       return { ...state, showShipping: !state.showShipping }
 
+    case 'ADD_VAT_LINE': {
+      const newLine: VatLine = {
+        id: uid(),
+        rate: action.rate,
+        label: action.rate === 0 ? 'Exento' : `IVA ${action.rate}%`,
+      }
+      return { ...state, vatLines: [...state.vatLines, newLine] }
+    }
+
+    case 'REMOVE_VAT_LINE': {
+      if (state.vatLines.length <= 1) return state
+      const remaining = state.vatLines.filter((v) => v.id !== action.id)
+      const fallbackId = remaining[0].id
+      // Reassign items that used the removed VAT line
+      const updatedItems = state.items.map((item) =>
+        item.vatLineId === action.id ? { ...item, vatLineId: fallbackId } : item
+      )
+      return { ...state, vatLines: remaining, items: updatedItems }
+    }
+
+    case 'UPDATE_VAT_LINE':
+      return {
+        ...state,
+        vatLines: state.vatLines.map((v) =>
+          v.id === action.id
+            ? { ...v, rate: action.rate, label: action.rate === 0 ? 'Exento' : `IVA ${action.rate}%` }
+            : v
+        ),
+      }
+
+    case 'ADD_SIGNATURE':
+      return {
+        ...state,
+        signatures: [...state.signatures, { id: uid(), url: '', label: '' }],
+      }
+
+    case 'UPDATE_SIGNATURE':
+      return {
+        ...state,
+        signatures: state.signatures.map((s) =>
+          s.id === action.id ? { ...s, [action.field]: action.value } : s
+        ),
+      }
+
+    case 'REMOVE_SIGNATURE':
+      return {
+        ...state,
+        signatures: state.signatures.filter((s) => s.id !== action.id),
+      }
+
     default:
       return state
   }
@@ -138,6 +197,7 @@ export function useInvoice(initialState?: InvoiceState) {
       taxAmount: getTaxAmount(state),
       total: getTotal(state),
       balanceDue: getBalanceDue(state),
+      vatBreakdown: getVatBreakdown(state),
     }),
     [state]
   )

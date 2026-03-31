@@ -8,7 +8,9 @@ import {
   getTaxAmount,
   getTotal,
   getBalanceDue,
+  getVatBreakdown,
   createInitialState,
+  DEFAULT_VAT_LINES,
 } from '@/types/invoice'
 import type { Invoice } from '@/types'
 
@@ -23,6 +25,7 @@ export function invoiceStateToFirestore(
     documentType: state.documentType || 'invoice',
     title: state.title || '',
     invoiceNumber: state.invoiceNumber || '',
+    invoiceType: state.invoiceType || 'F1',
     status,
     currency: state.currency.code,
     language: state.language.code,
@@ -50,14 +53,20 @@ export function invoiceStateToFirestore(
     total: getTotal(state),
     amountPaid: state.amountPaid,
     balanceDue: getBalanceDue(state),
+    vatBreakdown: getVatBreakdown(state),
     notes: state.notes || '',
     terms: state.terms || '',
     signatureUrl: state.signatureUrl || '',
     signatureLabel: state.signatureLabel || '',
+    signatures: state.signatures || [],
     items: state.items.map((item, idx) => ({
       ...item,
       sortOrder: idx,
     })),
+    // Rectificativa (empty string instead of undefined — Firestore rejects undefined)
+    rectifiedInvoiceId: state.rectifiedInvoiceId || '',
+    rectifiedInvoiceNumber: state.rectifiedInvoiceNumber || '',
+    rectificationReason: state.rectificationReason || '',
   }
 }
 
@@ -66,6 +75,21 @@ export function firestoreToInvoiceState(invoice: Invoice): InvoiceState {
   const currency = CURRENCIES.find((c) => c.code === invoice.currency) || base.currency
   const language = LANGUAGES.find((l) => l.code === invoice.language) || base.language
 
+  // Reconstruct vatLines from vatBreakdown or fallback to taxRate
+  let vatLines = [...DEFAULT_VAT_LINES]
+  if (invoice.vatBreakdown && invoice.vatBreakdown.length > 0) {
+    vatLines = invoice.vatBreakdown.map((vb, idx) => ({
+      id: `vat-${vb.rate}-${idx}`,
+      rate: vb.rate,
+      label: vb.rate === 0 ? 'Exento' : `IVA ${vb.rate}%`,
+    }))
+  } else if (invoice.taxRate && invoice.taxRate > 0) {
+    vatLines = [{ id: 'vat-legacy', rate: invoice.taxRate, label: `IVA ${invoice.taxRate}%` }]
+  }
+
+  // Assign vatLineId to items if not present
+  const defaultVatLineId = vatLines[0]?.id || 'vat-21'
+
   return {
     templateStyle: (invoice.templateStyle as InvoiceState['templateStyle']) || 'default',
     documentType: invoice.documentType || 'invoice',
@@ -73,6 +97,7 @@ export function firestoreToInvoiceState(invoice: Invoice): InvoiceState {
     currency,
     language,
     invoiceNumber: invoice.invoiceNumber || '',
+    invoiceType: invoice.invoiceType || 'F1',
     issueDate: invoice.issueDate || base.issueDate,
     dueDate: invoice.dueDate || '',
     customFields: [],
@@ -97,8 +122,10 @@ export function firestoreToInvoiceState(invoice: Invoice): InvoiceState {
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           amount: item.amount,
+          vatLineId: item.vatLineId || defaultVatLineId,
         }))
       : base.items,
+    vatLines,
     discountRate: invoice.discountRate || 0,
     taxRate: invoice.taxRate || 0,
     shippingAmount: invoice.shippingAmount || 0,
@@ -108,5 +135,15 @@ export function firestoreToInvoiceState(invoice: Invoice): InvoiceState {
     terms: invoice.terms || '',
     signatureUrl: invoice.signatureUrl || '',
     signatureLabel: invoice.signatureLabel || '',
+    signatures: (invoice as Record<string, unknown>).signatures as InvoiceState['signatures'] || [],
+    // VeriFactu (read-only)
+    verifactuStatus: invoice.verifactuStatus || 'none',
+    verifactuHash: invoice.verifactuHash || '',
+    verifactuQrUrl: invoice.verifactuQrUrl || '',
+    emittedAt: invoice.emittedAt || '',
+    // Rectificativa
+    rectifiedInvoiceId: invoice.rectifiedInvoiceId || '',
+    rectifiedInvoiceNumber: invoice.rectifiedInvoiceNumber || '',
+    rectificationReason: invoice.rectificationReason || '',
   }
 }

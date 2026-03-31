@@ -15,7 +15,6 @@ export async function downloadPNG(element: HTMLElement, filename: string): Promi
 export async function generatePDF(
   element: HTMLElement,
   filename: string,
-  addWatermark?: boolean
 ): Promise<void> {
   const dataUrl = await toPng(element, {
     pixelRatio: 2,
@@ -47,33 +46,15 @@ export async function generatePDF(
     heightLeft -= pageHeight
   }
 
-  if (addWatermark) {
-    const totalPages = pdf.getNumberOfPages()
-    for (let i = 1; i <= totalPages; i++) {
-      pdf.setPage(i)
-      pdf.saveGraphicsState()
-      const gState = new (pdf as unknown as { GState: new (opts: Record<string, number>) => object }).GState({ opacity: 0.08 })
-      pdf.setGState(gState)
-      pdf.setFontSize(54)
-      pdf.setTextColor(160, 160, 160)
-      pdf.text('InvoiceApp', imgWidth / 2, pageHeight / 2, {
-        align: 'center',
-        angle: 45,
-      })
-      pdf.restoreGraphicsState()
-    }
-  }
-
   pdf.save(filename)
 }
 
 export async function downloadPDF(
   previewRef: HTMLElement,
   invoiceNumber: string,
-  isPaid: boolean
 ): Promise<void> {
   const filename = invoiceNumber
     ? `factura-${invoiceNumber}.pdf`
     : 'factura.pdf'
-  await generatePDF(previewRef, filename, !isPaid)
+  await generatePDF(previewRef, filename)
 }

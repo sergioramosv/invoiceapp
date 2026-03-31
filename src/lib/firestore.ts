@@ -40,7 +40,12 @@ export async function createInvoice(data: Omit<Invoice, 'id' | 'createdAt' | 'up
 }
 
 export async function updateInvoice(id: string, data: Partial<Invoice>) {
-  await updateDoc(doc(getFirebaseDb(), 'invoices', id), { ...data, updatedAt: serverTimestamp() })
+  // Firestore rejects undefined values — strip them
+  const clean: Record<string, unknown> = { updatedAt: serverTimestamp() }
+  for (const [k, v] of Object.entries(data)) {
+    if (v !== undefined) clean[k] = v
+  }
+  await updateDoc(doc(getFirebaseDb(), 'invoices', id), clean)
 }
 
 export async function deleteInvoice(id: string) {

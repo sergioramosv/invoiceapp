@@ -3,7 +3,7 @@ export function Analytics() {
   return (
     <script
       defer
-      data-domain="invoiceapp.es"
+      data-domain=""
       src="https://plausible.io/js/script.js"
     />
   )

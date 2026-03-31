@@ -6,6 +6,19 @@ export interface InvoiceItem {
   quantity: number
   unitPrice: number
   amount: number
+  vatLineId?: string
+}
+
+export interface VatLine {
+  id: string
+  rate: number
+  label: string
+}
+
+export interface SignatureEntry {
+  id: string
+  url: string
+  label: string
 }
 
 export interface CustomField {
@@ -128,6 +141,7 @@ export const DOCUMENT_TYPES: { value: DocumentType; labels: Record<string, strin
 ]
 
 import type { TemplateStyle } from '@/lib/invoice-templates'
+import type { VeriFactuInvoiceType, VeriFactuStatus, VatBreakdownLine } from '@/types'
 
 export interface InvoiceState {
   templateStyle: TemplateStyle
@@ -136,6 +150,7 @@ export interface InvoiceState {
   currency: Currency
   language: Language
   invoiceNumber: string
+  invoiceType: VeriFactuInvoiceType
   issueDate: string
   dueDate: string
   customFields: CustomField[]
@@ -158,6 +173,8 @@ export interface InvoiceState {
   shipToAddress: string
   // Items
   items: InvoiceItem[]
+  // VAT
+  vatLines: VatLine[]
   // Totals
   discountRate: number
   taxRate: number
@@ -170,6 +187,16 @@ export interface InvoiceState {
   terms: string
   signatureUrl: string
   signatureLabel: string
+  signatures: SignatureEntry[]
+  // VeriFactu (read-only in UI, set by server)
+  verifactuStatus?: VeriFactuStatus
+  verifactuHash?: string
+  verifactuQrUrl?: string
+  emittedAt?: string
+  // Rectificativa
+  rectifiedInvoiceId?: string
+  rectifiedInvoiceNumber?: string
+  rectificationReason?: string
 }
 
 function getTodayISO(): string {
@@ -177,7 +204,12 @@ function getTodayISO(): string {
   return d.toISOString().split('T')[0]
 }
 
+export const DEFAULT_VAT_LINES: VatLine[] = [
+  { id: 'vat-21', rate: 21, label: 'IVA 21%' },
+]
+
 export function createInitialState(): InvoiceState {
+  const defaultVatLine = DEFAULT_VAT_LINES[0]
   return {
     templateStyle: 'default',
     documentType: 'invoice',
@@ -185,6 +217,7 @@ export function createInitialState(): InvoiceState {
     currency: CURRENCIES[0],
     language: LANGUAGES[0],
     invoiceNumber: '',
+    invoiceType: 'F1',
     issueDate: getTodayISO(),
     dueDate: '',
     customFields: [],
@@ -209,8 +242,10 @@ export function createInitialState(): InvoiceState {
         quantity: 1,
         unitPrice: 0,
         amount: 0,
+        vatLineId: defaultVatLine.id,
       },
     ],
+    vatLines: [{ ...defaultVatLine }],
     discountRate: 0,
     taxRate: 0,
     shippingAmount: 0,
@@ -220,20 +255,67 @@ export function createInitialState(): InvoiceState {
     terms: '',
     signatureUrl: '',
     signatureLabel: '',
+    signatures: [],
   }
 }
 
 export function getSubtotal(state: InvoiceState): number {
+  if (!state?.items) return 0
   return state.items.reduce((sum, item) => sum + item.amount, 0)
 }
 
 export function getDiscountAmount(state: InvoiceState): number {
-  return getSubtotal(state) * (state.discountRate / 100)
+  return getSubtotal(state) * ((state?.discountRate || 0) / 100)
+}
+
+/**
+ * Returns VAT breakdown grouped by rate.
+ * If vatLines exist, groups items by their vatLineId.
+ * Falls back to legacy single taxRate if no vatLines.
+ */
+export function getVatBreakdown(state: InvoiceState): VatBreakdownLine[] {
+  if (!state?.items) return []
+  const subtotal = getSubtotal(state)
+  const discountRate = (state.discountRate || 0) / 100
+
+  // If vatLines exist, compute per-line breakdown
+  if (state.vatLines && state.vatLines.length > 0) {
+    const lineMap = new Map<string, { rate: number; totalAmount: number }>()
+    for (const vl of state.vatLines) {
+      lineMap.set(vl.id, { rate: vl.rate, totalAmount: 0 })
+    }
+
+    for (const item of state.items) {
+      const vlId = item.vatLineId || state.vatLines[0].id
+      const entry = lineMap.get(vlId)
+      if (entry) {
+        entry.totalAmount += item.amount
+      }
+    }
+
+    const result: VatBreakdownLine[] = []
+    for (const [, entry] of lineMap) {
+      if (entry.totalAmount === 0) continue
+      const base = entry.totalAmount * (1 - discountRate)
+      const quota = base * (entry.rate / 100)
+      result.push({ rate: entry.rate, base: Math.round(base * 100) / 100, quota: Math.round(quota * 100) / 100 })
+    }
+    return result
+  }
+
+  // Legacy fallback: single taxRate
+  if (state.taxRate > 0) {
+    const base = subtotal * (1 - discountRate)
+    const quota = base * (state.taxRate / 100)
+    return [{ rate: state.taxRate, base: Math.round(base * 100) / 100, quota: Math.round(quota * 100) / 100 }]
+  }
+
+  return []
 }
 
 export function getTaxAmount(state: InvoiceState): number {
-  const afterDiscount = getSubtotal(state) - getDiscountAmount(state)
-  return afterDiscount * (state.taxRate / 100)
+  const breakdown = getVatBreakdown(state)
+  return breakdown.reduce((sum, line) => sum + line.quota, 0)
 }
 
 export function getTotal(state: InvoiceState): number {

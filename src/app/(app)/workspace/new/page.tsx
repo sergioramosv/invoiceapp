@@ -11,8 +11,8 @@ import A4Page from '@/components/invoice/A4Page'
 import { downloadPDF, downloadPNG } from '@/lib/generate-pdf'
 import { createInvoice, getTemplate, createTemplate, getNextInvoiceNumber } from '@/lib/firestore'
 import { invoiceStateToFirestore } from '@/lib/invoice-converter'
-import { InvoiceState, createInitialState } from '@/types/invoice'
-import { PromptModal, Modal } from '@/components/ui/Modal'
+import { InvoiceState, createInitialState, CURRENCIES, LANGUAGES } from '@/types/invoice'
+import { PromptModal, Modal, ConfirmModal } from '@/components/ui/Modal'
 import { SendEmailModal } from '@/components/ui/SendEmailModal'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useI18n } from '@/lib/i18n'
@@ -50,7 +50,22 @@ function NewInvoicePage() {
         try {
           const template = await getTemplate(templateId)
           if (template && template.data) {
-            setInitialState(template.data as unknown as InvoiceState)
+            // Template data is raw Firestore format — merge with defaults
+            const base = createInitialState()
+            const raw = template.data as Record<string, unknown>
+            const currency = CURRENCIES.find((c) => c.code === raw.currency) || base.currency
+            const language = LANGUAGES.find((l) => l.code === raw.language) || base.language
+            setInitialState({
+              ...base,
+              ...raw,
+              currency,
+              language,
+              vatLines: base.vatLines,
+              items: base.items,
+              invoiceNumber: '',
+              customFields: [],
+              bankFields: [],
+            } as InvoiceState)
           } else {
             setInitialState(createInitialState())
           }
@@ -88,15 +103,22 @@ function NewInvoiceEditor({
   saveAsTemplateMode: boolean
 }) {
   const { t } = useI18n()
-  const { state, dispatch, subtotal, discountAmount, taxAmount, total, balanceDue } =
+  const { state, dispatch, subtotal, discountAmount, taxAmount, total, balanceDue, vatBreakdown } =
     useInvoice(initialState)
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit')
   const [saving, setSaving] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const [showTemplatePrompt, setShowTemplatePrompt] = useState(false)
   const [downloadingPNG, setDownloadingPNG] = useState(false)
-  const [isPaid] = useState(true) // Free for now — enable payments later
+  const [emitting, setEmitting] = useState(false)
+  const [showEmitConfirm, setShowEmitConfirm] = useState(false)
+  const [templateSaved, setTemplateSaved] = useState(false)
+  const [emitError, setEmitError] = useState('')
+  const [showEmitSuccess, setShowEmitSuccess] = useState(false)
+  const [emittedInvoiceId, setEmittedInvoiceId] = useState('')
   const [showEmailModal, setShowEmailModal] = useState(false)
+  const [savedInvoiceId, setSavedInvoiceId] = useState('')
+  const [showSavedToast, setShowSavedToast] = useState(false)
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false)
   const previewRef = useRef<HTMLDivElement>(null)
 
@@ -149,8 +171,10 @@ function NewInvoiceEditor({
           user.uid,
           'draft'
         )
-        await createInvoice(data)
-        router.push('/workspace')
+        const id = await createInvoice(data)
+        setSavedInvoiceId(id)
+        setShowSavedToast(true)
+        setTimeout(() => setShowSavedToast(false), 3000)
       }
     } catch (err) {
       console.error('Error saving:', err)
@@ -159,11 +183,50 @@ function NewInvoiceEditor({
     }
   }
 
+  function handleEmitClick() {
+    if (!user || state.documentType === 'quote') return
+    if (!state.fromTaxId) { setEmitError(t('verifactu.needNif')); return }
+    setShowEmitConfirm(true)
+  }
+
+  async function handleEmitConfirm() {
+    if (!user) return
+    setShowEmitConfirm(false)
+    setSaving(true)
+    setEmitting(true)
+    try {
+      let invoiceNumber = state.invoiceNumber
+      if (!invoiceNumber) {
+        invoiceNumber = await getNextInvoiceNumber(user.uid)
+        dispatch({ type: 'SET_FIELD', field: 'invoiceNumber', value: invoiceNumber })
+      }
+      const data = invoiceStateToFirestore({ ...state, invoiceNumber }, user.uid, 'draft')
+      const invoiceId = await createInvoice(data)
+      const res = await fetch('/api/verifactu/emit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoiceId }),
+      })
+      const result = await res.json()
+      if (result.success) {
+        setEmittedInvoiceId(invoiceId)
+        setShowEmitSuccess(true)
+      } else {
+        setEmitError(result.error || t('verifactu.emitError'))
+      }
+    } catch (err) {
+      console.error('Error emitting:', err)
+    } finally {
+      setSaving(false)
+      setEmitting(false)
+    }
+  }
+
   async function handleDownloadPDF() {
     if (!previewRef.current) return
     setDownloading(true)
     try {
-      await downloadPDF(previewRef.current, state.invoiceNumber, isPaid)
+      await downloadPDF(previewRef.current, state.invoiceNumber)
     } catch (err) {
       console.error('Error generating PDF:', err)
     } finally {
@@ -247,6 +310,8 @@ function NewInvoiceEditor({
         data: state as unknown as Record<string, unknown>,
         isDefault: false,
       })
+      setTemplateSaved(true)
+      setTimeout(() => setTemplateSaved(false), 3000)
       if (saveAsTemplateMode) {
         router.push('/workspace/templates')
       }
@@ -257,22 +322,6 @@ function NewInvoiceEditor({
 
   return (
     <div className="h-screen flex flex-col">
-      {/* Free user banner */}
-      {!isPaid && (
-        <div className="bg-warning/10 border-b border-warning/20 px-4 py-2.5 flex items-center justify-center gap-2 text-sm text-warning">
-          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>{t('editor.freeBanner')}</span>
-          <Link
-            href="/workspace/upgrade"
-            className="font-semibold text-primary hover:text-primary-dark underline underline-offset-2 transition-colors"
-          >
-            {t('editor.removeWatermark')}
-          </Link>
-        </div>
-      )}
-
       {/* Top bar */}
       <div className="border-b border-border bg-surface px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -329,7 +378,7 @@ function NewInvoiceEditor({
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
             </svg>
-            {t('editor.template')}
+            {t('editor.saveArticle')}
           </button>
 
           <button
@@ -339,6 +388,19 @@ function NewInvoiceEditor({
           >
             {saving ? t('editor.saving') : saveAsTemplateMode ? t('editor.saveTemplate') : t('editor.save')}
           </button>
+
+          {state.documentType === 'invoice' && !saveAsTemplateMode && (
+            <button
+              onClick={handleEmitClick}
+              disabled={emitting || saving}
+              className="hidden sm:flex px-4 py-2 text-sm bg-success text-white rounded-lg font-medium hover:bg-success/90 transition-colors items-center gap-2 disabled:opacity-50"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              {emitting ? t('verifactu.emitting') : t('verifactu.emit')}
+            </button>
+          )}
 
           <button
             onClick={handleDownloadPNG}
@@ -412,6 +474,7 @@ function NewInvoiceEditor({
             taxAmount={taxAmount}
             total={total}
             balanceDue={balanceDue}
+            vatBreakdown={vatBreakdown}
           />
         </div>
 
@@ -440,10 +503,33 @@ function NewInvoiceEditor({
         open={showTemplatePrompt}
         onClose={() => setShowTemplatePrompt(false)}
         onSubmit={saveTemplate}
-        title={t('modal.templateName')}
-        placeholder={t('modal.templatePlaceholder')}
-        submitLabel={t('modal.saveTemplate')}
+        title={t('modal.articleName')}
+        placeholder={t('modal.articlePlaceholder')}
+        submitLabel={t('modal.saveArticle')}
       />
+
+      {/* Article saved toast */}
+      {templateSaved && (
+        <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-4">
+          <div className="flex items-center gap-3 px-5 py-3 bg-success text-white rounded-xl shadow-lg">
+            <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-sm font-medium">{t('modal.articleSaved')}</span>
+          </div>
+        </div>
+      )}
+
+      {showSavedToast && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <div className="flex items-center gap-3 px-5 py-3 bg-success text-white rounded-xl shadow-lg">
+            <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-sm font-medium">{t('editor.saved')}</span>
+          </div>
+        </div>
+      )}
 
       <SendEmailModal
         open={showEmailModal}
@@ -474,6 +560,61 @@ function NewInvoiceEditor({
             <button
               onClick={() => setShowShortcutsHelp(false)}
               className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-surface-tertiary transition-colors"
+            >
+              {t('modal.cancel')}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* VeriFactu emit confirmation */}
+      <ConfirmModal
+        open={showEmitConfirm}
+        onClose={() => setShowEmitConfirm(false)}
+        onConfirm={handleEmitConfirm}
+        title={t('verifactu.confirmTitle')}
+        message={t('verifactu.confirmEmit')}
+        confirmLabel={t('verifactu.emit')}
+      />
+
+      {/* VeriFactu error modal */}
+      <Modal open={!!emitError} onClose={() => setEmitError('')}>
+        <div className="p-6">
+          <h3 className="text-lg font-semibold text-danger mb-2">{t('verifactu.emitError')}</h3>
+          <p className="text-sm text-text-secondary">{emitError}</p>
+          <button
+            onClick={() => setEmitError('')}
+            className="mt-4 px-4 py-2 text-sm bg-text text-surface rounded-lg font-medium"
+          >
+            {t('modal.confirm')}
+          </button>
+        </div>
+      </Modal>
+
+      {/* Emit success modal */}
+      <Modal open={showEmitSuccess} onClose={() => router.push(`/workspace/edit/${emittedInvoiceId}`)}>
+        <div className="p-6 text-center">
+          <div className="w-16 h-16 bg-success/15 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-text mb-2">{t('verifactu.successTitle')}</h3>
+          <p className="text-sm text-text-secondary mb-6">{t('verifactu.successDesc')}</p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={() => router.push(`/workspace/edit/${emittedInvoiceId}`)}
+              className="px-5 py-2.5 text-sm bg-text text-surface rounded-lg font-medium hover:bg-text-secondary transition-colors flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              {t('verifactu.viewInvoice')}
+            </button>
+            <button
+              onClick={() => router.push('/workspace')}
+              className="px-5 py-2.5 text-sm border border-border rounded-lg font-medium hover:bg-surface-tertiary transition-colors"
             >
               {t('modal.cancel')}
             </button>

@@ -1,0 +1,6 @@
+export { computeVeriFactuHash, toAEATDate } from './hash'
+export { buildAltaFacturaXml } from './soap'
+export type { SoftwareIdentification } from './soap'
+export { submitToAEAT } from './client'
+export type { AEATResponse } from './client'
+export { buildVerifactuQrUrl, generateQrDataUrl } from './qr'

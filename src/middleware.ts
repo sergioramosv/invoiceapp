@@ -5,6 +5,14 @@ export function middleware(request: NextRequest) {
   const session = request.cookies.get('session')
   const { pathname } = request.nextUrl
 
+  // Root: redirect to workspace if authenticated, otherwise allow showing landing page
+  if (pathname === '/') {
+    if (session) {
+      return NextResponse.redirect(new URL('/workspace', request.url))
+    }
+    return NextResponse.next()
+  }
+
   // Protected routes - redirect to login if no session
   if (pathname.startsWith('/workspace') && !session) {
     return NextResponse.redirect(new URL('/login', request.url))
@@ -19,5 +27,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/workspace/:path*', '/login', '/signup'],
+  matcher: ['/', '/workspace/:path*', '/login', '/signup'],
 }

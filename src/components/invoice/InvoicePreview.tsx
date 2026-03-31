@@ -1,7 +1,49 @@
 'use client'
 
-import { InvoiceState } from '@/types/invoice'
+import { useState, useEffect } from 'react'
+import { InvoiceState, getVatBreakdown } from '@/types/invoice'
 import type { TemplateStyle } from '@/lib/invoice-templates'
+
+/** QR code: generates real QR from URL, shows placeholder while loading or if no URL */
+function VerifactuQr({ url }: { url?: string }) {
+  const [qrDataUrl, setQrDataUrl] = useState<string>('')
+
+  useEffect(() => {
+    if (!url) { setQrDataUrl(''); return }
+    let cancelled = false
+    import('qrcode').then((QRCode) => {
+      QRCode.toDataURL(url, { width: 160, margin: 1, errorCorrectionLevel: 'M' })
+        .then((dataUrl: string) => { if (!cancelled) setQrDataUrl(dataUrl) })
+        .catch(() => {})
+    }).catch(() => {})
+    return () => { cancelled = true }
+  }, [url])
+
+  if (qrDataUrl) {
+    return <img src={qrDataUrl} alt="QR VeriFactu" className="w-20 h-20" />
+  }
+
+  // SVG placeholder
+  return (
+    <svg width="80" height="80" viewBox="0 0 80 80" className="shrink-0">
+      <rect width="80" height="80" fill="white" stroke="#e5e5e5" strokeWidth="1" rx="4" />
+      <rect x="6" y="6" width="20" height="20" fill="#d4d4d4" rx="2" />
+      <rect x="10" y="10" width="12" height="12" fill="white" rx="1" />
+      <rect x="13" y="13" width="6" height="6" fill="#d4d4d4" rx="1" />
+      <rect x="54" y="6" width="20" height="20" fill="#d4d4d4" rx="2" />
+      <rect x="58" y="10" width="12" height="12" fill="white" rx="1" />
+      <rect x="61" y="13" width="6" height="6" fill="#d4d4d4" rx="1" />
+      <rect x="6" y="54" width="20" height="20" fill="#d4d4d4" rx="2" />
+      <rect x="10" y="58" width="12" height="12" fill="white" rx="1" />
+      <rect x="13" y="61" width="6" height="6" fill="#d4d4d4" rx="1" />
+      {[30,36,42,48,54].map(x =>
+        [30,36,42,48,54,60].map(y =>
+          (x + y) % 8 < 5 ? <rect key={`${x}-${y}`} x={x} y={y} width="4" height="4" fill="#d4d4d4" rx="0.5" /> : null
+        )
+      )}
+    </svg>
+  )
+}
 
 interface InvoicePreviewProps {
   state: InvoiceState
@@ -24,6 +66,7 @@ export default function InvoicePreview({
   total,
   balanceDue,
 }: InvoicePreviewProps) {
+  const vatBreakdown = getVatBreakdown(state)
   const labels = state.language.labels
   const sym = state.currency.symbol
   const tmpl: TemplateStyle = state.templateStyle || 'default'
@@ -318,14 +361,14 @@ export default function InvoicePreview({
                 <span className="text-danger">-{fmt(discountAmount, sym)}</span>
               </div>
             )}
-            {state.taxRate > 0 && (
-              <div className="flex justify-between">
+            {vatBreakdown.map((line, idx) => (
+              <div key={idx} className="flex justify-between">
                 <span className="text-text-secondary">
-                  {labels.tax} ({state.taxRate}%)
+                  {line.rate === 0 ? 'Exento' : `${labels.tax} ${line.rate}%`}
                 </span>
-                <span>{fmt(taxAmount, sym)}</span>
+                <span>{fmt(line.quota, sym)}</span>
               </div>
-            )}
+            ))}
             {state.shippingAmount > 0 && (
               <div className="flex justify-between">
                 <span className="text-text-secondary">Envio</span>
@@ -422,17 +465,47 @@ export default function InvoicePreview({
           </div>
         )}
 
-        {/* Signature / Stamp */}
-        {(state.signatureUrl || state.signatureLabel) && (
-          <div className="mt-8 flex justify-end">
-            <div className="text-center">
-              {state.signatureUrl && (
-                <img src={state.signatureUrl} alt="Firma" className="h-20 object-contain" />
+        {/* VeriFactu QR Code - always shown for invoices */}
+        {state.documentType !== 'quote' && (
+          <div className="mt-6 flex items-end justify-between border-t border-border pt-4">
+            <div className="text-[9px] text-text-muted max-w-[200px]">
+              <p className="font-medium mb-0.5">Factura verificable — VeriFactu</p>
+              <p>Puede verificar esta factura en la sede electrónica de la AEAT</p>
+              {state.verifactuHash ? (
+                <p className="font-mono mt-1 break-all">{state.verifactuHash.slice(0, 16)}...</p>
+              ) : (
+                <p className="font-mono mt-1 text-text-muted/50">Hash pendiente de emisión</p>
               )}
-              <div className="border-t border-border mt-2 pt-1">
-                <p className="text-xs text-text-muted">{state.signatureLabel || 'Firma / Sello'}</p>
-              </div>
             </div>
+            <VerifactuQr url={state.verifactuQrUrl} />
+          </div>
+        )}
+
+        {/* Signatures / Stamps */}
+        {(state.signatureUrl || state.signatureLabel || (state.signatures && state.signatures.length > 0)) && (
+          <div className="mt-8 flex justify-end gap-6 flex-wrap">
+            {(state.signatureUrl || state.signatureLabel) && (
+              <div className="text-center">
+                {state.signatureUrl && (
+                  <img src={state.signatureUrl} alt="Firma" className="h-20 object-contain" />
+                )}
+                <div className="border-t border-border mt-2 pt-1">
+                  <p className="text-xs text-text-muted">{state.signatureLabel || 'Firma / Sello'}</p>
+                </div>
+              </div>
+            )}
+            {state.signatures?.map((sig) => (
+              (sig.url || sig.label) && (
+                <div key={sig.id} className="text-center">
+                  {sig.url && (
+                    <img src={sig.url} alt="Firma" className="h-20 object-contain" />
+                  )}
+                  <div className="border-t border-border mt-2 pt-1">
+                    <p className="text-xs text-text-muted">{sig.label || 'Firma / Sello'}</p>
+                  </div>
+                </div>
+              )
+            ))}
           </div>
         )}
       </div>

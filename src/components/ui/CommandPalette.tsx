@@ -85,8 +85,10 @@ export default function CommandPalette() {
   }, [query])
 
   const pages: SearchResult[] = [
-    { id: 'page-invoices', category: 'pages', title: t('search.invoices'), subtitle: '/workspace', href: '/workspace' },
-    { id: 'page-templates', category: 'pages', title: 'Templates', subtitle: '/workspace/templates', href: '/workspace/templates' },
+    { id: 'page-dashboard', category: 'pages', title: 'Dashboard', subtitle: '/workspace', href: '/workspace' },
+    { id: 'page-invoices', category: 'pages', title: t('search.invoices'), subtitle: '/workspace/invoices', href: '/workspace/invoices' },
+    { id: 'page-quotes', category: 'pages', title: t('search.quotes'), subtitle: '/workspace/quotes', href: '/workspace/quotes' },
+    { id: 'page-templates', category: 'pages', title: 'Artículos', subtitle: '/workspace/templates', href: '/workspace/templates' },
     { id: 'page-clients', category: 'pages', title: t('search.clients'), subtitle: '/workspace/clients', href: '/workspace/clients' },
     { id: 'page-settings', category: 'pages', title: 'Settings', subtitle: '/workspace/settings', href: '/workspace/settings' },
   ]

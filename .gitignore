@@ -2,6 +2,9 @@ node_modules
 .next
 .env
 .env.local
+certs/
+*.p12
+*.pfx
 *.tsbuildinfo
 next-env.d.ts
 

@@ -40,10 +40,67 @@ interface InvoiceFormProps {
   taxAmount: number
   total: number
   balanceDue: number
+  vatBreakdown: { rate: number; base: number; quota: number }[]
 }
 
 function formatCurrency(value: number, symbol: string): string {
   return `${symbol}${value.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
+
+function ClientSearch({ clients, onSelect, placeholder }: {
+  clients: Client[]
+  onSelect: (id: string) => void
+  placeholder: string
+}) {
+  const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
+
+  const results = query.length > 0
+    ? clients.filter(c =>
+        c.name.toLowerCase().includes(query.toLowerCase()) ||
+        (c.email || '').toLowerCase().includes(query.toLowerCase()) ||
+        (c.taxId || '').toLowerCase().includes(query.toLowerCase())
+      )
+    : clients
+
+  return (
+    <div className="relative mb-4">
+      <div className="relative">
+        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+        <input
+          type="text"
+          value={query}
+          onChange={e => { setQuery(e.target.value); setOpen(true) }}
+          onFocus={() => setOpen(true)}
+          placeholder={placeholder}
+          className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+        />
+      </div>
+      {open && results.length > 0 && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute z-20 w-full mt-1 bg-surface border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+            {results.map(c => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => { onSelect(c.id); setQuery(''); setOpen(false) }}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-surface-tertiary transition-colors flex items-center justify-between"
+              >
+                <div>
+                  <span className="font-medium text-text">{c.name}</span>
+                  {c.email && <span className="text-text-muted ml-2 text-xs">{c.email}</span>}
+                </div>
+                {c.taxId && <span className="text-xs text-text-muted">{c.taxId}</span>}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
 }
 
 export default function InvoiceForm({
@@ -54,6 +111,7 @@ export default function InvoiceForm({
   taxAmount,
   total,
   balanceDue,
+  vatBreakdown,
 }: InvoiceFormProps) {
   const { t } = useI18n()
   const { user } = useAuth()
@@ -192,8 +250,8 @@ export default function InvoiceForm({
         </div>
       </div>
 
-      {/* Header row: Doc Type, Title, Currency, Language */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      {/* Header row: Doc Type, Invoice Type, Title, Currency, Language */}
+      <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
         <div>
           <label className="block text-sm font-medium text-text-secondary mb-1">
             {t('form.type')}
@@ -215,6 +273,28 @@ export default function InvoiceForm({
             ))}
           </select>
         </div>
+        {state.documentType === 'invoice' && (
+          <div>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              {t('form.invoiceType')}
+            </label>
+            <select
+              value={state.invoiceType}
+              onChange={(e) =>
+                dispatch({ type: 'SET_FIELD', field: 'invoiceType', value: e.target.value })
+              }
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface"
+            >
+              <option value="F1">{t('form.invoiceTypeF1')}</option>
+              <option value="F2">{t('form.invoiceTypeF2')}</option>
+              <option value="R1">{t('form.invoiceTypeR1')}</option>
+              <option value="R2">{t('form.invoiceTypeR2')}</option>
+              <option value="R3">{t('form.invoiceTypeR3')}</option>
+              <option value="R4">{t('form.invoiceTypeR4')}</option>
+              <option value="R5">{t('form.invoiceTypeR5')}</option>
+            </select>
+          </div>
+        )}
         <div>
           <label className="block text-sm font-medium text-text-secondary mb-1">
             {t('form.title')}
@@ -410,27 +490,13 @@ export default function InvoiceForm({
           )}
         </div>
 
-        {/* Client selector */}
+        {/* Client search */}
         {clients.length > 0 && (
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('clients.selectClient')}
-            </label>
-            <select
-              onChange={(e) => handleSelectClient(e.target.value)}
-              defaultValue=""
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface"
-            >
-              <option value="">—</option>
-              {clients.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}{c.taxId ? ` (${c.taxId})` : ''}
-                </option>
-              ))}
-              <option value="" disabled>───────────</option>
-              <option value="">{t('clients.newClient')}</option>
-            </select>
-          </div>
+          <ClientSearch
+            clients={clients}
+            onSelect={handleSelectClient}
+            placeholder={t('clients.search')}
+          />
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -714,7 +780,7 @@ export default function InvoiceForm({
 
         {/* Desktop table header */}
         <div className="hidden sm:grid sm:grid-cols-12 gap-2 mb-2 px-1">
-          <span className="col-span-5 text-xs font-medium text-text-secondary uppercase">
+          <span className="col-span-4 text-xs font-medium text-text-secondary uppercase">
             {labels.item}
           </span>
           <span className="col-span-2 text-xs font-medium text-text-secondary uppercase">
@@ -722,6 +788,9 @@ export default function InvoiceForm({
           </span>
           <span className="col-span-2 text-xs font-medium text-text-secondary uppercase">
             {labels.price}
+          </span>
+          <span className="col-span-1 text-xs font-medium text-text-secondary uppercase">
+            {t('form.vatRate')}
           </span>
           <span className="col-span-2 text-xs font-medium text-text-secondary uppercase text-right">
             {labels.amount}
@@ -734,7 +803,7 @@ export default function InvoiceForm({
             key={item.id}
             className="grid grid-cols-1 sm:grid-cols-12 gap-2 mb-2 items-center"
           >
-            <div className="sm:col-span-5">
+            <div className="sm:col-span-4">
               <input
                 type="text"
                 value={item.description}
@@ -783,6 +852,26 @@ export default function InvoiceForm({
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
+            <div className="sm:col-span-1">
+              <select
+                value={item.vatLineId || state.vatLines[0]?.id || ''}
+                onChange={(e) =>
+                  dispatch({
+                    type: 'UPDATE_ITEM',
+                    id: item.id,
+                    field: 'vatLineId',
+                    value: e.target.value,
+                  })
+                }
+                className="w-full px-1 py-2 border border-border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-surface"
+              >
+                {state.vatLines.map((vl) => (
+                  <option key={vl.id} value={vl.id}>
+                    {vl.rate}%
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="sm:col-span-2 text-right text-sm font-medium px-3 py-2">
               {formatCurrency(item.amount, sym)}
             </div>
@@ -802,18 +891,65 @@ export default function InvoiceForm({
           </div>
         ))}
 
-        <button
-          type="button"
-          onClick={() => dispatch({ type: 'ADD_ITEM' })}
-          className="mt-2 text-sm text-primary font-medium hover:text-primary-dark transition-colors"
-        >
-          {t('form.addItem')}
-        </button>
+        <div className="flex items-center gap-2 mt-2">
+          <button
+            type="button"
+            onClick={() => dispatch({ type: 'ADD_ITEM' })}
+            className="text-sm text-primary font-medium hover:text-primary-dark transition-colors"
+          >
+            {t('form.addItem')}
+          </button>
+        </div>
+
+        {/* VAT Lines manager */}
+        <div className="mt-4 p-3 bg-surface-secondary rounded-lg">
+          <p className="text-xs font-medium text-text-secondary mb-2">{t('form.vatRates')}</p>
+          <div className="flex flex-wrap gap-2">
+            {state.vatLines.map((vl) => (
+              <div key={vl.id} className="flex items-center gap-1 bg-surface border border-border rounded-lg px-2 py-1">
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={vl.rate}
+                  onChange={(e) =>
+                    dispatch({ type: 'UPDATE_VAT_LINE', id: vl.id, rate: parseFloat(e.target.value) || 0 })
+                  }
+                  className="w-12 px-1 py-0.5 text-xs text-right border-0 bg-transparent focus:outline-none"
+                />
+                <span className="text-xs text-text-muted">%</span>
+                {state.vatLines.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => dispatch({ type: 'REMOVE_VAT_LINE', id: vl.id })}
+                    className="ml-1 text-danger hover:bg-danger/10 rounded p-0.5"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            ))}
+            <div className="flex gap-1">
+              {[21, 10, 4, 0].filter((r) => !state.vatLines.some((vl) => vl.rate === r)).map((rate) => (
+                <button
+                  key={rate}
+                  type="button"
+                  onClick={() => dispatch({ type: 'ADD_VAT_LINE', rate })}
+                  className="px-2 py-1 text-xs border border-dashed border-border rounded-lg text-text-muted hover:bg-surface-tertiary hover:text-text transition-colors"
+                >
+                  +{rate === 0 ? t('form.exempt') : `${rate}%`}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Totals section */}
       <div className="border-t border-border pt-6 mt-6">
-        <div className="max-w-xs ml-auto space-y-3">
+        <div className="max-w-sm ml-auto space-y-3">
           {/* Subtotal */}
           <div className="flex items-center justify-between text-sm">
             <span className="text-text-secondary">{labels.subtotal}</span>
@@ -845,27 +981,16 @@ export default function InvoiceForm({
             </span>
           </div>
 
-          {/* Tax */}
-          <div className="flex items-center justify-between text-sm gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-text-secondary">{labels.tax}</span>
-              <input
-                type="number"
-                min={0}
-                value={state.taxRate}
-                onChange={(e) =>
-                  dispatch({
-                    type: 'SET_FIELD',
-                    field: 'taxRate',
-                    value: parseFloat(e.target.value) || 0,
-                  })
-                }
-                className="w-16 px-2 py-1 border border-border rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-              />
-              <span className="text-text-secondary">%</span>
+          {/* VAT Breakdown */}
+          {vatBreakdown.map((line, idx) => (
+            <div key={idx} className="flex items-center justify-between text-sm">
+              <span className="text-text-secondary">
+                {line.rate === 0 ? t('form.exempt') : `${labels.tax} ${line.rate}%`}
+                <span className="text-xs text-text-muted ml-1">({formatCurrency(line.base, sym)})</span>
+              </span>
+              <span className="font-medium">{formatCurrency(line.quota, sym)}</span>
             </div>
-            <span className="font-medium">{formatCurrency(taxAmount, sym)}</span>
-          </div>
+          ))}
 
           {/* Shipping */}
           <div className="flex items-center justify-between text-sm gap-2">
@@ -1021,23 +1146,63 @@ export default function InvoiceForm({
         </div>
       </div>
 
-      {/* Firma / Sello */}
+      {/* Firmas / Sellos */}
       <div className="border-t border-border pt-6 mt-6">
         <h3 className="text-lg font-semibold mb-4">{t('form.signature')}</h3>
-        <SignaturePad
-          value={state.signatureUrl}
-          onChange={(url) => dispatch({ type: 'SET_FIELD', field: 'signatureUrl', value: url })}
-        />
-        <div className="mt-3">
-          <label className="block text-sm font-medium text-text-secondary mb-1">{t('form.signatureLabel')}</label>
-          <input
-            type="text"
-            value={state.signatureLabel}
-            onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'signatureLabel', value: e.target.value })}
-            placeholder={t('form.signaturePlaceholder')}
-            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+
+        {/* Firma principal */}
+        <div className="mb-4 p-4 border border-border rounded-lg">
+          <p className="text-xs font-medium text-text-muted mb-2">{t('form.signatureMain')}</p>
+          <SignaturePad
+            value={state.signatureUrl}
+            onChange={(url) => dispatch({ type: 'SET_FIELD', field: 'signatureUrl', value: url })}
           />
+          <div className="mt-2">
+            <input
+              type="text"
+              value={state.signatureLabel}
+              onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'signatureLabel', value: e.target.value })}
+              placeholder={t('form.signaturePlaceholder')}
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            />
+          </div>
         </div>
+
+        {/* Firmas adicionales */}
+        {state.signatures.map((sig) => (
+          <div key={sig.id} className="mb-4 p-4 border border-border rounded-lg relative">
+            <button
+              type="button"
+              onClick={() => dispatch({ type: 'REMOVE_SIGNATURE', id: sig.id })}
+              className="absolute top-2 right-2 p-1.5 text-danger hover:bg-danger/10 rounded-lg transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <SignaturePad
+              value={sig.url}
+              onChange={(url) => dispatch({ type: 'UPDATE_SIGNATURE', id: sig.id, field: 'url', value: url })}
+            />
+            <div className="mt-2">
+              <input
+                type="text"
+                value={sig.label}
+                onChange={(e) => dispatch({ type: 'UPDATE_SIGNATURE', id: sig.id, field: 'label', value: e.target.value })}
+                placeholder={t('form.signaturePlaceholder')}
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              />
+            </div>
+          </div>
+        ))}
+
+        <button
+          type="button"
+          onClick={() => dispatch({ type: 'ADD_SIGNATURE' })}
+          className="text-sm text-primary font-medium hover:text-primary-dark transition-colors"
+        >
+          {t('form.addSignature')}
+        </button>
       </div>
     </div>
   )

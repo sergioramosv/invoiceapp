@@ -22,7 +22,17 @@ export interface CompanyProfile {
   website?: string
 }
 
-export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+export type InvoiceStatus = 'draft' | 'emitted' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+
+// VeriFactu types
+export type VeriFactuInvoiceType = 'F1' | 'F2' | 'R1' | 'R2' | 'R3' | 'R4' | 'R5'
+export type VeriFactuStatus = 'none' | 'pending' | 'sent' | 'accepted' | 'rejected'
+
+export interface VatBreakdownLine {
+  rate: number
+  base: number
+  quota: number
+}
 
 export interface InvoiceItem {
   id: string
@@ -31,6 +41,7 @@ export interface InvoiceItem {
   unitPrice: number
   amount: number
   sortOrder: number
+  vatLineId?: string
 }
 
 export type DocumentType = 'invoice' | 'quote'
@@ -42,6 +53,9 @@ export interface Invoice {
   documentType?: DocumentType
   title?: string
   invoiceNumber: string
+  invoiceSeries?: string
+  invoiceSequentialNumber?: number
+  invoiceType?: VeriFactuInvoiceType
   status: InvoiceStatus
   currency: string
   language: string
@@ -73,6 +87,8 @@ export interface Invoice {
   total: number
   amountPaid: number
   balanceDue: number
+  // VAT breakdown (VeriFactu)
+  vatBreakdown?: VatBreakdownLine[]
   // Bank info
   bankName?: string
   bankAccount?: string
@@ -86,6 +102,19 @@ export interface Invoice {
   signatureLabel?: string
   // Items
   items: InvoiceItem[]
+  // VeriFactu
+  verifactuHash?: string
+  verifactuPreviousHash?: string
+  verifactuStatus?: VeriFactuStatus
+  verifactuQrUrl?: string
+  emittedAt?: string
+  aeatResponseCode?: string
+  aeatResponseMessage?: string
+  aeatCsv?: string
+  // Rectificativa
+  rectifiedInvoiceId?: string
+  rectifiedInvoiceNumber?: string
+  rectificationReason?: string
   // Metadata
   templateId?: string
   createdAt: string
