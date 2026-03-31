@@ -22,12 +22,21 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://invoiceapp.es',
     siteName: 'InvoiceApp',
+    images: [
+      {
+        url: 'https://invoiceapp.es/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'InvoiceApp — Crea facturas profesionales en segundos',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'InvoiceApp — Crea facturas profesionales en segundos',
     description:
       'Genera facturas profesionales en PDF al instante. El generador de facturas más rápido para freelancers y empresas en España.',
+    images: ['https://invoiceapp.es/og-image.png'],
   },
 }
 
