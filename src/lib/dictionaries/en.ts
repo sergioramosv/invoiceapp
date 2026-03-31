@@ -294,6 +294,63 @@ const en: Record<string, string> = {
   'landing.faq5.q': 'Do I need to install anything?',
   'landing.faq5.a': 'No, the app works 100% in the browser. You can also install it as a PWA.',
 
+  // Landing — features grid (redesign)
+  'landing.featuresTitle2': 'Everything you need to invoice',
+  'landing.featuresSubtitle2': 'Electronic invoicing, real-time editor, multi-currency, analytics and more. Open source and production-ready.',
+  'landing.feat.verifactu.title': 'VeriFactu / Electronic Invoicing',
+  'landing.feat.verifactu.desc': 'AEAT integration. Issue electronic invoices with chained SHA-256 hashing.',
+  'landing.feat.editor.title': 'Real-time WYSIWYG editor',
+  'landing.feat.editor.desc': 'Live preview as you edit. Split-screen with form and A4 preview.',
+  'landing.feat.templates.title': '4 template styles',
+  'landing.feat.templates.desc': 'Classic, Minimal, Corporate and Creative. Every invoice your way.',
+  'landing.feat.multicurrency.title': 'Multi-currency & language',
+  'landing.feat.multicurrency.desc': '20+ currencies (EUR, USD, GBP...) and 3 languages (ES, EN, DE).',
+  'landing.feat.analytics.title': 'Dashboard & analytics',
+  'landing.feat.analytics.desc': 'KPIs, monthly revenue charts, status breakdown, top clients.',
+  'landing.feat.quotes.title': 'Quotes → Invoices',
+  'landing.feat.quotes.desc': 'Create quotes and convert them to invoices in one click.',
+  'landing.feat.api.title': 'REST API',
+  'landing.feat.api.desc': 'Integrate with any system. Endpoints for invoices and clients.',
+  'landing.feat.opensource.title': 'Open source',
+  'landing.feat.opensource.desc': 'Open source code. Deploy your own instance. MIT License.',
+
+  // Landing — VeriFactu section
+  'landing.verifactu.badge': 'Regulatory compliance',
+  'landing.verifactu.title': 'Electronic invoicing with VeriFactu',
+  'landing.verifactu.desc': 'Every invoice is signed with a SHA-256 hash chained to the previous record, guaranteeing the integrity and traceability of all your invoicing.',
+  'landing.verifactu.check1': 'Automatic registration with the AEAT',
+  'landing.verifactu.check2': 'Invoice types F1-R5 supported',
+  'landing.verifactu.check3': 'QR verification code on every invoice',
+  'landing.verifactu.check4': 'Post-emission lock for immutability',
+  'landing.verifactu.status': 'VeriFactu Status',
+  'landing.verifactu.accepted': 'Accepted',
+  'landing.verifactu.hashLabel': 'SHA-256 Hash',
+  'landing.verifactu.prevHashLabel': 'Previous hash',
+  'landing.verifactu.qrLabel': 'QR Verification',
+  'landing.verifactu.qrSub': 'Scan to verify',
+
+  // Landing — tech stack section
+  'landing.tech.title': 'Built with modern technology',
+  'landing.tech.subtitle': 'Modern stack, optimized performance, first-class developer experience.',
+  'landing.tech.framework': 'Framework',
+  'landing.tech.ui': 'UI',
+  'landing.tech.language': 'Language',
+  'landing.tech.backend': 'Backend',
+  'landing.tech.styles': 'Styles',
+  'landing.tech.pdf': 'PDF',
+
+  // Landing — open source CTA
+  'landing.oss.title': 'Open source. Yours forever.',
+  'landing.oss.sub': 'Deploy your own instance in minutes. MIT License.',
+  'landing.oss.github': 'View on GitHub',
+
+  // Landing — hire CTA
+  'landing.hire.badge': 'Custom development',
+  'landing.hire.title': 'Need something more advanced?',
+  'landing.hire.sub': 'Custom integrations, specific business logic, full SaaS from scratch — available for freelance projects.',
+  'landing.hire.cta': 'Contact me',
+  'landing.hire.web': 'sergioramosvicente.com',
+
   // Landing social proof labels
   'landing.sp1': 'Freelancers',
   'landing.sp2': 'Agencies',

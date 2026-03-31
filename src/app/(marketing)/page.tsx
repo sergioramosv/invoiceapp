@@ -268,64 +268,30 @@ function InvoicePreviewDemo() {
   )
 }
 
-/* ───────────────────────────── Features Data ───────────────────────────── */
-
-const FEATURES = [
-  {
-    icon: IconShieldCheck,
-    title: 'VeriFactu / Facturacion electronica',
-    desc: 'Integracion con la AEAT. Emite facturas electronicas con hash SHA-256 encadenado.',
-  },
-  {
-    icon: IconPencil,
-    title: 'Editor WYSIWYG en tiempo real',
-    desc: 'Vista previa en vivo mientras editas. Split-screen con formulario y preview A4.',
-  },
-  {
-    icon: IconLayout,
-    title: '4 estilos de plantilla',
-    desc: 'Clasico, Minimal, Corporate y Creative. Cada factura con tu estilo.',
-  },
-  {
-    icon: IconGlobe,
-    title: 'Multi-moneda e idioma',
-    desc: '20+ monedas (EUR, USD, GBP...) y 3 idiomas (ES, EN, DE).',
-  },
-  {
-    icon: IconChart,
-    title: 'Dashboard con analytics',
-    desc: 'KPIs, graficos de ingresos mensuales, distribucion por estado, top clientes.',
-  },
-  {
-    icon: IconArrowsConvert,
-    title: 'Presupuestos → Facturas',
-    desc: 'Crea presupuestos y conviertelos en factura con un clic.',
-  },
-  {
-    icon: IconCode,
-    title: 'API REST',
-    desc: 'Integra con cualquier sistema. Endpoints para facturas y clientes.',
-  },
-  {
-    icon: IconHeart,
-    title: 'Open source',
-    desc: 'Codigo abierto. Despliega tu propia instancia. MIT License.',
-  },
-]
-
-const TECH_STACK = [
-  { label: 'Framework', name: 'Next.js 16' },
-  { label: 'UI', name: 'React 19' },
-  { label: 'Lenguaje', name: 'TypeScript' },
-  { label: 'Backend', name: 'Firebase' },
-  { label: 'Estilos', name: 'Tailwind CSS 4' },
-  { label: 'PDF', name: 'jsPDF' },
-]
-
 /* ───────────────────────────── Main Page ───────────────────────────── */
 
 export default function LandingPage() {
   const { t } = useI18n()
+
+  const FEATURES = [
+    { icon: IconShieldCheck, title: t('landing.feat.verifactu.title'), desc: t('landing.feat.verifactu.desc') },
+    { icon: IconPencil,      title: t('landing.feat.editor.title'),    desc: t('landing.feat.editor.desc') },
+    { icon: IconLayout,      title: t('landing.feat.templates.title'), desc: t('landing.feat.templates.desc') },
+    { icon: IconGlobe,       title: t('landing.feat.multicurrency.title'), desc: t('landing.feat.multicurrency.desc') },
+    { icon: IconChart,       title: t('landing.feat.analytics.title'), desc: t('landing.feat.analytics.desc') },
+    { icon: IconArrowsConvert, title: t('landing.feat.quotes.title'),  desc: t('landing.feat.quotes.desc') },
+    { icon: IconCode,        title: t('landing.feat.api.title'),       desc: t('landing.feat.api.desc') },
+    { icon: IconHeart,       title: t('landing.feat.opensource.title'), desc: t('landing.feat.opensource.desc') },
+  ]
+
+  const TECH_STACK = [
+    { label: t('landing.tech.framework'), name: 'Next.js 16' },
+    { label: t('landing.tech.ui'),        name: 'React 19' },
+    { label: t('landing.tech.language'),  name: 'TypeScript' },
+    { label: t('landing.tech.backend'),   name: 'Firebase' },
+    { label: t('landing.tech.styles'),    name: 'Tailwind CSS 4' },
+    { label: t('landing.tech.pdf'),       name: 'jsPDF' },
+  ]
 
   return (
     <>
@@ -370,10 +336,10 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
-              Todo lo que necesitas para facturar
+              {t('landing.featuresTitle2')}
             </h2>
             <p className="mt-4 text-text-secondary max-w-2xl mx-auto">
-              Facturacion electronica, editor en tiempo real, multi-moneda, analytics y mas. Open source y listo para produccion.
+              {t('landing.featuresSubtitle2')}
             </p>
           </FadeIn>
 
@@ -400,32 +366,20 @@ export default function LandingPage() {
             <FadeIn>
               <div>
                 <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-success/10 text-success mb-6">
-                  Cumplimiento normativo
+                  {t('landing.verifactu.badge')}
                 </span>
                 <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight mb-6">
-                  Facturacion electronica con VeriFactu
+                  {t('landing.verifactu.title')}
                 </h2>
                 <div className="space-y-4 text-text-secondary text-sm md:text-base leading-relaxed">
-                  <p>
-                    Cada factura se firma con un hash SHA-256 encadenado al registro anterior, garantizando la integridad y trazabilidad de toda tu facturacion.
-                  </p>
+                  <p>{t('landing.verifactu.desc')}</p>
                   <ul className="space-y-3">
-                    <li className="flex items-start gap-3">
-                      <IconCheck />
-                      <span>Registro automatico con la AEAT</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <IconCheck />
-                      <span>Tipos de factura F1-R5 soportados</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <IconCheck />
-                      <span>QR de verificacion en cada factura</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <IconCheck />
-                      <span>Bloqueo post-emision para inmutabilidad</span>
-                    </li>
+                    {(['check1', 'check2', 'check3', 'check4'] as const).map(k => (
+                      <li key={k} className="flex items-start gap-3">
+                        <IconCheck />
+                        <span>{t(`landing.verifactu.${k}`)}</span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -440,25 +394,25 @@ export default function LandingPage() {
                       <IconShieldCheck />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-text">Estado VeriFactu</p>
+                      <p className="text-sm font-semibold text-text">{t('landing.verifactu.status')}</p>
                       <p className="text-xs text-text-muted">INV-2026-047</p>
                     </div>
                   </div>
                   <span className="px-3 py-1 text-xs font-semibold rounded-full bg-success/10 text-success">
-                    Aceptada
+                    {t('landing.verifactu.accepted')}
                   </span>
                 </div>
 
                 <div className="space-y-4">
                   <div className="p-4 rounded-xl bg-surface-secondary">
-                    <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-2">Hash SHA-256</p>
+                    <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-2">{t('landing.verifactu.hashLabel')}</p>
                     <p className="text-xs text-text font-mono break-all">
                       a1b2c3d4e5f6...8f9a0b1c2d3e
                     </p>
                   </div>
 
                   <div className="p-4 rounded-xl bg-surface-secondary">
-                    <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-2">Hash anterior</p>
+                    <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-2">{t('landing.verifactu.prevHashLabel')}</p>
                     <p className="text-xs text-text font-mono break-all">
                       f7e6d5c4b3a2...1a2b3c4d5e6f
                     </p>
@@ -466,8 +420,8 @@ export default function LandingPage() {
 
                   <div className="flex items-center justify-between p-4 rounded-xl bg-surface-secondary">
                     <div>
-                      <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-1">QR Verificacion</p>
-                      <p className="text-xs text-text-secondary">Escanear para validar</p>
+                      <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-1">{t('landing.verifactu.qrLabel')}</p>
+                      <p className="text-xs text-text-secondary">{t('landing.verifactu.qrSub')}</p>
                     </div>
                     <div className="w-12 h-12 rounded-lg bg-text/5 flex items-center justify-center text-text-muted">
                       <IconQr />
@@ -485,10 +439,10 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
-              Construido con tecnologia moderna
+              {t('landing.tech.title')}
             </h2>
             <p className="mt-4 text-text-secondary">
-              Stack moderno, rendimiento optimizado, developer experience de primera.
+              {t('landing.tech.subtitle')}
             </p>
           </FadeIn>
 
@@ -510,10 +464,10 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
             <h2 className="text-3xl md:text-4xl font-bold text-surface tracking-tight">
-              Open source. Tuyo para siempre.
+              {t('landing.oss.title')}
             </h2>
             <p className="mt-4 text-lg text-surface/70">
-              Despliega tu propia instancia en minutos. MIT License.
+              {t('landing.oss.sub')}
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
@@ -523,7 +477,7 @@ export default function LandingPage() {
                 className="inline-flex items-center gap-2 px-8 py-4 bg-surface text-text font-medium rounded-full hover:bg-surface/90 transition-colors"
               >
                 <IconGitHub />
-                Ver en GitHub
+                {t('landing.oss.github')}
               </a>
               <Link
                 href="/demo"
@@ -544,12 +498,12 @@ export default function LandingPage() {
       <section className="py-24 md:py-32">
         <div className="max-w-2xl mx-auto px-6 text-center">
           <FadeIn>
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-4">Desarrollo a medida</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-4">{t('landing.hire.badge')}</p>
             <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
-              ¿Necesitas algo más avanzado?
+              {t('landing.hire.title')}
             </h2>
             <p className="mt-4 text-lg text-text-secondary">
-              Integraciones personalizadas, lógica de negocio específica, SaaS completo desde cero — estoy disponible para proyectos freelance.
+              {t('landing.hire.sub')}
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
@@ -560,7 +514,7 @@ export default function LandingPage() {
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                   <polyline points="22,6 12,13 2,6" />
                 </svg>
-                Contáctame
+                {t('landing.hire.cta')}
               </a>
               <a
                 href="https://sergioramosvicente.com"
@@ -573,7 +527,7 @@ export default function LandingPage() {
                   <line x1="2" y1="12" x2="22" y2="12" />
                   <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
                 </svg>
-                sergioramosvicente.com
+                {t('landing.hire.web')}
               </a>
             </div>
           </FadeIn>

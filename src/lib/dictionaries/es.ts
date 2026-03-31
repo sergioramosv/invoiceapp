@@ -294,6 +294,63 @@ const es: Record<string, string> = {
   'landing.faq5.q': '¿Necesito instalar algo?',
   'landing.faq5.a': 'No, la app funciona 100% en el navegador. También puedes instalarla como PWA.',
 
+  // Landing — features grid (redesign)
+  'landing.featuresTitle2': 'Todo lo que necesitas para facturar',
+  'landing.featuresSubtitle2': 'Facturación electrónica, editor en tiempo real, multi-moneda, analytics y más. Open source y listo para producción.',
+  'landing.feat.verifactu.title': 'VeriFactu / Facturación electrónica',
+  'landing.feat.verifactu.desc': 'Integración con la AEAT. Emite facturas electrónicas con hash SHA-256 encadenado.',
+  'landing.feat.editor.title': 'Editor WYSIWYG en tiempo real',
+  'landing.feat.editor.desc': 'Vista previa en vivo mientras editas. Split-screen con formulario y preview A4.',
+  'landing.feat.templates.title': '4 estilos de plantilla',
+  'landing.feat.templates.desc': 'Clásico, Minimal, Corporate y Creative. Cada factura con tu estilo.',
+  'landing.feat.multicurrency.title': 'Multi-moneda e idioma',
+  'landing.feat.multicurrency.desc': '20+ monedas (EUR, USD, GBP...) y 3 idiomas (ES, EN, DE).',
+  'landing.feat.analytics.title': 'Dashboard con analytics',
+  'landing.feat.analytics.desc': 'KPIs, gráficos de ingresos mensuales, distribución por estado, top clientes.',
+  'landing.feat.quotes.title': 'Presupuestos → Facturas',
+  'landing.feat.quotes.desc': 'Crea presupuestos y conviértelos en factura con un clic.',
+  'landing.feat.api.title': 'API REST',
+  'landing.feat.api.desc': 'Integra con cualquier sistema. Endpoints para facturas y clientes.',
+  'landing.feat.opensource.title': 'Open source',
+  'landing.feat.opensource.desc': 'Código abierto. Despliega tu propia instancia. MIT License.',
+
+  // Landing — VeriFactu section
+  'landing.verifactu.badge': 'Cumplimiento normativo',
+  'landing.verifactu.title': 'Facturación electrónica con VeriFactu',
+  'landing.verifactu.desc': 'Cada factura se firma con un hash SHA-256 encadenado al registro anterior, garantizando la integridad y trazabilidad de toda tu facturación.',
+  'landing.verifactu.check1': 'Registro automático con la AEAT',
+  'landing.verifactu.check2': 'Tipos de factura F1-R5 soportados',
+  'landing.verifactu.check3': 'QR de verificación en cada factura',
+  'landing.verifactu.check4': 'Bloqueo post-emisión para inmutabilidad',
+  'landing.verifactu.status': 'Estado VeriFactu',
+  'landing.verifactu.accepted': 'Aceptada',
+  'landing.verifactu.hashLabel': 'Hash SHA-256',
+  'landing.verifactu.prevHashLabel': 'Hash anterior',
+  'landing.verifactu.qrLabel': 'QR Verificación',
+  'landing.verifactu.qrSub': 'Escanear para validar',
+
+  // Landing — tech stack section
+  'landing.tech.title': 'Construido con tecnología moderna',
+  'landing.tech.subtitle': 'Stack moderno, rendimiento optimizado, developer experience de primera.',
+  'landing.tech.framework': 'Framework',
+  'landing.tech.ui': 'UI',
+  'landing.tech.language': 'Lenguaje',
+  'landing.tech.backend': 'Backend',
+  'landing.tech.styles': 'Estilos',
+  'landing.tech.pdf': 'PDF',
+
+  // Landing — open source CTA
+  'landing.oss.title': 'Open source. Tuyo para siempre.',
+  'landing.oss.sub': 'Despliega tu propia instancia en minutos. MIT License.',
+  'landing.oss.github': 'Ver en GitHub',
+
+  // Landing — hire CTA
+  'landing.hire.badge': 'Desarrollo a medida',
+  'landing.hire.title': '¿Necesitas algo más avanzado?',
+  'landing.hire.sub': 'Integraciones personalizadas, lógica de negocio específica, SaaS completo desde cero — estoy disponible para proyectos freelance.',
+  'landing.hire.cta': 'Contáctame',
+  'landing.hire.web': 'sergioramosvicente.com',
+
   // Landing social proof labels
   'landing.sp1': 'Freelancers',
   'landing.sp2': 'Agencias',
